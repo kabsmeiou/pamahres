@@ -14,6 +14,7 @@ client = OpenAI(
 def extract_pdf_content(material_list: list) -> str:
   # extract the text from the pdf
   ###  IMPORTANT: Replace material_file.path to material_path on production ###
+  
   content = ""
   for material in material_list:
     with fitz.open(material.material_file.path) as doc:

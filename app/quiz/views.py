@@ -29,8 +29,12 @@ class QuizListCreateView(generics.ListCreateAPIView):
 
   def get_queryset(self):
     course_id = self.kwargs['course_id']
-    # filter by course, show all the quizzes associated in a course
-    return QuizModel.objects.filter(material_list__course_id=course_id)
+    # return all quizzes if no course_id
+    if course_id:
+      # filter by course, show all the quizzes associated in a course
+      return QuizModel.objects.filter(material_list__course_id=course_id)
+    return QuizModel.objects.all()
+
   
   ### LIMIT THE MATERIAL SELECTION TO ONLY ONE(1) PER QUIZ ###
   # override the create function to process the pdf and generate questions using openai

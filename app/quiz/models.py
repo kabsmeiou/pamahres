@@ -5,6 +5,7 @@ from courses.models import Course
 class QuizModel(models.Model):
   course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='quizzes')
   material_list = models.ManyToManyField(CourseMaterial, related_name="quiz_references")
+  # add quiz_score here
   number_of_questions = models.PositiveIntegerField(default=5)
   quiz_title = models.CharField(max_length=100, unique=True)
 

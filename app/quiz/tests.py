@@ -10,13 +10,23 @@ class QuizViewTests(APITestCase):
     def setUp(self):
         # Create a user for authentication
         self.user = User.objects.create_user(username="testuser", password="password")
-        self.token = self.get_jwt_token(self.user)  # Assuming you have a method to get JWT token
+        self.token = self.get_jwt_token(self.user) 
+        #setup_user_details(self.user)
         
         # Create a course for testing
         self.course = Course.objects.create(course_name="Test Course", user=self.user)
         # Create a material linked to the course
         self.material1 = CourseMaterial.objects.create(material_path='test_content.pdf', material_file='test_content.pdf', course=self.course)
     
+    def setup_user_details(self, user):
+        """Helper method to set up user details."""
+        self.user = user
+        self.token = self.get_jwt_token(user)
+        user.age = 20
+        user.education_level = 'Undergraduate'
+        user.mbti_type = 'INFP'
+        user.save()
+
     def get_jwt_token(self, user):
         """Helper method to get JWT token for the user."""
         # Obtain JWT token using the TokenObtainPairView
@@ -42,7 +52,7 @@ class QuizViewTests(APITestCase):
         
         # fetch the questions from the newly created quiz
         quiz_id = response.data['id']
-        questions_url = reverse('question-list', kwargs={'quiz_id': quiz_id})
+        questions_url = reverse('question-list', kwargs={'quiz_id': quiz_id, 'course_id': self.course.id})
         questions_response = self.client.get(questions_url, HTTP_AUTHORIZATION=f'Bearer {self.token}')
         
         self.assertEqual(questions_response.status_code, status.HTTP_200_OK)
