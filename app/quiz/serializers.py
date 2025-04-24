@@ -4,7 +4,8 @@ from .models import QuizModel, QuestionModel
 class QuizModelSerializer(serializers.ModelSerializer):
   class Meta:
     model = QuizModel
-    fields = '__all__'
+    fields = ['id', 'material_list', 'number_of_questions', 'quiz_title']
+    read_only_fields = ['course']
   
   # extract the materials from the POST request as user selected in the frontend
   def create(self, validated_data):

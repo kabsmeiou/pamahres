@@ -21,6 +21,9 @@ class CourseView(generics.ListCreateAPIView):
 
   def get_queryset(self):
     return self.request.user.courses.all()
+
+  def perform_create(self, serializer):
+    serializer.save(user=self.request.user)
   
 # View for showing all the materials in a course. It will return the materials'
 # associated with the user and the course he clicked.

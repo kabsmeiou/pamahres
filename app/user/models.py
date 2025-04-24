@@ -40,7 +40,7 @@ class Profile(models.Model):
   mbti_type = models.CharField(max_length=4, choices=MBTI_CHOICES, blank=True, null=True)
   age = models.PositiveIntegerField(blank=True, null=True)
   education_level = models.CharField(max_length=20, choices=EDUCATION_LEVEL_CHOICES)
-  course = models.CharField(max_length=100, blank=True)
+  user_course = models.CharField(max_length=100, blank=True)
   target_study_hours = models.PositiveIntegerField()
   current_grade = models.PositiveIntegerField()
 

@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from quiz.serializers import QuizModelSerializer, QuestionModelSerializer
 from .models import QuizModel, QuestionModel
 from .openai_generator import get_completion, extract_pdf_content
-from courses.models import CourseMaterial
+from courses.models import CourseMaterial, Course
 
 # the questions associated with a quiz
 # filter the questions from a quiz using quiz_id
@@ -39,10 +39,17 @@ class QuizListCreateView(generics.ListCreateAPIView):
   ### LIMIT THE MATERIAL SELECTION TO ONLY ONE(1) PER QUIZ ###
   # override the create function to process the pdf and generate questions using openai
   def perform_create(self, serializer):
-    quiz = serializer.save()
-    
+    course_id = self.kwargs['course_id']
+    course = get_object_or_404(Course, id=course_id)
+    quiz = None
+    try:
+      quiz = serializer.save(course=course)
+    except Exception as e:
+      raise ValidationError(f"Error creating quiz: {str(e)}")
+
     material_ids = self.request.data.get('material_list', [])
     # print("material_ids", material_ids)
+
     if material_ids:
       # fetch materials via ids
       material_list = CourseMaterial.objects.filter(id__in=material_ids)
@@ -55,7 +62,7 @@ class QuizListCreateView(generics.ListCreateAPIView):
     # process the pdf into text
     # divide content into 5000-character chunks and process (haven't done)
     pdf_content = extract_pdf_content(quiz.material_list.all())
-    if not pdf_content:
+    if pdf_content == "":
       raise ValidationError("No valid content extracted from the provided materials.")
     
     try:
