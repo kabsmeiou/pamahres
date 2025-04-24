@@ -14,7 +14,6 @@ client = OpenAI(
 def extract_pdf_content(material_list: list) -> str:
   # extract the text from the pdf
   ###  IMPORTANT: Replace material_file.path to material_path on production ###
-  
   content = ""
   for material in material_list:
     with fitz.open(material.material_file.path) as doc:
@@ -53,5 +52,8 @@ def get_completion(model="deepseek/deepseek-chat:free", *, items: int=5, pdf_con
     ]
   )
   # prepare the response and make sure its in the correct format
-  response = parse_llm_response(completion.choices[0].message.content)
+  try:
+    response = parse_llm_response(completion.choices[0].message.content)
+  except Exception as e:
+    print(e)
   return response
