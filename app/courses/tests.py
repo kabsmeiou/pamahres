@@ -16,15 +16,15 @@ class CourseViewTests(APITestCase):
     # Obtain JWT token using the TokenObtainPairView
     response = self.client.post(reverse('token_obtain_pair'), data={
         'username': user.username,
-        'password': 'password'  # Use the password set during user creation
+        'password': 'password'
     })
-    return response.data['access']  # Return the access token
+    return response.data['access']
   
   def test_create_invalid_course_with_non_numeric_units(self):
     """Test creating a course with invalid units."""
     invalid_unit = {
       'course_name': 'Test Course',
-      'course_units': 'invalid_unit',  # Invalid units should raise a validation error
+      'course_units': 'invalid_unit',
     }
 
     url = reverse('course-list-create')
