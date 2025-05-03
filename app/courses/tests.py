@@ -45,13 +45,14 @@ class CourseViewTests(APITestCase):
 
   def test_create_valid_course(self):
     """Should work when creating a course that meets the model's expected input"""
-    invalid_units = {
+    valid_units = {
       'course_name': 'Test Course',
-      'course_units': 5,  # Invalid units should raise a validation error
+      'course_code': 'TEST',
+      'course_units': 5,  # Valid units should not raise a validation error
     }
 
     url = reverse('course-list-create')
-    response = self.client.post(url, invalid_units, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')  
+    response = self.client.post(url, valid_units, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
   def test_course_material(self):
