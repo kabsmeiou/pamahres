@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import QuizModel, QuestionModel
+from .models import QuizModel, QuestionModel, QuestionOption
 
 class QuizModelSerializer(serializers.ModelSerializer):
   class Meta:
@@ -13,8 +13,39 @@ class QuizModelSerializer(serializers.ModelSerializer):
     quiz = QuizModel.objects.create(**validated_data)
     quiz.material_list.set(materials)
     return quiz
-
+  
+class QuestionOptionSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = QuestionOption
+    fields = ['text', 'is_correct']
+    
 class QuestionModelSerializer(serializers.ModelSerializer):
+  options = QuestionOptionSerializer(many=True, write_only=True)
+
   class Meta:
     model = QuestionModel
-    fields = '__all__'
+    fields = ['question', 'question_type', 'quiz', 'options']
+
+  def validate(self, data):
+    options = data.get('options', [])
+    # validate number of options
+    if data['question_type'] == 'MCQ':
+      if len(options) < 3: # must be at least 3 options included
+        raise serializers.ValidationError("MCQ questions must have at least 3 options.")
+      if len(options) > 4: # must not be more than 4 options in mcq
+        raise serializers.ValidationError("MCQ questions must have at most 4 options.")
+    elif data['question_type'] == 'TF' and options:
+      raise serializers.ValidationError("TF questions should not have custom options.")
+    
+    # validate correct answer
+    has_correct_answer: bool = any(option['is_correct'] for option in options)
+    if not has_correct_answer:
+      raise serializers.ValidationError("MCQ questions must have at least one correct answer.")
+    return data
+
+  def create(self, validated_data):
+    options_data = validated_data.pop('options')
+    question = QuestionModel.objects.create(**validated_data)
+    for option in options_data:
+      QuestionOption.objects.create(question=question, **option)
+    return question
