@@ -1,5 +1,5 @@
 # To Do List
-- [ ] Finalize models
+- [x] Finalize models
 - [ ] Additional tests for user
 - [ ] Add authentication
 - [ ] Settle for a database (maybe use supabase buckets for files)
