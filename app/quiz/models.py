@@ -52,6 +52,13 @@ class QuestionOption(models.Model):
   text = models.CharField(max_length=200, null=False, blank=False)
   is_correct = models.BooleanField(null=False, default=False)
 
+  # index by questions fk
+  class Meta:
+    indexes = [
+      models.Index(fields=['question']),
+    ]
+    ordering = ['id']
+
   def __str__(self):
       return f"{self.text} {'(Correct)' if self.is_correct else ''}"
 
@@ -66,9 +73,10 @@ class QuestionModel(models.Model):
   correct_answer_count = models.PositiveIntegerField(default=0)
   incorrect_answer_count = models.PositiveIntegerField(default=0)
 
+  # indexing quiz for faster lookup when i filter questions by quiz
   class Meta:
     indexes = [
-      models.Index(fields=['quiz', 'question_type']),
+      models.Index(fields=['quiz']),
     ]
     ordering = ['id']
 

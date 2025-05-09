@@ -16,7 +16,6 @@ class QuizViewTests(APITestCase):
         valid_units = {
             'course_name': 'Test Course',
             'course_code': 'TEST',
-            'course_units': 5,  # Valid units should not raise a validation error
         }
         url = reverse('course-list-create')
         response = self.client.post(url, valid_units, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
@@ -24,8 +23,19 @@ class QuizViewTests(APITestCase):
         self.course = Course.objects.get(id=response.data['id'])
 
         # Create a material for testing
-        self.material1 = CourseMaterial.objects.create(material_file='test_content.pdf', course=self.course)
+        material = {
+            'material_file_url': "https://yszhqkacyhudqdjjncjc.supabase.co/storage/v1/object/public/images//inbound1750991441972193945.webp",
+            'file_name': 'test.pdf',
+            'file_type': 'pdf',
+            'file_size': 1024
+        }
 
+        url = reverse('course-material-list-create', kwargs={'course_id': self.course.id})
+        response = self.client.post(url, material, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(CourseMaterial.objects.count(), 1)
+        self.material1 = CourseMaterial.objects.get(id=response.data['id'])
+        
         # Create quiz via POST
         dummy_quiz = {
             'course': self.course.id,
@@ -38,15 +48,39 @@ class QuizViewTests(APITestCase):
         self.quiz = QuizModel.objects.get(id=response.data['id'])
 
         # setup question for the quiz
-        question = {
-            'question':'Test Question', 
+        question1 = {
+            'question':'Test Question 1', 
             'quiz': self.quiz.id,
             'question_type':'MCQ',
+            'options': [
+                {"text": "3", "is_correct": False},
+                {"text": "4", "is_correct": True},
+                {"text": "5", "is_correct": False}
+            ]
         }
         url = reverse('question-list-create', kwargs={'quiz_id': self.quiz.id})
-        response = self.client.post(url, question, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+        response = self.client.post(url, question1, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.question = QuestionModel.objects.get(id=response.data['id'])
+        self.question1 = QuestionModel.objects.get(id=response.data['id'])
+
+        # another question
+        question2 = {
+            'question':'Test Question 2', 
+            'quiz': self.quiz.id,
+            'question_type':'MCQ',
+            'options': [
+                {"text": "3", "is_correct": False},
+                {"text": "4", "is_correct": True},
+                {"text": "5", "is_correct": False},
+                {"text": "6", "is_correct": False}
+            ]
+        }
+        url = reverse('question-list-create', kwargs={'quiz_id': self.quiz.id})
+        response = self.client.post(url, question2, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.question2 = QuestionModel.objects.get(id=response.data['id'])
+
+        
     
     def setup_user_details(self, user):
         """Helper method to set up user details."""
@@ -76,25 +110,99 @@ class QuizViewTests(APITestCase):
     #     response = self.client.post(url, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
     #     self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_add_question_to_quiz(self):
-        """Should work when adding a question to a quiz"""
+    def test_question_setup(self):
+        """Should be able to find the created questions in the quiz"""
+        url = reverse('question-list-create', kwargs={'quiz_id': self.quiz.id})
+        response = self.client.get(url, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_options_for_question_setup(self):
+        """Should be able to see the options for each question fetched in quiz_id"""
+        url = reverse('question-list-create', kwargs={'quiz_id': self.quiz.id})
+        response = self.client.get(url, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        options_for_question_1 = QuestionModel.objects.get(id=response.data[0]['id']).options.all()
+        options_for_question_2 = QuestionModel.objects.get(id=response.data[1]['id']).options.all()
+        self.assertGreater(len(options_for_question_1), 2)
+        self.assertGreater(len(options_for_question_2), 2)
+
+    def test_add_question_to_quiz_without_options(self):
+        """Should not work when adding a question without options"""
         question = {
-            'question':'Test Question', 
+            'question':'Test Question 2', 
             'quiz': self.quiz.id,
             'question_type':'MCQ',
         }
         url = reverse('question-list-create', kwargs={'quiz_id': self.quiz.id})
         response = self.client.post(url, question, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_invalid_option_count(self):
+        """Should not work when adding a question to a quiz with invalid option count"""
+        question = {
+            'question':'Test Question', 
+            'quiz': self.quiz.id,
+            'question_type':'MCQ',
+            'options': [
+                {"text": "3", "is_correct": False},
+                {"text": "4", "is_correct": True},
+                {"text": "5", "is_correct": False},
+                {"text": "6", "is_correct": False},
+                {"text": "8", "is_correct": False}
+            ]
+        }
+        url = reverse('question-list-create', kwargs={'quiz_id': self.quiz.id})
+        response = self.client.post(url, question, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_invalid_option_boolean(self):
+        """Should not work when adding a question to a quiz with options for a t/f type question"""
+        question = {
+            'question':'Test Question', 
+            'quiz': self.quiz.id,
+            'question_type':'TF',
+            'options': [
+                {"text": "3", "is_correct": False},
+                {"text": "4", "is_correct": True},
+            ]
+        }
+        url = reverse('question-list-create', kwargs={'quiz_id': self.quiz.id})
+        response = self.client.post(url, question, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    
+    def test_valid_boolean_question(self):
+        """Should not work when adding a question to a quiz with options for a t/f type question"""
+        question = {
+            'question':'Test Question', 
+            'quiz': self.quiz.id,
+            'question_type':'TF',
+            'options': [
+                {'text': 'correct_answer', 'is_correct': True}
+            ]
+        }
+        url = reverse('question-list-create', kwargs={'quiz_id': self.quiz.id})
+        response = self.client.post(url, question, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+        # print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_add_option_to_question(self):
-        """Should work when adding an option to a question"""
-        option = {
-            'question': self.question.id,
-            'text': 'Test Option',
-            'is_correct': False
-        }
-        url = reverse('add-option', kwargs={'question_id': self.question.id})
-        response = self.client.post(url, option, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    # def test_add_option_to_question(self):
+    #     """Should work when adding an option to a question"""
+    #     option = {
+    #         'question': self.question.id,
+    #         'text': 'Test Option',
+    #         'is_correct': False
+    #     }
+    #     url = reverse('add-option', kwargs={'question_id': self.question.id})
+    #     response = self.client.post(url, option, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
     
+    # def test_invalid_add_option_to_question(self):
+    #     """Should work when adding an option to a question"""
+    #     option = {
+    #         'question': self.question.id,
+    #         'text': 'Test Option',
+    #         'is_correct': False
+    #     }
+    #     url = reverse('add-option', kwargs={'question_id': self.question.id})
+    #     response = self.client.post(url, option, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)

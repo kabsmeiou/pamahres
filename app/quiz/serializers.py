@@ -24,7 +24,7 @@ class QuestionModelSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = QuestionModel
-    fields = ['question', 'question_type', 'quiz', 'options']
+    fields = ['id', 'question', 'question_type', 'quiz', 'options']
 
   def validate(self, data):
     options = data.get('options', [])
@@ -34,13 +34,19 @@ class QuestionModelSerializer(serializers.ModelSerializer):
         raise serializers.ValidationError("MCQ questions must have at least 3 options.")
       if len(options) > 4: # must not be more than 4 options in mcq
         raise serializers.ValidationError("MCQ questions must have at most 4 options.")
-    elif data['question_type'] == 'TF' and options:
-      raise serializers.ValidationError("TF questions should not have custom options.")
+    elif data['question_type'] == 'TF':
+      # creating a t/f question requires passing a dummy option called "correct_answer"
+      # this option should have an "is_correct" field set to True or False
+      # len == 1 which means correct_answer is set to True or False as "is_correct"
+      if len(options) == 0:
+        raise serializers.ValidationError("Please provide a correct answer.")
+      elif len(options) >= 2:
+        raise serializers.ValidationError("True/False questions should not have custom options.")
     
     # validate correct answer
     has_correct_answer: bool = any(option['is_correct'] for option in options)
     if not has_correct_answer:
-      raise serializers.ValidationError("MCQ questions must have at least one correct answer.")
+      raise serializers.ValidationError("Questions must have at least one correct answer.")
     return data
 
   def create(self, validated_data):

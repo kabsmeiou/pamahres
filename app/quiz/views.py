@@ -50,14 +50,14 @@ class QuestionListCreateView(generics.ListCreateAPIView):
       serializer.save(quiz=quiz)
     except Exception as e:
       raise ValidationError(f"Error creating question: {str(e)}")
-  
-  def perform_create(self, serializer):
-    question_id = self.kwargs['question_id']
-    question = get_object_or_404(QuestionModel, id=question_id)
-    try:
-      serializer.save(question=question)
-    except Exception as e:
-      raise ValidationError(f"Error creating option: {str(e)}")
+
+  # def perform_create(self, serializer):
+  #   question_id = self.kwargs['question_id']
+  #   question = get_object_or_404(QuestionModel, id=question_id)
+  #   try:
+  #     serializer.save(question=question)
+  #   except Exception as e:
+  #     raise ValidationError(f"Error creating option: {str(e)}")
 
 ### LIMIT THE MATERIAL SELECTION TO ONLY ONE(1) PER QUIZ ###
 # override the create function to process the pdf and generate questions using openai
@@ -110,15 +110,19 @@ class GenerateQuestionView(generics.GenericAPIView):
 
       for question, item in zip(created_questions, questions):
         options = item.get('options')
+        # generated output doesn't contain options
         if not options:
-          option_instances.extend([
-          QuestionOption(
-            question=question,
-            text=option,
-            is_correct=(option == item.get('answer'))
-          )
-          for option in ['True', 'False']
-          ])
+          dummy_option_text: str = "correct_answer"
+          try:
+            option_instances.append(
+              QuestionOption(
+                question=question,
+                text=dummy_option_text,
+                is_correct=(item.get('answer'))
+              )
+            )
+          except Exception as e:
+            raise ValidationError(f"Error creating dummy option for t/f question: {str(e)}")
           continue
         
         option_instances.extend([

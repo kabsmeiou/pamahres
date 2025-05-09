@@ -1,12 +1,9 @@
-from django.shortcuts import render
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission
+from rest_framework.permissions import IsAuthenticated, BasePermission
 from courses.serializers import CourseSerializer, CourseMaterialSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import get_object_or_404
 from .models import Course
+from django.forms import ValidationError
 
 # Check if the user is the owner, use as permission for the views
 class IsOwner(BasePermission):
@@ -34,6 +31,15 @@ class CourseMaterialsView(generics.ListCreateAPIView):
 
   def get_queryset(self):
     return self.request.user.courses.course_materials.all()
+  
+  def perform_create(self, serializer):
+    # get course id from params
+    course_id = self.kwargs['course_id']
+    try:
+      course = get_object_or_404(Course, id=course_id)
+    except Exception as e:
+      raise ValidationError(f"Error creating material: {str(e)}")
+    serializer.save(course=course)
 
 
 # Single instance view of a course, showing details

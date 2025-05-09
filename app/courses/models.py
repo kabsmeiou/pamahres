@@ -14,14 +14,10 @@ class Course(models.Model):
 
 class CourseMaterial(models.Model):
   course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='materials')
-  material_file = models.FileField(
-    upload_to='course_materials/',
-    validators=[FileExtensionValidator(allowed_extensions=['pdf', 'docx', 'pptx', 'jpg', 'png'])],
-    null=False,
-    blank=False
-  )
-  file_size = models.PositiveIntegerField(null=True)
-  file_type = models.CharField(max_length=50, null=True)
+  material_file_url = models.URLField()  # Use URLField for external file URLs
+  file_name = models.CharField(max_length=100)
+  file_size = models.PositiveIntegerField()
+  file_type = models.CharField(max_length=50)
   uploaded_at = models.DateTimeField(auto_now_add=True)
 
   # database index for 'course' and 'uploaded_at'
@@ -31,12 +27,6 @@ class CourseMaterial(models.Model):
       models.Index(fields=['course', 'uploaded_at']),
     ]
     ordering = ['-uploaded_at']
-
-  def save(self, *args, **kwargs):
-    if self.material_file:
-      self.file_size = self.material_file.size
-      self.file_type = self.material_file.name.split('.')[-1].lower()
-    super().save(*args, **kwargs)
 
   def __str__(self):
     return f"{self.course.name} - {self.material_file.name}"
