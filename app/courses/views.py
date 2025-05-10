@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated, BasePermission
 from courses.serializers import CourseSerializer, CourseMaterialSerializer
 from django.shortcuts import get_object_or_404
 from .models import Course
-from django.forms import ValidationError
+from rest_framework.exceptions import ValidationError
 
 # Check if the user is the owner, use as permission for the views
 class IsOwner(BasePermission):

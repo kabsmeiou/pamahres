@@ -4,15 +4,28 @@ from django.urls import reverse
 from user.models import User
 from courses.models import Course, CourseMaterial
 from quiz.models import QuizModel, QuestionModel
+from typing import Final
+
+TEST_PASSWORD: Final[str] = 'testpass123'
 
 class QuizViewTests(APITestCase):
     def setUp(self):
         # Create a user for authentication
-        self.user = User.objects.create_user(username="testuser", password="password")
+        url = reverse('signup')
+        data = {
+            'username': 'testuser',
+            'email': 'test@example.com',
+            'first_name': 'Test',
+            'last_name': 'User',
+            'password': TEST_PASSWORD
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        user = User.objects.get(username='testuser')
+        self.user = user
         self.token = self.get_jwt_token(self.user) 
-        #setup_user_details(self.user)
         
-        # Create a course for testing and send a post request to create it
+        # A course for testing and send a post request to create it
         valid_units = {
             'course_name': 'Test Course',
             'course_code': 'TEST',
@@ -22,7 +35,7 @@ class QuizViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.course = Course.objects.get(id=response.data['id'])
 
-        # Create a material for testing
+        # Attach a material for testing
         material = {
             'material_file_url': "https://yszhqkacyhudqdjjncjc.supabase.co/storage/v1/object/public/images//inbound1750991441972193945.webp",
             'file_name': 'test.pdf',
@@ -36,7 +49,7 @@ class QuizViewTests(APITestCase):
         self.assertEqual(CourseMaterial.objects.count(), 1)
         self.material1 = CourseMaterial.objects.get(id=response.data['id'])
         
-        # Create quiz via POST
+        # quiz via POST
         dummy_quiz = {
             'course': self.course.id,
             'quiz_title': 'Test Quiz',
@@ -80,23 +93,22 @@ class QuizViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.question2 = QuestionModel.objects.get(id=response.data['id'])
 
-        
     
-    def setup_user_details(self, user):
-        """Helper method to set up user details."""
-        self.user = user
-        self.token = self.get_jwt_token(user)
-        user.age = 20
-        user.education_level = 'Undergraduate'
-        user.mbti_type = 'INFP'
-        user.save()
+    # def setup_user_details(self, user):
+    #     """Helper method to set up user details."""
+    #     self.user = user
+    #     self.token = self.get_jwt_token(user)
+    #     user.age = 20
+    #     user.education_level = 'Undergraduate'
+    #     user.mbti_type = 'INFP'
+    #     user.save()
 
     def get_jwt_token(self, user):
         """Helper method to get JWT token for the user."""
         # Obtain JWT token using the TokenObtainPairView
         response = self.client.post(reverse('token_obtain_pair'), data={
             'username': user.username,
-            'password': 'password'  # Use the password set during user creation
+            'password': TEST_PASSWORD # Use the password set during user creation
         })
         return response.data['access']  # Return the access token
     
@@ -184,6 +196,13 @@ class QuizViewTests(APITestCase):
         response = self.client.post(url, question, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
         # print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+    def test_generate_quiz(self):
+        """Should work when generating a quiz"""
+        url = reverse('generate-questions', kwargs={'quiz_id': self.quiz.id})
+        response = self.client.post(url, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # def test_add_option_to_question(self):
     #     """Should work when adding an option to a question"""

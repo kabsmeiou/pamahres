@@ -1,4 +1,4 @@
-from django.forms import ValidationError
+from rest_framework.exceptions import ValidationError
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -118,7 +118,7 @@ class GenerateQuestionView(generics.GenericAPIView):
               QuestionOption(
                 question=question,
                 text=dummy_option_text,
-                is_correct=(item.get('answer'))
+                is_correct=(item.get('answer') == 'true')
               )
             )
           except Exception as e:
