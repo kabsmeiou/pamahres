@@ -4,6 +4,7 @@ from django.urls import reverse
 from user.models import User
 from courses.models import Course, CourseMaterial
 from typing import Final
+from supabase_client import supabase
 
 TEST_PASSWORD: Final[str] = 'testpass123'
 
@@ -12,11 +13,11 @@ class CourseViewTests(APITestCase):
     # Create a user for authentication
     url = reverse('signup')
     data = {
-        'username': 'testuser',
-        'email': 'test@example.com',
-        'first_name': 'Test',
-        'last_name': 'User',
-        'password': TEST_PASSWORD
+      'username': 'testuser',
+      'email': 'test@example.com',
+      'first_name': 'Test',
+      'last_name': 'User',
+      'password': TEST_PASSWORD
     }
     response = self.client.post(url, data, format='json')
     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -39,8 +40,8 @@ class CourseViewTests(APITestCase):
     """Helper method to get JWT token for the user."""
     # Obtain JWT token using the TokenObtainPairView
     response = self.client.post(reverse('token_obtain_pair'), data={
-        'username': user.username,
-        'password': TEST_PASSWORD
+      'username': user.username,
+      'password': TEST_PASSWORD
     })
     return response.data['access']
   

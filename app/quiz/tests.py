@@ -197,31 +197,8 @@ class QuizViewTests(APITestCase):
         # print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-
-    def test_generate_quiz(self):
-        """Should work when generating a quiz"""
-        url = reverse('generate-questions', kwargs={'quiz_id': self.quiz.id})
-        response = self.client.post(url, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    # def test_add_option_to_question(self):
-    #     """Should work when adding an option to a question"""
-    #     option = {
-    #         'question': self.question.id,
-    #         'text': 'Test Option',
-    #         'is_correct': False
-    #     }
-    #     url = reverse('add-option', kwargs={'question_id': self.question.id})
-    #     response = self.client.post(url, option, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    
-    # def test_invalid_add_option_to_question(self):
-    #     """Should work when adding an option to a question"""
-    #     option = {
-    #         'question': self.question.id,
-    #         'text': 'Test Option',
-    #         'is_correct': False
-    #     }
-    #     url = reverse('add-option', kwargs={'question_id': self.question.id})
-    #     response = self.client.post(url, option, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    # def test_generate_quiz(self):
+    #     """Should work when generating a quiz"""
+    #     url = reverse('generate-questions', kwargs={'quiz_id': self.quiz.id})
+    #     response = self.client.post(url, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)

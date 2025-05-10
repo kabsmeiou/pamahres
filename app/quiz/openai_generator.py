@@ -4,6 +4,7 @@ from openai import OpenAI
 import fitz
 import json
 from rest_framework.exceptions import ValidationError
+from supabase_client import supabase
 
 load_dotenv()
 
@@ -11,19 +12,32 @@ client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
   api_key=os.getenv("OPENAI_API_KEY"),
 )
+
 # Use supabase here, initialize the client, fetch the pdf as a list,
 # the return as a list of pdfs
 # It will be returned to extract_pdf_content and will be processed
 def fetch_pdf(material_list: list) -> list:
-  return []
+  try:
+    pdf_files = []
+    for material in material_list:
+      material_path: str = material.material_file_url
+      response = supabase.storage.from_('materials-all').download(material_path)
+      if response.status_code == 200:
+        pdf_files.append(response.data)  # Append the PDF binary data
+      else:
+        print(f"Failed to download {material_path}")
+  except Exception as e:
+    raise ValidationError(f"Error fetching PDF: {str(e)}")
+  return pdf_files
 
 def extract_pdf_content(material_list: list) -> str:
   # using the list of material objects, fetch pdf files from supabase
   pdf_files = fetch_pdf(material_list)
-  # Load a local test PDF as bytes (for development/testing)
+  
   with open("test_content.pdf", "rb") as f:
       test_pdf_bytes = f.read()
   pdf_files.append(test_pdf_bytes)
+
   # extract the text from the pdf
   ###  IMPORTANT: Replace material_file.path to material_path on production ###
   content = ""
