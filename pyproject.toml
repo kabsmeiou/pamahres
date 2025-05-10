@@ -32,4 +32,6 @@ dependencies = [
     "typing-inspection==0.4.0",
     "tzdata==2025.2",
     "httpcore>=1.0.9",
+    "psycopg2-binary>=2.9.10",
+    "supabase>=2.15.1",
 ]
