@@ -5,6 +5,8 @@ from user.serializers import UserSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.views import APIView
+from django.http import JsonResponse
 
 # login/signup views
 class Signup(generics.CreateAPIView):
@@ -34,3 +36,13 @@ class ProfileView(generics.RetrieveAPIView):
 
   def get_object(self):
     return self.request.user
+
+  
+from django.http import JsonResponse
+from app.middleware import ClerkSDK
+
+class ClerkProtectedView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return JsonResponse({"message": "Clerk authentication successful", "user": str(request.user)})
