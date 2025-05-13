@@ -34,4 +34,7 @@ dependencies = [
     "httpcore>=1.0.9",
     "psycopg2-binary>=2.9.10",
     "supabase>=2.15.1",
+    "pytz>=2025.2",
+    "requests>=2.32.3",
+    "django-cors-headers>=4.7.0",
 ]

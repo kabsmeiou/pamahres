@@ -1,9 +1,16 @@
 # To Do List
 - [x] Finalize models
 - [x] Additional tests for user
-- [ ] Add authentication
+- [x] Add authentication
 - [x] Settle for a database (maybe use supabase buckets for files)
+- [ ] Configure AI chat function
 - [ ] Create frontend
-  - [ ] Web app
+  - [ ] Web app (in progress)
+    - [ ] Fix quiz connection
+    - [ ] Setup supabase client
+    - [ ] Refactor materials
+    - [ ] Optimize states
+    - [ ] Add user profile edit page
+    - [ ] Setup upload components
   - [ ] iOS
 - [ ] Deploy the application to production server
