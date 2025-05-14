@@ -16,7 +16,7 @@ class Course(models.Model):
 
 class CourseMaterial(models.Model):
   course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='materials')
-  material_file_url = models.URLField()  # Use URLField for external file URLs
+  material_file_url = models.CharField(max_length=100)  # Use URLField for external file URLs
   file_name = models.CharField(max_length=100)
   file_size = models.PositiveIntegerField()
   file_type = models.CharField(max_length=50)
@@ -31,7 +31,9 @@ class CourseMaterial(models.Model):
     ordering = ['-uploaded_at']
 
   def __str__(self):
-    return f"{self.course.name} - {self.material_file.name}"
-
-  def __str__(self):
     return f"{self.course.course_name} - {self.material_file.name}"
+  
+  # @property
+  #   def public_url(self):
+  #       # Generate the public URL if needed
+  #       return f"https://<your-project>.supabase.co/storage/v1/object/public/materials-all/{self.file_path}"

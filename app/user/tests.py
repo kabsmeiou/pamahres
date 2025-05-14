@@ -7,21 +7,6 @@ from unittest.mock import patch
 
 User = get_user_model()
 
-class UserRegistrationTest(APITestCase):
-  def test_user_registration_creates_profile(self):
-    url = reverse('signup')
-    data = {
-      'username': 'testuser',
-      'email': 'test@example.com',
-      'first_name': 'Test',
-      'last_name': 'User',
-      'password': 'testpass123'
-    }
-    response = self.client.post(url, data, format='json')
-    self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    user = User.objects.get(username='testuser')
-    self.assertTrue(Profile.objects.filter(user=user).exists())
-
 class ClerkAuthTest(APITestCase):
     @patch('rest_framework_simplejwt.authentication.JWTAuthentication.authenticate')
     @patch('app.middleware.JWTAuthenticationMiddleware.decode_jwt')  # Mock the decode_jwt method

@@ -18,22 +18,17 @@ class CourseMaterialSerializer(serializers.ModelSerializer):
 
   # validate functions are called automatically by DRF
   def validate_file_name(self, value):
-    if len(value) > 100:
+    if len(value) > 200:
       raise serializers.ValidationError("File name is too long.")
     return value
 
   def validate_file_type(self, value):
-    if value.lower() not in ['pdf']:
-      raise serializers.ValidationError("File type is too long.")
+    if 'application/pdf' not in value.lower():  # Check if the MIME type contains 'application/pdf'
+        raise serializers.ValidationError("Invalid file type. Only PDF files are allowed.")
     return value
   
   def validate_file_size(self, value):
     # 10mb limit
     if value > 10000000:
       raise serializers.ValidationError("File size is too large.")
-    return value
-  
-  def validate_material_file_url(self, value):
-    if not re.match(r"^https://.*supabase.co.*", value):
-      raise serializers.ValidationError("Invalid file URL (must be a Supabase URL).")
     return value

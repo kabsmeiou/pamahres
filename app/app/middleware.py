@@ -9,6 +9,7 @@ from jwt.algorithms import RSAAlgorithm
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from dotenv import load_dotenv
+from user.models import Profile, UserActivity
 
 # Load .env file
 load_dotenv()
@@ -118,5 +119,13 @@ class JWTAuthenticationMiddleware(BaseAuthentication):
 
         if user_id:
             user, created = User.objects.get_or_create(username=user_id)
+            if created:
+                user.email = email
+                user.first_name = first_name
+                user.last_name = last_name
+                user.save()
+                Profile.objects.create(user=user)
+                UserActivity.objects.create(user=user)
             return user
+
         return None
