@@ -10,6 +10,7 @@ from quiz.serializers import QuizModelSerializer, QuestionModelSerializer, Quest
 from .models import QuizModel, QuestionModel, QuestionOption
 from .openai_generator import get_completion, extract_pdf_content
 from courses.models import CourseMaterial, Course
+from django.http import JsonResponse
 
 # list of quizzes in the course
 class QuizListCreateView(generics.ListCreateAPIView):
@@ -31,6 +32,20 @@ class QuizListCreateView(generics.ListCreateAPIView):
     except Exception as e:
       raise ValidationError(f"Error creating quiz: {str(e)}")
 
+# delete a quiz
+class QuizDeleteView(generics.DestroyAPIView):
+  serializer_class = QuizModelSerializer
+  permission_classes = [IsAuthenticated]
+
+  def delete(self, request, quiz_id):
+    # Logic for deleting the quiz
+    try:
+        quiz = QuizModel.objects.get(id=quiz_id)
+        quiz.delete()
+        return JsonResponse({'message': 'Quiz deleted successfully'}, status=204)
+    except QuizModel.DoesNotExist:
+        return JsonResponse({'error': 'Quiz not found'}, status=404)
+
 # the questions associated with a quiz
 # filter the questions from a quiz using quiz_id
 # also the create view for the questions
@@ -51,13 +66,6 @@ class QuestionListCreateView(generics.ListCreateAPIView):
     except Exception as e:
       raise ValidationError(f"Error creating question: {str(e)}")
 
-  # def perform_create(self, serializer):
-  #   question_id = self.kwargs['question_id']
-  #   question = get_object_or_404(QuestionModel, id=question_id)
-  #   try:
-  #     serializer.save(question=question)
-  #   except Exception as e:
-  #     raise ValidationError(f"Error creating option: {str(e)}")
 
 ### LIMIT THE MATERIAL SELECTION TO ONLY ONE(1) PER QUIZ ###
 # override the create function to process the pdf and generate questions using openai

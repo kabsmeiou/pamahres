@@ -21,11 +21,16 @@ def fetch_pdf(material_list: list) -> list:
     pdf_files = []
     for material in material_list:
       material_path: str = material.material_file_url
-      response = supabase.storage.from_('materials-all').download(material_path)
-      if response.status_code == 200:
-        pdf_files.append(response.data)  # Append the PDF binary data
-      else:
-        print(f"Failed to download {material_path}")
+      try:
+        # Supabase download returns bytes directly
+        pdf_data = supabase.storage.from_('materials-all').download(material_path)
+        if pdf_data:  # If we got the data successfully
+          pdf_files.append(pdf_data)
+        else:
+          print(f"Failed to download {material_path}")
+      except Exception as e:
+        print(f"Failed to download {material_path}: {str(e)}")
+        continue
   except Exception as e:
     raise ValidationError(f"Error fetching PDF: {str(e)}")
   return pdf_files
@@ -34,10 +39,6 @@ def extract_pdf_content(material_list: list) -> str:
   # using the list of material objects, fetch pdf files from supabase
   pdf_files = fetch_pdf(material_list)
   
-  with open("test_content.pdf", "rb") as f:
-      test_pdf_bytes = f.read()
-  pdf_files.append(test_pdf_bytes)
-
   # extract the text from the pdf
   ###  IMPORTANT: Replace material_file.path to material_path on production ###
   content = ""

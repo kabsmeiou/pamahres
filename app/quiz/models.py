@@ -11,7 +11,10 @@ class QuizModel(models.Model):
   time_limit_minutes = models.PositiveIntegerField( # quiz time limit
     default=10,
     help_text="Time limit in minutes",
-    validators=[MinValueValidator(1)],
+    validators=[
+      MinValueValidator(1),
+      MaxValueValidator(30),
+    ],
   )
   # add quiz_score here
   quiz_score = models.PositiveIntegerField(
@@ -22,7 +25,7 @@ class QuizModel(models.Model):
   number_of_questions = models.PositiveIntegerField(
     default=5,
     validators=[
-      MinValueValidator(1),  # At least 1 question
+      MinValueValidator(0),  # 0 minimum questions for initialization of quiz
       MaxValueValidator(20),  # Max 20 questions
     ],
   )

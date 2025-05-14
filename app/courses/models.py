@@ -30,8 +30,6 @@ class CourseMaterial(models.Model):
     ]
     ordering = ['-uploaded_at']
 
-  def __str__(self):
-    return f"{self.course.course_name} - {self.material_file.name}"
   
   # @property
   #   def public_url(self):
