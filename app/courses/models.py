@@ -13,6 +13,9 @@ class Course(models.Model):
 
   def __str__(self):
     return self.course_name
+  
+  def get_number_of_quizzes(self):
+    return self.quizzes.count()
 
 class CourseMaterial(models.Model):
   course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='materials')

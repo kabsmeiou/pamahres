@@ -22,7 +22,7 @@ class QuizListCreateView(generics.ListCreateAPIView):
     # return all quizzes if no course_id
     if course_id:
       # filter by course, show all the quizzes associated in a course
-      return QuizModel.objects.filter(material_list__course_id=course_id)
+      return QuizModel.objects.filter(course_id=course_id)
  
   def perform_create(self, serializer):
     course_id = self.kwargs['course_id']
@@ -54,9 +54,10 @@ class QuestionListCreateView(generics.ListCreateAPIView):
   permission_classes = [IsAuthenticated]
 
   def get_queryset(self):
-    quiz_id = self.kwargs['quiz_id']
     # get the QuizModel object using quizid
-    return QuestionModel.objects.filter(quiz_id=quiz_id)
+    quiz_id = self.kwargs['quiz_id']
+    quiz = get_object_or_404(QuizModel, id=quiz_id)
+    return QuestionModel.objects.filter(quiz=quiz)
   
   def perform_create(self, serializer):
     quiz_id = self.kwargs['quiz_id']
@@ -66,6 +67,49 @@ class QuestionListCreateView(generics.ListCreateAPIView):
     except Exception as e:
       raise ValidationError(f"Error creating question: {str(e)}")
 
+class QuizDetailView(generics.RetrieveAPIView):
+  serializer_class = QuizModelSerializer
+  permission_classes = [IsAuthenticated]
+
+  def get_object(self):
+    quiz_id = self.kwargs['quiz_id']
+    return get_object_or_404(QuizModel, id=quiz_id)
+
+class CheckQuizAnswerView(generics.GenericAPIView):
+  serializer_class = QuestionModelSerializer
+  permission_classes = [IsAuthenticated]
+
+  # expect a list of option_ids and question_ids
+  def post(self, request, *args, **kwargs):
+    quiz_id = kwargs['quiz_id']
+    quiz = get_object_or_404(QuizModel, id=quiz_id)
+    # get the list of option_ids
+    answer_list = request.data
+
+    # check if the answer_list is empty
+    if not answer_list:
+      raise ValidationError("No answers provided.")
+
+    score: int = 0
+    # check if the answer is correct
+    results: list[dict] = []
+    for answer in answer_list:
+      question = get_object_or_404(QuestionModel, id=answer['question_id'])
+      correct_answer = question.correct_answer
+      results.append({
+        "question_id": question.id,
+        "correct_answer": correct_answer,
+        "is_correct": answer['answer'].lower() == correct_answer.lower(),
+      })
+      if results[-1]['is_correct']: # check if the answer is correct (last appended item)
+        score += 1
+
+    # update the quiz score
+    quiz.quiz_score = max(quiz.quiz_score, score)
+    quiz.save()
+
+    return Response({"score": score, "results": results}, status=status.HTTP_200_OK)
+    
 
 ### LIMIT THE MATERIAL SELECTION TO ONLY ONE(1) PER QUIZ ###
 # override the create function to process the pdf and generate questions using openai
@@ -96,7 +140,7 @@ class GenerateQuestionView(generics.GenericAPIView):
         raise ValidationError("No valid content extracted from the provided materials.")
       try:
         # call the function for generating the questions
-        questions = get_completion(items=quiz.number_of_questions, pdf_content=pdf_content)
+        questions: list[dict] = get_completion(items=quiz.number_of_questions, pdf_content=pdf_content)
       except Exception as e:
         raise ValidationError(f"Error generating questions: {str(e)}")
 
@@ -109,6 +153,7 @@ class GenerateQuestionView(generics.GenericAPIView):
           quiz=quiz,
           question=item['question'],
           question_type=item['type'],
+          correct_answer=item.get('answer')
         )
         for item in questions
       ]
@@ -120,13 +165,13 @@ class GenerateQuestionView(generics.GenericAPIView):
         options = item.get('options')
         # generated output doesn't contain options
         if not options:
-          dummy_option_text: str = "correct_answer"
+          dummy_option_text: str = "placeholder"
           try:
             option_instances.append(
               QuestionOption(
                 question=question,
                 text=dummy_option_text,
-                is_correct=(item.get('answer') == 'true')
+                order=0
               )
             )
           except Exception as e:
@@ -137,9 +182,9 @@ class GenerateQuestionView(generics.GenericAPIView):
           QuestionOption(
             question=question,
             text=option,
-            is_correct=(option == item.get('answer'))
+            order=index
           )
-          for option in options
+          for index, option in enumerate(options)
         ])
       
       # Bulk create all options at once

@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 # quiz model that is linked to materials in a course and specifies the number of questions
 class QuizModel(models.Model):
   course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='quizzes')
-  material_list = models.ManyToManyField(CourseMaterial, related_name="quiz_references")
+  material_list = models.ManyToManyField(CourseMaterial, related_name="quiz_references", blank=True)
   time_limit_minutes = models.PositiveIntegerField( # quiz time limit
     default=10,
     help_text="Time limit in minutes",
@@ -53,17 +53,17 @@ class QuizModel(models.Model):
 class QuestionOption(models.Model):
   question = models.ForeignKey('QuestionModel', on_delete=models.CASCADE, related_name='options')
   text = models.CharField(max_length=200, null=False, blank=False)
-  is_correct = models.BooleanField(null=False, default=False)
-
+  order = models.PositiveIntegerField(default=0)
+  
   # index by questions fk
   class Meta:
     indexes = [
       models.Index(fields=['question']),
     ]
-    ordering = ['id']
-
+    ordering = ['order']
+  
   def __str__(self):
-      return f"{self.text} {'(Correct)' if self.is_correct else ''}"
+    return f"{self.text} {'(Correct)' if self.question.correct_answer == self.text else ''}"
 
 class QuestionModel(models.Model):
   QUESTION_TYPE_CHOICES = [
@@ -73,8 +73,7 @@ class QuestionModel(models.Model):
   quiz = models.ForeignKey(QuizModel, on_delete=models.CASCADE, related_name='questions')
   question = models.CharField(max_length=1000)
   question_type = models.CharField(max_length=3, choices=QUESTION_TYPE_CHOICES, default='MCQ')
-  correct_answer_count = models.PositiveIntegerField(default=0)
-  incorrect_answer_count = models.PositiveIntegerField(default=0)
+  correct_answer = models.CharField(max_length=10, null=True, blank=True)
 
   # indexing quiz for faster lookup when i filter questions by quiz
   class Meta:
@@ -90,11 +89,6 @@ class QuestionModel(models.Model):
     if self.question_type == 'TF':
       return ['True', 'False']
     return [option.text for option in self.options.all()]
-
-  def get_correct_answer(self):
-    if self.question_type == 'TF':
-      return self.options.filter(is_correct=True).first().text
-    return self.options.filter(is_correct=True).first()
 
   def clean(self):
     if self.question_type == 'MCQ' and self.options.count() < 2:

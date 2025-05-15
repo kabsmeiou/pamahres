@@ -6,11 +6,16 @@
 - [ ] Configure AI chat function
 - [ ] Create frontend
   - [ ] Web app (in progress)
-    - [ ] Fix quiz connection
-    - [ ] Setup supabase client
+    - [x] Fix quiz connection
+    - [x] Setup supabase client
     - [ ] Refactor materials
     - [ ] Optimize states
     - [ ] Add user profile edit page
-    - [ ] Setup upload components
+    - [x] Setup upload components
+    - [ ] Adding options to questions
+    - [ ] Adding questions to quizzes
+    - [ ] Redesign UI
+    - [ ] Refactor logic in frontend
+    - [ ] Edit quiz(?)
   - [ ] iOS
 - [ ] Deploy the application to production server

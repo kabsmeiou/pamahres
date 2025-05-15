@@ -3,10 +3,12 @@ from .models import Course, CourseMaterial
 import re
 
 class CourseSerializer(serializers.ModelSerializer):
+  number_of_quizzes = serializers.IntegerField(source='get_number_of_quizzes', read_only=True)
+
   class Meta:
     model = Course
     fields = '__all__'
-    read_only_fields = ['user']
+    read_only_fields = ['user', 'number_of_quizzes']
 
 # for post requests, only allow pdfs, etc.
 # validate file_name as well.
