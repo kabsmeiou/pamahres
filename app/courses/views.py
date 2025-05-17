@@ -80,3 +80,10 @@ class CourseDetailView(generics.RetrieveUpdateAPIView):
   # Look into the course list in database and select the corresponding course_id from the request
   def get_object(self):
     return get_object_or_404(Course, id=self.kwargs["course_id"], user=self.request.user)
+  
+class MaterialDetailView(generics.RetrieveUpdateDestroyAPIView):
+  serializer_class = CourseMaterialSerializer
+  permission_classes = [IsAuthenticated, IsOwner]
+
+  def get_object(self):
+    return get_object_or_404(CourseMaterial, id=self.kwargs["material_id"], course__user=self.request.user)

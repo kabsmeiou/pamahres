@@ -22,6 +22,7 @@ class QuizModel(models.Model):
     help_text="Current quiz score", # record highest score
     validators=[MinValueValidator(0)],
   )
+  last_taken = models.DateTimeField(null=True, blank=True)
   number_of_questions = models.PositiveIntegerField(
     default=5,
     validators=[

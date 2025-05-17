@@ -11,6 +11,7 @@ from .models import QuizModel, QuestionModel, QuestionOption
 from .openai_generator import get_completion, extract_pdf_content
 from courses.models import CourseMaterial, Course
 from django.http import JsonResponse
+import datetime
 
 # list of quizzes in the course
 class QuizListCreateView(generics.ListCreateAPIView):
@@ -83,6 +84,10 @@ class CheckQuizAnswerView(generics.GenericAPIView):
   def post(self, request, *args, **kwargs):
     quiz_id = kwargs['quiz_id']
     quiz = get_object_or_404(QuizModel, id=quiz_id)
+    # update last_taken
+    quiz.last_taken = datetime.datetime.now()
+    quiz.save()
+
     # get the list of option_ids
     answer_list = request.data
 
