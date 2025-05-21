@@ -5,6 +5,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 
 # quiz model that is linked to materials in a course and specifies the number of questions
+# change default number of questions to 0
 class QuizModel(models.Model):
   course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='quizzes')
   material_list = models.ManyToManyField(CourseMaterial, related_name="quiz_references", blank=True)
@@ -24,7 +25,7 @@ class QuizModel(models.Model):
   )
   last_taken = models.DateTimeField(null=True, blank=True)
   number_of_questions = models.PositiveIntegerField(
-    default=5,
+    default=0,
     validators=[
       MinValueValidator(0),  # 0 minimum questions for initialization of quiz
       MaxValueValidator(20),  # Max 20 questions
