@@ -8,6 +8,8 @@ from supabase_client import supabase
 from rest_framework.response import Response
 from rest_framework import status
 from urllib.parse import urlparse
+from quiz.models import QuizModel
+from quiz.tasks import generate_questions_task
 
 # Check if the user is the owner, use as permission for the views
 class IsOwner(BasePermission):
@@ -46,11 +48,24 @@ class CourseMaterialsView(generics.ListCreateAPIView):
   def perform_create(self, serializer):
     # get course id from params
     course_id = self.kwargs['course_id']
-    try:
-      course = get_object_or_404(Course, id=course_id)
-    except Exception as e:
-      raise ValidationError(f"Error creating material: {str(e)}")
+    course = get_object_or_404(Course, id=course_id)
+
     serializer.save(course=course)
+    # get currently uploaded material
+    material = serializer.instance
+
+    # if course has been created, create a quiz then pregenerate questions based on this(just saved) material
+    quiz = QuizModel.objects.create(
+      course=course, 
+      is_generated=True,
+      number_of_questions=20
+    )
+    quiz.material_list.add(material)
+    # delay the task to generate questions
+    try:
+      generate_questions_task.delay(quiz.id, quiz.number_of_questions)
+    except Exception as e:
+      raise ValidationError(f"Error generating questions: {str(e)}")
 
 class CourseMaterialDetailView(generics.RetrieveUpdateDestroyAPIView):
   serializer_class = CourseMaterialSerializer

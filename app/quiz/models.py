@@ -32,6 +32,7 @@ class QuizModel(models.Model):
     ],
   )
   quiz_title = models.CharField(max_length=100, unique=True)
+  is_generated = models.BooleanField(default=False)
   uploaded_at = models.DateTimeField(auto_now_add=True)
 
   class Meta:
