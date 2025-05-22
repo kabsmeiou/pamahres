@@ -16,6 +16,7 @@
     - [ ] Adding questions to quizzes
     - [ ] Redesign UI
     - [ ] Refactor logic in frontend
-    - [ ] Edit quiz(?)
+    - [x] Edit quiz(?)
+    - [ ] Fix cors preflight taking too long!!!
   - [ ] iOS
 - [ ] Deploy the application to production server
