@@ -22,17 +22,36 @@ CLERK_SECRET_KEY = os.getenv("CLERK_SECRET_KEY")
 CACHE_KEY = "jwks_data"
 
 
+import time
+import logging
+
+logger = logging.getLogger(__name__)
+
 class ClerkSDK:
     """Handles Clerk-related API interactions."""
-    
     def fetch_user_info(self, user_id: str):
         """Fetch user info from Clerk API."""
+        user_info = cache.get(f"user_info_{user_id}")
+
+        if user_info:
+            return {
+                "email_address": user_info["email_addresses"][0]["email_address"],
+                "first_name": user_info["first_name"],
+                "last_name": user_info["last_name"],
+                "last_login": datetime.datetime.fromtimestamp(
+                    user_info["last_sign_in_at"] / 1000, tz=pytz.UTC
+                ),
+            }, True
+
         response = requests.get(
             f"{CLERK_API_URL}/users/{user_id}",
             headers={"Authorization": f"Bearer {CLERK_SECRET_KEY}"},
         )
+
         if response.status_code == 200:
             data = response.json()
+            # set cache
+            cache.set(f"user_info_{user_id}", data, 60 * 60 * 24)
             return {
                 "email_address": data["email_addresses"][0]["email_address"],
                 "first_name": data["first_name"],
@@ -64,7 +83,6 @@ class ClerkSDK:
 
 class JWTAuthenticationMiddleware(BaseAuthentication):
     """Custom middleware for JWT Authentication."""
-
     def __init__(self):
         self.clerk_sdk = ClerkSDK()  # Instantiate ClerkSDK once
 
@@ -78,25 +96,27 @@ class JWTAuthenticationMiddleware(BaseAuthentication):
             token = auth_header.split(" ")[1]  # Extract the token
         except IndexError:
             raise AuthenticationFailed("Bearer token not provided.")
-        
         # Decode the JWT and fetch the associated user
         user = self.decode_jwt(token)
+
         if not user:
             return None
         
         # Fetch additional user info from Clerk API
         info, found = self.clerk_sdk.fetch_user_info(user.username)
+
         if found:
             user.email = info["email_address"]
             user.first_name = info["first_name"]
             user.last_name = info["last_name"]
             user.last_login = info["last_login"]
             user.save()
-        
+
         return user, None
 
     def decode_jwt(self, token):
         """Decode JWT to get user ID."""
+
         jwks_data = self.clerk_sdk.get_jwks()
         public_key = RSAAlgorithm.from_jwk(jwks_data["keys"][0])  # Get public key
 
@@ -118,14 +138,21 @@ class JWTAuthenticationMiddleware(BaseAuthentication):
         user_id = payload.get("sub")  # Get user ID from payload
 
         if user_id:
-            user, created = User.objects.get_or_create(username=user_id)
+            get_or_create_start = time.time()
+            try:
+                user = User.objects.get(username=user_id)
+                created = False
+            except User.DoesNotExist:
+                user = User.objects.create(username=user_id)
+                created = True
+            get_or_create_end = time.time()
+            logger.info(f"Time to get or create user: {get_or_create_end - get_or_create_start:.3f} seconds")
             if created:
-                user.email = email
-                user.first_name = first_name
-                user.last_name = last_name
+                user.email = payload.get("email_address")
+                user.first_name = payload.get("first_name")
+                user.last_name = payload.get("last_name")
                 user.save()
                 Profile.objects.create(user=user)
                 UserActivity.objects.create(user=user)
             return user
-
         return None

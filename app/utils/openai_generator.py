@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 import json
+from rest_framework.exceptions import ValidationError
 
 load_dotenv()
 
@@ -29,9 +30,33 @@ def get_completion(model="deepseek/deepseek-chat:free", *, items: int=5, pdf_con
         "role": "system",
         "content": "You are a helpful tutor that creates quizzes from educational material."
       },
-      {
+      { 
         "role": "user",
-        "content": f"Here is the material:\n\n```{material}```\n\nGenerate a quiz with exactly {items} questions: {items // 2} True/False questions and {(items + 1) // 2} multiple-choice questions. Each multiple-choice question should have 1 correct answer and 3 plausible incorrect options. Make sure the questions are clear, accurate, and directly based on the provided content. Respond strictly in this exact JSON format: ['question': '...', 'type': 'multiple_choice or t/f', 'options': ['option_a', 'option_b', 'option_c', 'option_d'], 'answer': 'a', 'b', 'c', 'd', if multiple choice else true/false, ...]"
+        "content": f"""
+            Given the material below:
+
+            ```{material}```
+
+            Generate exactly {items} quiz questions:
+            - {items // 2} True/False
+            - {(items + 1) // 2} Multiple Choice (1 correct + 3 plausible distractors)
+
+            Your response should STRICTLY be a JSON array consisting of the following:
+            [
+              {{
+                "question": "Text",
+                "type": "t/f",
+                "answer": "True"
+              }},
+              {{
+                "question": "Text",
+                "type": "multiple_choice",
+                "options": ["Option A", "Option B", "Option C", "Option D"],
+                "answer": "a"
+              }}
+            ]
+            Use only letters ("a"-"d") for answers. No explanations or extra text. Base all questions strictly on the material.
+            """
       }
     ]
   )

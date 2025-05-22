@@ -3,7 +3,8 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class User(AbstractUser):
-  pass
+  # index the username
+  username = models.CharField(max_length=150, unique=True)
 
 # create option for mbti
 MBTI_CHOICES = [

@@ -5,7 +5,7 @@ from utils.pdf_processor import extract_pdf_content
 from utils.openai_generator import get_completion
 from utils.question_generator import create_questions_and_options
 from rest_framework.exceptions import ValidationError
-
+from supabase_client import supabase
 
 @shared_task
 def generate_questions_task(quiz_id: int, number_of_questions: int):
@@ -39,6 +39,16 @@ def generate_questions_task(quiz_id: int, number_of_questions: int):
         raise ValidationError(f"Error generating questions: {str(e)}")
 
     create_questions_and_options(quiz, questions)
+
+@shared_task
+def delete_material_and_quiz(quiz_title: str, file_url: str):
+    try:
+        response = supabase.storage.from_('materials-all').remove([file_url])
+        print(response)
+        return "Delete successful"
+    except Exception as e:
+        # Catch any error from Supabase removal
+        return f"Error deleting file: {str(e)}"
 
 
 # The user will see generate quiz but the generate quiz will just fetch from the pregenerated quiz. 

@@ -14,6 +14,11 @@ from django.http import JsonResponse
 import datetime
 from .tasks import generate_questions_task
 from utils.validators import validate_quiz_question
+import time
+import logging
+from django.core.cache import cache
+
+logger = logging.getLogger(__name__)
 
 # list of quizzes in the course
 class QuizListCreateView(generics.ListCreateAPIView):
@@ -21,18 +26,41 @@ class QuizListCreateView(generics.ListCreateAPIView):
   permission_classes = [IsAuthenticated]
 
   def get_queryset(self):
+    start_time = time.time()
     course_id = self.kwargs['course_id']
     # return all quizzes if no course_id
     if course_id:
       # filter by course, show all the quizzes associated in a course
       # show only the quizzes that are not marked as generated(let generated quizzes on standby)
-      return QuizModel.objects.filter(course_id=course_id, is_generated=False)
- 
+      quizzes = QuizModel.objects.filter(course_id=course_id, is_generated=False)
+      logger.info(f"Total get_queryset method of quiz list took {time.time() - start_time:.3f} seconds")
+      return quizzes
+    
+
+  def list(self, request, *args, **kwargs):
+    start_time = time.time()
+    course_id = self.kwargs.get('course_id')
+    cache_key = f'quizzes_serialized_{course_id}'
+    cached_data = cache.get(cache_key)
+
+    if cached_data:
+      logger.info(f"Total list method cache hit took {time.time() - start_time:.3f} seconds")
+      return Response(cached_data)
+
+    queryset = self.get_queryset()
+    serializer = self.get_serializer(queryset, many=True)
+    cache.set(cache_key, serializer.data, timeout=300)  # cache for 5 mins
+    logger.info(f"Total list method took {time.time() - start_time:.3f} seconds")
+    return Response(serializer.data)
+
+
   def perform_create(self, serializer):
     course_id = self.kwargs['course_id']
     course = get_object_or_404(Course, id=course_id)
     try:
       serializer.save(course=course)
+      # delete cache so the list method will fetch the latest data
+      cache.delete(f'quizzes_serialized_{course_id}')
     except Exception as e:
       raise ValidationError(f"Error creating quiz: {str(e)}")
 
@@ -44,9 +72,12 @@ class QuizDeleteView(generics.DestroyAPIView):
   def delete(self, request, quiz_id):
     # Logic for deleting the quiz
     try:
-        quiz = QuizModel.objects.get(id=quiz_id)
-        quiz.delete()
-        return JsonResponse({'message': 'Quiz deleted successfully'}, status=204)
+      start_time = time.time()
+      quiz = QuizModel.objects.get(id=quiz_id)
+      quiz.delete()
+      cache.delete(f'quizzes_serialized_{quiz.course_id}')
+      logger.info(f"Total delete quiz time took {time.time() - start_time:.3f} seconds")
+      return JsonResponse({'message': 'Quiz deleted successfully'}, status=204)
     except QuizModel.DoesNotExist:
         return JsonResponse({'error': 'Quiz not found'}, status=404)
 
@@ -58,10 +89,14 @@ class QuestionListCreateView(generics.ListCreateAPIView):
   permission_classes = [IsAuthenticated]
 
   def get_queryset(self):
+    start_time = time.time()
     # get the QuizModel object using quizid
     quiz_id = self.kwargs['quiz_id']
     quiz = get_object_or_404(QuizModel, id=quiz_id)
-    return QuestionModel.objects.filter(quiz=quiz)
+    questions = quiz.questions.all()
+    logger.info(f"Total get_queryset method of question list took {time.time() - start_time:.3f} seconds")
+    return questions
+    
   
   def perform_create(self, serializer):
     quiz_id = self.kwargs['quiz_id']
@@ -85,6 +120,7 @@ class CheckQuizAnswerView(generics.GenericAPIView):
 
   # expect a list of option_ids and question_ids
   def post(self, request, *args, **kwargs):
+    start_time = time.time()
     quiz_id = kwargs['quiz_id']
     quiz = get_object_or_404(QuizModel, id=quiz_id)
     # update last_taken
@@ -101,8 +137,11 @@ class CheckQuizAnswerView(generics.GenericAPIView):
     score: int = 0
     # check if the answer is correct
     results: list[dict] = []
+    question_ids = [answer['question_id'] for answer in answer_list]
+    questions = QuestionModel.objects.filter(id__in=question_ids).in_bulk()
+
     for answer in answer_list:
-      question = get_object_or_404(QuestionModel, id=answer['question_id'])
+      question = questions[answer['question_id']]
       correct_answer = question.correct_answer
       results.append({
         "question_id": question.id,
@@ -115,20 +154,31 @@ class CheckQuizAnswerView(generics.GenericAPIView):
     # update the quiz score
     quiz.quiz_score = max(quiz.quiz_score, score)
     quiz.save()
-
+    logger.info(f"Total check quiz answer time took {time.time() - start_time:.3f} seconds")
     return Response({"score": score, "results": results}, status=status.HTTP_200_OK)
 
 ### LIMIT THE MATERIAL SELECTION TO ONLY ONE(1) PER QUIZ ###
 class GenerateQuestionView(generics.GenericAPIView):
   def post(self, request, *args, **kwargs):
+    start_time = time.time()
     # get current quiz object
+    db_fetch_start = time.time()
     quiz = get_object_or_404(QuizModel, id=kwargs['quiz_id'])
+    db_fetch_end = time.time()
+    logger.info(f"Total db fetch time took {db_fetch_end - db_fetch_start:.3f} seconds")
+
     try:
       # check if theres any quiz that is generated
+      generated_quiz_fetch_start = time.time()
       generated_quiz = QuizModel.objects.filter(is_generated=True).exclude(id=quiz.id).first()
+      generated_quiz_fetch_end = time.time()
+      logger.info(f"Total generated quiz fetch time took {generated_quiz_fetch_end - generated_quiz_fetch_start:.3f} seconds")
       if generated_quiz:
         # fetch questions from the generated_quiz and attach to the quiz object
-        source_questions = QuestionModel.objects.filter(quiz=generated_quiz)
+        source_questions_fetch_start = time.time()
+        source_questions = generated_quiz.questions.all()
+        source_questions_fetch_end = time.time()
+        logger.info(f"Total source questions fetch time took {source_questions_fetch_end - source_questions_fetch_start:.3f} seconds")
         requested_count = quiz.number_of_questions
         actual_count = source_questions.count()
 
@@ -136,24 +186,30 @@ class GenerateQuestionView(generics.GenericAPIView):
         # if the number of questions is greater than the number of questions in the generated_quiz, then attach all the questions
         # basically, steal the questions from the generated_quiz
         if quiz.number_of_questions > actual_count:
-          for question in source_questions:
-            validate_quiz_question(question)
-            question.quiz = quiz
-            question.save()
-          # generate remaining needed questions
-          generate_questions_task.delay(quiz.id, requested_count - actual_count)
+          save_questions_start = time.time()
+          # bulk transfer the source_questions to the quiz object
+          quiz.questions.set(source_questions)
+          save_questions_end = time.time()
+          logger.info(f"Total save questions time took {save_questions_end - save_questions_start:.3f} seconds")
+          # generate 20 questions again for the generated_quiz object in the background
           generated_quiz.number_of_questions = 0
+          generate_questions_task.delay(generated_quiz.id, 20)
+          logger.info(f"Total request > generated post method took {time.time() - start_time:.3f} seconds")
         else:
-          for question in source_questions[:requested_count]:
-            validate_quiz_question(question)
-            question.quiz = quiz
-            question.save()
+          save_questions_start = time.time()
+          # bulk transfer the source_questions to the quiz object
+          quiz.questions.set(source_questions[:requested_count])
+          save_questions_end = time.time()
+          logger.info(f"Total save questions time took {save_questions_end - save_questions_start:.3f} seconds")
           # decrease the number of questions count in the generated_quiz
-          generated_quiz.number_of_questions -= requested_count
+          generated_quiz.number_of_questions = max(generated_quiz.number_of_questions - requested_count, 0)
+          
+          # generate the amount of questions we just stole
+          generate_questions_task.delay(generated_quiz.id, requested_count)
 
         quiz.save()
         generated_quiz.save()
-
+        logger.info(f"Total post method took {start_time - time.time():.3f} seconds")
         return Response({"message": "Quiz already generated."}, status=status.HTTP_200_OK)
       else:
         print("Generating questions...")
