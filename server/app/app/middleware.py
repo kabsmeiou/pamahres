@@ -141,6 +141,7 @@ class JWTAuthenticationMiddleware(BaseAuthentication):
             get_or_create_start = time.time()
             try:
                 user = User.objects.get(username=user_id)
+                logger.info(f"User {user_id} found in database")
                 created = False
             except User.DoesNotExist:
                 user = User.objects.create(username=user_id)
@@ -148,6 +149,7 @@ class JWTAuthenticationMiddleware(BaseAuthentication):
             get_or_create_end = time.time()
             logger.info(f"Time to get or create user: {get_or_create_end - get_or_create_start:.3f} seconds")
             if created:
+                logger.info(f"User {user_id} created in database")
                 user.email = payload.get("email_address")
                 user.first_name = payload.get("first_name")
                 user.last_name = payload.get("last_name")

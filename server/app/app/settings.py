@@ -131,7 +131,8 @@ else:
             'PORT': os.getenv("POSTGRES_PORT"),
             'OPTIONS': {
                 'sslmode': 'require',  
-            }
+            },
+            'CONN_MAX_AGE': 300,
         }
     }
 
