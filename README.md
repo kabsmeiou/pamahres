@@ -8,15 +8,14 @@
   - [ ] Web app (in progress)
     - [x] Fix quiz connection
     - [x] Setup supabase client
-    - [ ] Refactor materials
+    - [x] Refactor materials
     - [ ] Optimize states
     - [ ] Add user profile edit page
     - [x] Setup upload components
     - [ ] Adding options to questions
     - [ ] Adding questions to quizzes
     - [ ] Redesign UI
-    - [ ] Refactor logic in frontend
+    - [x] Refactor logic in frontend
     - [x] Edit quiz(?)
-    - [ ] Fix cors preflight taking too long!!!
-  - [ ] iOS
+    - [x] Fix cors preflight taking too long!!!
 - [ ] Deploy the application to production server
