@@ -1,0 +1,21 @@
+export interface Course {
+    id?: number;
+    user?: number;
+    course_code: string;
+    course_name: string;
+    course_description: string;
+    last_updated_at?: string;
+    number_of_quizzes?: number;
+}
+
+// fields = ['id', 'material_file_url', 'file_name', 'file_size', 'file_type', 'uploaded_at']
+// read_only_fields = ['uploaded_at']
+
+export interface Material {
+    id?: number;
+    material_file_url: string;
+    file_name: string;
+    file_size: number;
+    file_type: string;
+    uploaded_at?: string;
+}
