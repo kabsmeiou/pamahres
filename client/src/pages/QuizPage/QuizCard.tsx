@@ -8,6 +8,7 @@ import { useDeleteItem } from "../../hooks/useDeleteItem";
 
 import Error from "../../components/Error";
 import DeleteConfirmation from "../../components/DeleteConfirmation";
+
 const QuizCard = ({quiz}: {quiz: Quiz}) => {
   const { deleteQuiz } = useQuizApi();
   const { courseId } = useParams<{ courseId: string }>();
