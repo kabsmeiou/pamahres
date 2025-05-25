@@ -12,9 +12,14 @@ const MaterialList = ({
 }) => {
   return (
     <div className="space-y-4">
-        {materials.map(material => (
-            <MaterialCard key={material.id} material={material} pdfFiles={pdfFiles} setPdfFiles={setPdfFiles} />
-        ))}
+      {materials.map((material, index) => (
+        <MaterialCard
+          key={index}
+          material={material}
+          pdfFiles={pdfFiles}
+          setPdfFiles={setPdfFiles}
+        />
+      ))}
     </div>
   );
 };

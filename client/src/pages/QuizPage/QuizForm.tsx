@@ -3,22 +3,29 @@ import { X, Loader } from "react-feather";
 import { useParams } from "react-router-dom";
 import { useMaterialsApi } from "../../services/courses";
 import { useQuizApi } from "../../services/quizzes";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Material } from "../../types/course";
 import { Quiz } from "../../types/quiz";
 import { MaterialsContext } from "../../components/CourseLayout";
+
 interface QuizFormProps {
   isOpen: boolean;
+  setIsGeneratingQuestions: (isGeneratingQuestions: boolean) => void;
+  setCurrentQuizId: (currentQuizId: number | null) => void;
   onClose: () => void;
 }
 
-const QuizForm = ({ isOpen, onClose }: QuizFormProps) => {
+const QuizForm = ({ isOpen, onClose, setIsGeneratingQuestions, setCurrentQuizId }: QuizFormProps) => {
+  // param extraction for course id
   const { courseId } = useParams<{ courseId: string }>();
   const numericCourseId = parseInt(courseId!, 10);
+
+  // for API calls
   const queryClient = useQueryClient();
-  const { getMaterials } = useMaterialsApi();
+
   const { createQuiz, generateQuestions } = useQuizApi();
 
+  // quiz form data
   const [formData, setFormData] = useState<Quiz>({
     quiz_title: "",
     time_limit_minutes: 10,
@@ -26,10 +33,11 @@ const QuizForm = ({ isOpen, onClose }: QuizFormProps) => {
     number_of_questions: 0
   });
 
+  // quiz form state
   const [selectedMaterialId, setSelectedMaterialId] = useState<string>("");
   const [createQuizLoading, setCreateQuizLoading] = useState(false);
-  const [generatingQuestionsLoading, setGeneratingQuestionsLoading] = useState(false);
 
+  // material context for sidebar
   const context = useContext(MaterialsContext)
   if (!context) throw new Error("MaterialsContext not found")
   const { materials, materialsLoading } = context
@@ -45,21 +53,28 @@ const QuizForm = ({ isOpen, onClose }: QuizFormProps) => {
       };
       const quiz = await createQuiz(numericCourseId, quizData);
       if (quiz.material_list && quiz.material_list.length > 0) {
-        setGeneratingQuestionsLoading(true);
         try {
           await generateQuestions(quiz.id!);
         } catch (err: any) {
           console.error("Error generating questions:", err);
-        } finally {
-          setGeneratingQuestionsLoading(false);
         }
       }
+      console.log("Quiz created, number of questions:", quiz.number_of_questions)
+
+      if (quiz.current_number_of_questions === 0) {
+        // call an async function to check the status of the quiz every 5 seconds until
+        // the quiz has questions
+        console.log("Quiz created, setting isGeneratingQuestions to true");
+        // logic here to handle the loading state of the quiz form
+        // setIsGeneratingQuestions(true);
+        // setCurrentQuizId(quiz.id!);
+      }
+
       // Invalidate and refetch quizzes
       await queryClient.invalidateQueries({
         queryKey: ["quizzes", numericCourseId]
       });
       onClose();
-      
     } catch (err: any) {
       console.error("Error creating quiz:", err);
     } finally {

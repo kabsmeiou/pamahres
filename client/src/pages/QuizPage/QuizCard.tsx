@@ -8,14 +8,13 @@ import { useDeleteItem } from "../../hooks/useDeleteItem";
 
 import Error from "../../components/Error";
 import DeleteConfirmation from "../../components/DeleteConfirmation";
-
-
 const QuizCard = ({quiz}: {quiz: Quiz}) => {
   const { deleteQuiz } = useQuizApi();
   const { courseId } = useParams<{ courseId: string }>();
   const numericCourseId = parseInt(courseId!, 10);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [clickedReview, setClickedReview] = useState(false);
+
   const { isDeleting, handleDelete } = useDeleteItem(
     deleteQuiz,
     (courseId) => ["quizzes", courseId!]
@@ -39,8 +38,8 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
     : 'Not taken yet';
 
   // Calculate score percentage for visual indicators
-  const scorePercentage = quiz.quiz_score && quiz.number_of_questions 
-    ? (quiz.quiz_score / quiz.number_of_questions) * 100 
+  const scorePercentage = quiz.quiz_score && quiz.current_number_of_questions 
+    ? (quiz.quiz_score / quiz.current_number_of_questions) * 100 
     : 0;
   const scoreColor = scorePercentage >= 70 ? 'text-green-600' : scorePercentage >= 40 ? 'text-yellow-600' : 'text-red-600';
 
@@ -55,8 +54,8 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="flex-grow space-y-3">
             <Link 
-              to={`/courses/${courseId}/quizzes/${quiz.id}`} 
-              className="group inline-flex items-start gap-3 hover:no-underline"
+              to={`/courses/${courseId}/quizzes/${quiz.id}`}
+              className="group inline-flex items-start gap-3 hover:no-underline cursor-pointer"
             >
               <div className="p-2 bg-primary-50 text-primary-600 rounded-lg flex-shrink-0 mt-0.5 group-hover:bg-primary-100 transition-colors">
                 <FileText size={20} />
@@ -113,9 +112,9 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
               </button>
               <Link
                 to={`/courses/${courseId}/quizzes/${quiz.id}`}
-                className="inline-flex items-center justify-center gap-1.5 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium shadow-sm"
+                className="inline-flex items-center justify-center gap-1.5 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium shadow-sm cursor-pointer"
               >
-                {quiz.number_of_questions === 0 ? (
+                {quiz.last_taken === null ? (
                   "Take Quiz"
                 ) : (
                   "Retake"

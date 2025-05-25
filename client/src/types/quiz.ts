@@ -9,6 +9,7 @@ export interface Quiz {
     time_limit_minutes?: number;
     quiz_title: string;
     last_taken?: string;
+    current_number_of_questions?: number;
 }
 
 export interface QuestionOption {

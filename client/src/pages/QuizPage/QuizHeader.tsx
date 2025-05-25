@@ -1,9 +1,21 @@
 import { Plus, FileText } from "react-feather";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QuizForm from "./QuizForm";
+import usePolling from "../../hooks/usePolling";
+import { useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { useQuizApi } from "../../services/quizzes";
 
 const QuizHeader = () => {
+  const { courseId } = useParams<{ courseId: string }>();
+  const { getQuizById } = useQuizApi();
+  const numericCourseId = parseInt(courseId!, 10);
   const [showQuizForm, setShowQuizForm] = useState(false);
+  const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
+  const [currentQuizId, setCurrentQuizId] = useState<number | null>(null);
+  const queryClient = useQueryClient();
+
+  // TODO: add a loading state for the quiz form if the quiz is still being generated
 
   return (
     <div className="mb-6">
@@ -33,6 +45,8 @@ const QuizHeader = () => {
       <QuizForm 
         isOpen={showQuizForm}
         onClose={() => setShowQuizForm(false)}
+        setIsGeneratingQuestions={setIsGeneratingQuestions}
+        setCurrentQuizId={setCurrentQuizId}
       />
     </div>
   );

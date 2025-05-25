@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useQuizApi } from "../../services/quizzes";
@@ -45,7 +45,7 @@ const QuizPage = () => {
         queryKey: ["quiz-questions", quizId],
         queryFn: () => fetchQuestionsByQuizId(Number(quizId)),
     });
-
+  
     const validateAnswers = () => {
         const formattedAnswers = Object.entries(answers).map(([question_id, answer]) => ({
             question_id: Number(question_id),
@@ -74,7 +74,6 @@ const QuizPage = () => {
             const response = await submitQuiz(Number(quizId), formattedAnswers);
             setResult(response.results);
             queryClient.invalidateQueries({ queryKey: ["quizzes", courseId] });
-            queryClient.refetchQueries({ queryKey: ["quizzes", courseId] });
         } catch (error) {
             console.error(error);
         } finally {
@@ -163,8 +162,8 @@ const QuizPage = () => {
                 <div className="mt-6 mb-4">
                     <h2 className="text-sm font-semibold text-gray-600 mb-3">Question Navigator</h2>
                     <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-4 gap-2 max-h-[calc(100vh-30rem)] overflow-y-auto pr-1">
-                    {questions
-                        ? questions.map((question, index) => (
+                    {quiz?.current_number_of_questions && quiz?.current_number_of_questions > 0 && Array.isArray(questions) && questions.length > 0
+                        ? questions!.map((question, index) => (
                             <button
                                 onClick={() => setCurrentQuestionIndex(index)}
                                 key={question.id}
