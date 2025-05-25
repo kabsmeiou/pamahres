@@ -1,11 +1,17 @@
 from quiz.models import QuizModel, QuestionModel, QuestionOption
 from rest_framework.exceptions import ValidationError
+
 def create_questions_and_options(quiz: QuizModel, questions: list[dict]) -> None:
     if not quiz:
         raise ValidationError("Quiz not found.")
 
     if not questions:
         raise ValidationError("No questions found.")
+
+    # check quiz still exists
+    current_quiz = QuizModel.objects.filter(id=quiz).first()
+    if not current_quiz:
+        raise ValidationError("Quiz not found.")
 
     question_instances: list[QuestionModel] = [
         QuestionModel(

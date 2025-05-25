@@ -2,10 +2,15 @@ from rest_framework import serializers
 from .models import QuizModel, QuestionModel, QuestionOption
 
 class QuizModelSerializer(serializers.ModelSerializer):
+  current_number_of_questions = serializers.SerializerMethodField()
+  
   class Meta:
     model = QuizModel
-    fields = ['id', 'material_list', 'number_of_questions', 'quiz_title', 'quiz_score', 'time_limit_minutes', 'last_taken']
+    fields = ['id', 'material_list', 'number_of_questions', 'quiz_title', 'quiz_score', 'time_limit_minutes', 'last_taken', 'current_number_of_questions']
     read_only_fields = ['course']
+  
+  def get_current_number_of_questions(self, obj):
+    return obj.current_number_of_questions()
   
   # extract the materials from the POST request as user selected in the frontend
   def create(self, validated_data):

@@ -53,7 +53,7 @@ class QuizListCreateView(generics.ListCreateAPIView):
     logger.info(f"Total list method took {time.time() - start_time:.3f} seconds")
     return Response(serializer.data)
 
-
+  # limit up to 8 quizzes only
   def perform_create(self, serializer):
     course_id = self.kwargs['course_id']
     course = get_object_or_404(Course, id=course_id)
@@ -155,6 +155,11 @@ class CheckQuizAnswerView(generics.GenericAPIView):
     quiz.quiz_score = max(quiz.quiz_score, score)
     quiz.save()
     logger.info(f"Total check quiz answer time took {time.time() - start_time:.3f} seconds")
+
+    # reset cache of quiz list
+    cache.delete(f'quizzes_serialized_{quiz.course_id}')
+
+    # update the quiz status
     return Response({"score": score, "results": results}, status=status.HTTP_200_OK)
 
 ### LIMIT THE MATERIAL SELECTION TO ONLY ONE(1) PER QUIZ ###
@@ -186,14 +191,9 @@ class GenerateQuestionView(generics.GenericAPIView):
         # if the number of questions is greater than the number of questions in the generated_quiz, then attach all the questions
         # basically, steal the questions from the generated_quiz
         if quiz.number_of_questions > actual_count:
-          save_questions_start = time.time()
-          # bulk transfer the source_questions to the quiz object
-          quiz.questions.set(source_questions)
-          save_questions_end = time.time()
-          logger.info(f"Total save questions time took {save_questions_end - save_questions_start:.3f} seconds")
-          # generate 20 questions again for the generated_quiz object in the background
-          generated_quiz.number_of_questions = 0
-          generate_questions_task.delay(generated_quiz.id, 20)
+          # so if the number of questions is greater than the number of pregenerated questions,
+          # just do another task to generate the questions for the user and let them wait
+          generate_questions_task.delay(quiz.id, quiz.number_of_questions)
           logger.info(f"Total request > generated post method took {time.time() - start_time:.3f} seconds")
         else:
           save_questions_start = time.time()
@@ -201,6 +201,7 @@ class GenerateQuestionView(generics.GenericAPIView):
           quiz.questions.set(source_questions[:requested_count])
           save_questions_end = time.time()
           logger.info(f"Total save questions time took {save_questions_end - save_questions_start:.3f} seconds")
+          
           # decrease the number of questions count in the generated_quiz
           generated_quiz.number_of_questions = max(generated_quiz.number_of_questions - requested_count, 0)
           

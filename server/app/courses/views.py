@@ -69,7 +69,7 @@ class CourseMaterialsView(generics.ListCreateAPIView):
     # different quiz_generator for each material, so that the quiz_title is unique and each request to 
     # generate questions based on that material will have a separate quiz object they can steal from
     quiz = QuizModel.objects.create(
-      quiz_title=f"pregenerated-quiz-{material.file_name}",
+      quiz_title=f"pregenerated-quiz-{material.id}",
       course=course, 
       is_generated=True,
       number_of_questions=20
@@ -96,13 +96,20 @@ class CourseMaterialDetailView(generics.RetrieveUpdateDestroyAPIView):
   def delete(self, request, *args, **kwargs):
     start_time = time.time()
     material = self.get_object()
-    quiz_title = f"pregenerated-quiz-{material.file_name}"
+    quiz_title = f"pregenerated-quiz-{material.id}"
     file_url = material.material_file_url
-
+    material_id = material.id
     # Delete objects immediately in DB (or just mark deleted depending on your logic)
     QuizModel.objects.filter(quiz_title=quiz_title).delete()
     material.delete()
-
+    logger.info(f"Deleted material: {material_id}")
+    logger.info(f"Deleted quiz: {quiz_title}")
+    # check if quiz still exists
+    quiz = QuizModel.objects.filter(quiz_title=quiz_title).first()
+    if quiz:
+      logger.info(f"Quiz still exists: {quiz.id}")
+    else:
+      logger.info(f"Quiz does not exist: {quiz_title}")
     # Then queue the actual Supabase removal async
     delete_material_and_quiz.delay(quiz_title, file_url)
     logger.info(f"Total delete method of course material detail view took {time.time() - start_time:.3f} seconds")

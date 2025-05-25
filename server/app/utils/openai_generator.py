@@ -25,38 +25,39 @@ def get_completion(model="deepseek/deepseek-chat:free", *, items: int=5, pdf_con
 
   completion = client.chat.completions.create(
     model=model,
-    messages=[
+    messages = [
       {
         "role": "system",
         "content": "You are a helpful tutor that creates quizzes from educational material."
       },
-      { 
+      {
         "role": "user",
         "content": f"""
-            Given the material below:
+    Given the material below:
 
-            ```{material}```
+    {material}
 
-            Generate exactly {items} quiz questions:
-            - {items // 2} True/False
-            - {(items + 1) // 2} Multiple Choice (1 correct + 3 plausible distractors)
+    Generate exactly {items} quiz questions:
+    - {items // 2} True/False
+    - {(items + 1) // 2} Multiple Choice (1 correct + 3 plausible distractors)
 
-            Your response should STRICTLY be a JSON array consisting of the following:
-            [
-              {{
-                "question": "Text",
-                "type": "t/f",
-                "answer": "True"
-              }},
-              {{
-                "question": "Text",
-                "type": "multiple_choice",
-                "options": ["Option A", "Option B", "Option C", "Option D"],
-                "answer": "a"
-              }}
-            ]
-            Use only letters ("a"-"d") for answers. No explanations or extra text. Base all questions strictly on the material.
-            """
+    Return your response as a **raw JSON array**, with each question object formatted like this:
+
+    {{
+      "question": "Text",
+      "type": "t/f",
+      "answer": "True"
+    }}
+    or
+    {{
+      "question": "Text",
+      "type": "multiple_choice",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "answer": "a"
+    }}
+
+    Use only lowercase letters ("a"-"d") for multiple choice answers. Do not include any explanations, markdown, or extra text. Ensure the JSON is valid and parsable.
+    """
       }
     ]
   )
@@ -64,5 +65,6 @@ def get_completion(model="deepseek/deepseek-chat:free", *, items: int=5, pdf_con
   try:
     response = parse_llm_response(completion.choices[0].message.content)
   except Exception as e:
+    logger.error(f"Raw response: {completion.choices[0].message.content}")
     raise ValidationError(f"Error parsing LLM response: {str(e)}")
   return response

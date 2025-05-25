@@ -50,6 +50,9 @@ class QuizModel(models.Model):
   def __str__(self):
     return self.quiz_title
 
+  def current_number_of_questions(self):
+    return self.questions.count()
+
 # add options to a model
 # validate number of options (only <= 4 for now)
 # MCQ must have >= 3 options 
