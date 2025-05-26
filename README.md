@@ -3,7 +3,7 @@
 - [x] Additional tests for user
 - [x] Add authentication
 - [x] Settle for a database (maybe use supabase buckets for files)
-- [ ] Configure AI chat function
+- [x] Configure AI chat function
 - [ ] Create frontend
   - [ ] Web app (in progress)
     - [x] Fix quiz connection
@@ -17,5 +17,5 @@
     - [ ] Redesign UI
     - [x] Refactor logic in frontend
     - [x] Edit quiz(?)
-    - [x] Fix cors preflight taking too long!!!
+    - [x] Fix cors preflight taking too long!!
 - [ ] Deploy the application to production server
