@@ -1,6 +1,6 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, BasePermission
-from courses.serializers import CourseSerializer, CourseMaterialSerializer
+from courses.serializers import CourseSerializer, CourseMaterialSerializer, LLMConversationSerializer
 from django.shortcuts import get_object_or_404
 from .models import Course, CourseMaterial
 from rest_framework.exceptions import ValidationError
@@ -10,6 +10,7 @@ from rest_framework import status
 from urllib.parse import urlparse
 from quiz.models import QuizModel
 from quiz.tasks import generate_questions_task, delete_material_and_quiz
+from utils.openai_generator import get_conversational_completion
 import time
 import logging
 
@@ -20,6 +21,41 @@ class IsOwner(BasePermission):
   def has_object_permission(self, request, view, obj):
     return obj.user == request.user
 
+
+class LLMConversationView(generics.GenericAPIView):
+  serializer_class = LLMConversationSerializer
+  permission_classes = [IsAuthenticated, IsOwner]
+
+  def post(self, request, *args, **kwargs):
+    start_time = time.time()
+    serializer = self.get_serializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+
+    # get the data from the serializer
+    previous_messages = serializer.validated_data['previous_messages']
+    new_message = serializer.validated_data['new_message']
+
+    # get the course id from the url
+    course_id = self.kwargs['course_id']
+    course = get_object_or_404(Course, id=course_id, user=self.request.user)
+
+    # get the name of the user
+    user_name = self.request.user.first_name
+    
+    # get some of the related materials
+    related_materials = course.materials.all()[:5]
+    related_materials_names = [material.file_name for material in related_materials]
+
+    # get the name of the course
+    course_name = course.course_name
+
+    # get the context for the LLM
+    context = f"You are a helpful assistant that can answer questions about the course {course_name}. The user's name is {user_name}. The related materials are {related_materials_names}."
+
+    # get the response from the LLM
+    response = get_conversational_completion(previous_messages=previous_messages, new_message=new_message, context=context)
+    return Response({"reply": response}, status=status.HTTP_200_OK)
+    
 # View function for showing the courses that the current user has made.
 # Also serves as a view for creating new courses
 class CourseView(generics.ListCreateAPIView):

@@ -1,7 +1,6 @@
 import { useState, useContext } from "react";
 import { X, Loader } from "react-feather";
 import { useParams } from "react-router-dom";
-import { useMaterialsApi } from "../../services/courses";
 import { useQuizApi } from "../../services/quizzes";
 import { useQueryClient } from "@tanstack/react-query";
 import { Material } from "../../types/course";

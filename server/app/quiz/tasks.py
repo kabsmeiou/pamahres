@@ -6,6 +6,7 @@ from utils.openai_generator import get_completion
 from utils.question_generator import create_questions_and_options
 from rest_framework.exceptions import ValidationError
 from supabase_client import supabase
+from django.core.cache import cache
 
 @shared_task
 def generate_questions_task(quiz_id: int, number_of_questions: int):
@@ -50,6 +51,9 @@ def delete_material_and_quiz(quiz_title: str, file_url: str):
         # Catch any error from Supabase removal
         return f"Error deleting file: {str(e)}"
 
+@shared_task
+def delete_quiz_cache(course_id):
+    cache.delete(f'quizzes_serialized_{course_id}')
 
 # The user will see generate quiz but the generate quiz will just fetch from the pregenerated quiz. 
 # The pregenerated quiz is generated upon uploading a material. let's say a pdf with 8000 characters. The pdf will be chunked 

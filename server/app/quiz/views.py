@@ -12,7 +12,7 @@ from utils.question_generator import create_questions_and_options
 from courses.models import CourseMaterial, Course
 from django.http import JsonResponse
 import datetime
-from .tasks import generate_questions_task
+from .tasks import generate_questions_task, delete_quiz_cache
 from utils.validators import validate_quiz_question
 import time
 import logging
@@ -75,7 +75,8 @@ class QuizDeleteView(generics.DestroyAPIView):
       start_time = time.time()
       quiz = QuizModel.objects.get(id=quiz_id)
       quiz.delete()
-      cache.delete(f'quizzes_serialized_{quiz.course_id}')
+      # delete cache of the quiz
+      delete_quiz_cache.delay(quiz.course_id)
       logger.info(f"Total delete quiz time took {time.time() - start_time:.3f} seconds")
       return JsonResponse({'message': 'Quiz deleted successfully'}, status=204)
     except QuizModel.DoesNotExist:

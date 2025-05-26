@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Paperclip, MessageCircle, Clock } from 'react-feather';
-
+import { useChatbot } from '../services/chatbot';
+import { useParams } from 'react-router-dom';
 interface Message {
   id: string;
   content: string;
@@ -8,13 +9,15 @@ interface Message {
 }
 
 const Course = () => {
-
-
+  const { courseId } = useParams();
+  const courseIdNumber = parseInt(courseId as string);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  
+
+  const { sendMessage } = useChatbot();
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   };
@@ -23,9 +26,13 @@ const Course = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
+
+    setLoading(true);
 
     // Add user message
     const newMessage: Message = {
@@ -33,19 +40,30 @@ const Course = () => {
       content: message,
       sender: 'user'
     };
-    
+
     setMessages(prev => [...prev, newMessage]);
     setMessage('');
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content: 'I am still work in progress. I cannot answer any queries yet. Please check back later. :)',
-        sender: 'ai'
-      };
-      setMessages(prev => [...prev, aiResponse]);
-    }, 1000);
+    // send message to the server
+    const jsonMessage = {
+      previous_messages: messages.map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'assistant',
+        content: msg.content
+      })),
+      new_message: message,
+    }
+
+    const response = await sendMessage(jsonMessage, courseIdNumber);
+    
+    console.log(response);
+
+    const aiResponse: Message = {
+      id: (Date.now() + 1).toString(),
+      content: response.reply,
+      sender: 'ai'
+    };
+    setMessages(prev => [...prev, aiResponse]);
+    setLoading(false);
   };
 
   return (
@@ -113,6 +131,14 @@ const Course = () => {
                 </div>
               ))}
               <div ref={messagesEndRef} />
+            </div>
+          )}
+          {/* Loading indicator for AI response */}
+          {loading && (
+            <div className="flex justify-start">
+              <div className="max-w-[85%] rounded-2xl px-4 py-3 shadow-sm bg-white text-gray-800 border border-gray-100 italic opacity-70">
+                <p>Typing...</p>
+              </div>
             </div>
           )}
         </div>

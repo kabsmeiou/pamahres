@@ -2,6 +2,20 @@ from rest_framework import serializers
 from .models import Course, CourseMaterial
 import re
 
+class LLMConversationSerializer(serializers.Serializer):
+  previous_messages = serializers.JSONField()
+  new_message = serializers.CharField()
+
+  def validate_previous_messages(self, value):
+    if len(value) > 10:
+      raise serializers.ValidationError("Previous messages cannot be more than 10.")
+    return value
+
+  def validate_new_message(self, value):
+    if len(value) > 1000:
+      raise serializers.ValidationError("New message cannot be more than 1000 characters.")
+    return value
+
 class CourseSerializer(serializers.ModelSerializer):
   number_of_quizzes = serializers.IntegerField(source='get_number_of_quizzes', read_only=True)
 
