@@ -113,6 +113,7 @@ class CourseMaterialsView(generics.ListCreateAPIView):
     quiz.material_list.add(material)
     # delay the task to generate questions
     try:
+      logger.info(f"Generating questions for quiz: {quiz.id}")
       generate_questions_task.delay(quiz.id, quiz.number_of_questions)
     except Exception as e:
       raise ValidationError(f"Error generating questions: {str(e)}")
