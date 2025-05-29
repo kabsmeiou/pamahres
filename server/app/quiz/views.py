@@ -8,7 +8,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import get_object_or_404
 from quiz.serializers import QuizModelSerializer, QuestionModelSerializer, QuestionOptionSerializer
 from .models import QuizModel, QuestionModel, QuestionOption
-from utils.question_generator import create_questions_and_options
 from courses.models import CourseMaterial, Course
 from django.http import JsonResponse
 import datetime
@@ -188,18 +187,22 @@ class GenerateQuestionView(generics.GenericAPIView):
         requested_count = quiz.number_of_questions
         actual_count = source_questions.count()
 
-        # attach only the number of questions specified in the quiz object
-        # if the number of questions is greater than the number of questions in the generated_quiz, then attach all the questions
-        # basically, steal the questions from the generated_quiz
         if quiz.number_of_questions > actual_count:
           # so if the number of questions is greater than the number of pregenerated questions,
           # just do another task to generate the questions for the user and let them wait
           generate_questions_task.delay(quiz.id, quiz.number_of_questions)
           logger.info(f"Total request > generated post method took {time.time() - start_time:.3f} seconds")
         else:
+          # attach only the number of questions specified in the quiz object
+          # basically, steal the questions from the generated_quiz
           save_questions_start = time.time()
           # bulk transfer the source_questions to the quiz object
-          quiz.questions.set(source_questions[:requested_count])
+          # filter questions by type to ensure diverse question types
+          tf_questions = source_questions.filter(question_type="TF")
+          mcq_questions = source_questions.filter(question_type="MCQ")
+          quiz.questions.set(tf_questions[:requested_count // 2])
+          quiz.questions.set(mcq_questions[:(requested_count + 1) // 2])
+
           save_questions_end = time.time()
           logger.info(f"Total save questions time took {save_questions_end - save_questions_start:.3f} seconds")
           
