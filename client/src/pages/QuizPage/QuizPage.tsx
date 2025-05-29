@@ -45,7 +45,7 @@ const QuizPage = () => {
         queryKey: ["quiz-questions", quizId],
         queryFn: () => fetchQuestionsByQuizId(Number(quizId)),
     });
-  
+
     const validateAnswers = () => {
         const formattedAnswers = Object.entries(answers).map(([question_id, answer]) => ({
             question_id: Number(question_id),
