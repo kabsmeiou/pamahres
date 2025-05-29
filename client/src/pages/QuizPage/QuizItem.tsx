@@ -69,7 +69,7 @@ const QuizItem = ({
             <div className="mt-2">
                 <h3 className="text-sm font-medium text-gray-500 mb-3">Select an answer:</h3>
                 <ul className="space-y-3">
-                {question.question_type === "mul" ? (
+                {question.question_type === "MCQ" ? (
                     question.options.map((option, idx) => {
                         const optionLetter = String.fromCharCode(97 + idx); // "a", "b", "c", ...
                         const isSelected = answers[Number(question.id)] === optionLetter;
