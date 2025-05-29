@@ -10,7 +10,7 @@
 - [x] Add authentication
 
 ### FIX
-- [ ] Validate prompt and openai response to ensure correct format (getting occasional response errors from ai)
+- [x] Validate prompt and openai response to ensure correct format (getting occasional response errors from ai)
 - [x] Fix caching inefficiency(middleware.py)
 
 ### OTHERS
