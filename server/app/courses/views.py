@@ -9,8 +9,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from urllib.parse import urlparse
 from quiz.models import QuizModel
-from quiz.tasks import generate_questions_task, delete_material_and_quiz
-from utils.openai_generator import get_conversational_completion
+from quiz.tasks import delete_material_and_quiz
+from services.helpers import get_content_from_quizId, generate_questions_by_chunks
+from services.openai_generator import get_conversational_completion
 import time
 import logging
 
@@ -114,7 +115,8 @@ class CourseMaterialsView(generics.ListCreateAPIView):
     # delay the task to generate questions
     try:
       logger.info(f"Generating questions for quiz: {quiz.id}")
-      generate_questions_task.delay(quiz.id, quiz.number_of_questions)
+      current_material_contents = get_content_from_quizId(quiz.id)
+      generate_questions_by_chunks(current_material_contents, quiz, 20) # default to 20 questions for pregenerated quizzes
     except Exception as e:
       raise ValidationError(f"Error generating questions: {str(e)}")
     logger.info(f"Total perform_create of material creation took {time.time() - start_time:.3f} seconds")

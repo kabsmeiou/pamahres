@@ -27,14 +27,23 @@ def get_completion(model="deepseek/deepseek-chat:free", *, items: int=5, pdf_con
   """
   This function generates a list of quiz questions from a given material.
   It takes in the number of items to generate and the material to generate the questions from.
-  """
-  # limit the pdf content to 5000 characters
-  material = pdf_content[:5000]
 
+  Args:
+    model (str): The model to use for generating the questions.
+    items (int): The number of quiz questions to generate.
+    pdf_content (str): The content of the PDF material to generate questions from. This expects the content to be <= 3000 characters as preprocessed by 
+    max_retries (int): The maximum number of retries to get a valid response.
+  """
+
+  material = pdf_content.strip()
+
+  if not material:
+    raise ValidationError("Material content is empty. Please provide valid content to generate quiz questions.")
+  
   prompt = [
       {
         "role": "system",
-        "content": "You are a helpful tutor that creates quizzes from educational material."
+        "content": "You are a helpful tutor that creates quizzes from key points from educational materials. You only respond in JSON format exactly as the user describes."
       },
       {
         "role": "user",
@@ -48,13 +57,14 @@ def get_completion(model="deepseek/deepseek-chat:free", *, items: int=5, pdf_con
     - {(items + 1) // 2} Multiple Choice (1 correct + 3 plausible distractors)
 
     Return your response as a **raw JSON array**, with each question object formatted like this:
-
+    True/False example:
     {{
       "question": "Text",
       "type": "TF",
-      "answer": "True"
+      "answer": "true"
     }}
-    or
+    
+    Multiple Choice example:
     {{
       "question": "Text",
       "type": "MCQ",

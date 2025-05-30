@@ -1,4 +1,3 @@
-
 from rest_framework.exceptions import ValidationError
 from supabase_client import supabase
 import pymupdf
@@ -20,7 +19,6 @@ def fetch_pdf(material_list: list) -> list:
           raise ValidationError(f"Failed to download {material_path}")
       except Exception as e:
         raise ValidationError(f"Failed to download {material_path}: {str(e)}")
-        continue
   except Exception as e:
     raise ValidationError(f"Error fetching PDF: {str(e)}")
   return pdf_files
@@ -30,7 +28,6 @@ def extract_pdf_content(material_list: list) -> str:
   pdf_files = fetch_pdf(material_list)
   
   # extract the text from the pdf
-  ###  IMPORTANT: Replace material_file.path to material_path on production ###
   content = ""
   for material in pdf_files:
     try:
@@ -40,3 +37,21 @@ def extract_pdf_content(material_list: list) -> str:
     except Exception as e:
       raise ValidationError(f"Error extracting text from PDF: {str(e)}")
   return content
+
+def chunk_text_into_4(text: str) -> list[str]:
+    """Splits the text into exactly 4 chunks."""
+    if not text:
+        return []
+
+    chunk_length = len(text) // 4
+    remainder = len(text) % 4
+
+    chunks = []
+    start = 0
+
+    for i in range(4):
+        end = start + chunk_length + (1 if i < remainder else 0)
+        chunks.append(text[start:end])
+        start = end
+
+    return chunks

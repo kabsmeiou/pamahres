@@ -16,6 +16,7 @@ from utils.validators import validate_quiz_question
 import time
 import logging
 from django.core.cache import cache
+from services.helpers import get_content_from_quizId, generate_questions_by_chunks
 
 logger = logging.getLogger(__name__)
 
@@ -165,56 +166,37 @@ class CheckQuizAnswerView(generics.GenericAPIView):
 ### LIMIT THE MATERIAL SELECTION TO ONLY ONE(1) PER QUIZ ###
 class GenerateQuestionView(generics.GenericAPIView):
   def post(self, request, *args, **kwargs):
-    start_time = time.time()
-    # get current quiz object
-    db_fetch_start = time.time()
     quiz = get_object_or_404(QuizModel, id=kwargs['quiz_id'])
-    db_fetch_end = time.time()
-    logger.info(f"Total db fetch time took {db_fetch_end - db_fetch_start:.3f} seconds")
-
+    # get content from the quiz object
+    contents: list[str] = get_content_from_quizId(quiz.id)
+    
     try:
       # check if theres any quiz that is generated
-      generated_quiz_fetch_start = time.time()
       generated_quiz = QuizModel.objects.filter(is_generated=True).exclude(id=quiz.id).first()
-      generated_quiz_fetch_end = time.time()
-      logger.info(f"Total generated quiz fetch time took {generated_quiz_fetch_end - generated_quiz_fetch_start:.3f} seconds")
       if generated_quiz:
         # fetch questions from the generated_quiz and attach to the quiz object
-        source_questions_fetch_start = time.time()
         source_questions = generated_quiz.questions.all()
-        source_questions_fetch_end = time.time()
-        logger.info(f"Total source questions fetch time took {source_questions_fetch_end - source_questions_fetch_start:.3f} seconds")
         requested_count = quiz.number_of_questions
         actual_count = source_questions.count()
 
         if quiz.number_of_questions > actual_count:
           # so if the number of questions is greater than the number of pregenerated questions,
-          # just do another task to generate the questions for the user and let them wait
-          generate_questions_task.delay(quiz.id, quiz.number_of_questions)
-          logger.info(f"Total request > generated post method took {time.time() - start_time:.3f} seconds")
+          # just do another set of tasks to generate the questions for the user and let them wait
+          generate_questions_by_chunks(contents, generated_quiz, requested_count)
         else:
           # attach only the number of questions specified in the quiz object
           # basically, steal the questions from the generated_quiz
-          save_questions_start = time.time()
           # bulk transfer the source_questions to the quiz object
-          # filter questions by type to ensure diverse question types
-          tf_questions = source_questions.filter(question_type="TF")
-          mcq_questions = source_questions.filter(question_type="MCQ")
-          quiz.questions.set(tf_questions[:requested_count // 2])
-          quiz.questions.set(mcq_questions[:(requested_count + 1) // 2])
-
-          save_questions_end = time.time()
-          logger.info(f"Total save questions time took {save_questions_end - save_questions_start:.3f} seconds")
+          quiz.questions.set(source_questions[:requested_count])
           
           # decrease the number of questions count in the generated_quiz
           generated_quiz.number_of_questions = max(generated_quiz.number_of_questions - requested_count, 0)
           
           # generate the amount of questions we just stole
-          generate_questions_task.delay(generated_quiz.id, requested_count)
+          generate_questions_by_chunks(contents, generated_quiz, requested_count)
 
         quiz.save()
         generated_quiz.save()
-        logger.info(f"Total post method took {start_time - time.time():.3f} seconds")
         return Response({"message": "Quiz already generated."}, status=status.HTTP_200_OK)
       else:
         print("Generating questions...")
