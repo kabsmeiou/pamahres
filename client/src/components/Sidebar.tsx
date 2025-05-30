@@ -33,10 +33,10 @@ const Sidebar = ({ collapsed, setCollapsed, isMobile, onClose }: SidebarProps) =
         <div className="flex items-center">
           {!collapsed && (
             <h1 className="text-xl font-bold">
-              <span className="bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">LockAIn</span>
+              <span className="bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">Pamahres</span>
             </h1>
           )}
-          {collapsed && <span className="text-xl font-bold text-primary-600">AI</span>}
+          {collapsed && <span className="text-xl font-bold text-primary-600">P</span>}
         </div>
         <div className="flex items-center gap-2">
           {isMobile && (
