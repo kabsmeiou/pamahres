@@ -1,4 +1,4 @@
-# PAMAHRES: God of Knowledge, Born to Teach You
+# PAMAHRES
 
 
 # To do list
