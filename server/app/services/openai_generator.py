@@ -5,25 +5,33 @@ import json
 from rest_framework.exceptions import ValidationError
 from utils.validators import validate_response_format
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
 load_dotenv()
 
+# can use openrouter or groq
 client = OpenAI(
-  base_url="https://openrouter.ai/api/v1",
-  api_key=os.getenv("OPENAI_API_KEY"),
+  base_url="https://api.groq.com/openai/v1",
+  api_key=os.getenv("GROK_API_KEY",),
 )
 
-def parse_llm_response(raw_text: str):
-  # Remove the ```json\n and trailing ```
-  if raw_text.startswith("```json"):
-    raw_text = raw_text.strip()[7:]  
-  if raw_text.endswith("```"):
-    raw_text = raw_text.strip()[:-3]  
-  return json.loads(raw_text)
 
-def get_completion(model="deepseek/deepseek-chat:free", *, items: int=5, pdf_content="", max_retries: int=3) -> list:
+def parse_llm_response(raw_text: str):
+  # Use regex to find the first JSON array in the text
+  match = re.search(r"\[\s*{.*?}\s*]", raw_text, re.DOTALL)
+  if match:
+    try:
+      return json.loads(match.group(0))
+    except json.JSONDecodeError as e:
+      raise ValueError(f"Failed to parse extracted JSON: {e}")
+  else:
+    raise ValueError("No JSON array found in response.")
+
+
+# deepseek/deepseek-chat:free 
+def get_completion(model="meta-llama/llama-4-scout-17b-16e-instruct", *, items: int=5, pdf_content="", max_retries: int=3) -> list:
   """
   This function generates a list of quiz questions from a given material.
   It takes in the number of items to generate and the material to generate the questions from.
