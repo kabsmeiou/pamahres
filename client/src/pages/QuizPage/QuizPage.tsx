@@ -101,9 +101,14 @@ const QuizPage = () => {
     }
 
     const handleGoBack = () => {
-        setHeaderMessage("Are you sure you want to go back?");
-        setBodyMessage("If you go back, you will lose your progress and the quiz will be marked as incomplete.");
-        setShowConfirmation(true);
+        if (!hasSubmitted) {
+            setShowConfirmation(true);
+            setHeaderMessage("Are you sure you want to go back?");
+            setBodyMessage("If you go back, you will lose your progress and the quiz will be marked as incomplete.");
+        } else {
+            // if the quiz has been submitted, go back to the quiz list without confirmation
+            window.history.back();
+        }           
     }
 
     const handleSubmit = () => {
@@ -128,7 +133,7 @@ const QuizPage = () => {
     return (
         <div className="min-h-[calc(100vh-9rem)] flex flex-col lg:flex-row gap-6 p-4 bg-gray-50">
             {/* pop up confirmation for going back to the quiz list which is currently hidden and opens if back is pressed */}
-            {showConfirmation && (
+            {showConfirmation && !hasSubmitted && (
                 <ShowConfirmation
                     courseId={Number(courseId)}
                     setShowConfirmation={setShowConfirmation}
