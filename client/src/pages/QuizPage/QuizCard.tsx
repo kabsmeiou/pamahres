@@ -56,6 +56,7 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
           <div className="flex-grow space-y-3">
             <Link 
               to={`/courses/${courseId}/quizzes/${quiz.id}`}
+              state={quiz}
               className="group inline-flex items-start gap-3 hover:no-underline cursor-pointer"
             >
               <div className="p-2 bg-primary-50 text-primary-600 rounded-lg flex-shrink-0 mt-0.5 group-hover:bg-primary-100 transition-colors">

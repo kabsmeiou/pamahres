@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useQuizApi } from "../../services/quizzes";
@@ -36,11 +36,19 @@ const QuizPage = () => {
     // save the answers to the quiz
     const [answers, setAnswers] = useState<Record<number, string>>({});
 
-    const { data: quiz, isLoading: quizLoading, error: quizError } = useQuery<Quiz>({
+    // get the quiz data from the previous state, if not present, fetch it
+    let location = useLocation();
+    const quizFromState = location.state as Quiz | null;
+
+    const { data: quizFromFetch, isLoading: quizLoading, error: quizError } = useQuery<Quiz>({
         queryKey: ["quiz-info", quizId],
         queryFn: () => getQuizById(Number(quizId)),
+        enabled: !quizFromState, // only fetch if not provided in state
+        initialData: quizFromState || undefined, // use the state if available
     });
 
+    const quiz = quizFromFetch || quizFromState;
+    
     const { data: questions, isLoading: questionsLoading, error: questionsError } = useQuery<Question[]>({
         queryKey: ["quiz-questions", quizId],
         queryFn: () => fetchQuestionsByQuizId(Number(quizId)),

@@ -48,7 +48,9 @@ const Quizzes = () => {
               <Loading type="quiz" count={3} />
             </div>
           ) : quizzes && quizzes.length > 0 ? ( 
-            <QuizList quizzes={quizzes} />
+            <QuizList 
+              quizzes={quizzes} 
+              />
           ) : (
             <div className="py-8">
               <EmptyFallback />
