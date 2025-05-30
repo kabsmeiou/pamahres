@@ -2,7 +2,7 @@ import logging
 from django.shortcuts import get_object_or_404
 from quiz.models import QuizModel
 from courses.models import CourseMaterial
-from utils.pdf_processor import extract_pdf_content, chunk_text_into_4
+from utils.pdf_processor import extract_pdf_content, chunk_text
 from utils.question_generator import create_questions_and_options
 from quiz.tasks import generate_questions_task
 from rest_framework.exceptions import ValidationError
@@ -48,7 +48,7 @@ def get_content_from_quizId(quiz_id: int) -> list[str]:
         raise ValueError("No valid content extracted from the provided materials.")
     
     # divide content into 4 chunks and process
-    pdf_content_chunks: list[str] = chunk_text_into_4(pdf_content) # by default chunk size is 3000 characters
+    pdf_content_chunks: list[str] = chunk_text(pdf_content) # by default chunk size is 3000 characters
     logger.info(f"Extracted content from quiz {quiz_id} with {len(pdf_content_chunks)} chunks.")
     return pdf_content_chunks
 
@@ -74,18 +74,13 @@ def generate_questions_by_chunks(pdf_content_chunks: list[str], quiz: QuizModel,
 
     # number of questions to be generated for each api call is divided by 4
     # best case, we can generate 4 questions per chunk
-    max_chunks: int = 4
-    questions_per_completion: list[int] = [requested_count // max_chunks] * max_chunks
+    questions_per_completion: list[int] = [requested_count // number_of_chunks] * number_of_chunks
 
-    total_questions: int = questions_per_completion[0] * number_of_chunks
-
-    # if there is not enough content to generate the required number of questions
-    if total_questions < requested_count:
-        # distribute the remaining questions across the chunks
-        remaining_questions: int = requested_count - (questions_per_completion[0] * number_of_chunks)
-        for i in range(remaining_questions):
-          questions_per_completion[i % len(pdf_content_chunks)] += 1
-
+    # distribute remaining questions fairly
+    remaining_questions = requested_count - sum(questions_per_completion)
+    for i in range(remaining_questions):
+        questions_per_completion[i % number_of_chunks] += 1
+    
     for i, chunk in enumerate(pdf_content_chunks):
         # generate questions for each chunk
         logger.info(f"Generating {questions_per_completion[i]} questions for chunk {i+1}/{number_of_chunks}.")

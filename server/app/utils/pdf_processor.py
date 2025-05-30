@@ -38,20 +38,7 @@ def extract_pdf_content(material_list: list) -> str:
       raise ValidationError(f"Error extracting text from PDF: {str(e)}")
   return content
 
-def chunk_text_into_4(text: str) -> list[str]:
-    """Splits the text into exactly 4 chunks."""
-    if not text:
-        return []
-
-    chunk_length = len(text) // 4
-    remainder = len(text) % 4
-
-    chunks = []
-    start = 0
-
-    for i in range(4):
-        end = start + chunk_length + (1 if i < remainder else 0)
-        chunks.append(text[start:end])
-        start = end
-
-    return chunks
+def chunk_text(text: str, chunk_size: int=3000, max_chunks: int=4) -> list[str]:
+    """Splits the text into chunks of 3000 characters and returns 4 chunks at most."""
+    chunks = [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
+    return chunks[:max_chunks]
