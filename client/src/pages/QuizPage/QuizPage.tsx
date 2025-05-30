@@ -26,6 +26,7 @@ const QuizPage = () => {
     
     // quiz result
     const [result, setResult] = useState<QuizItemDetails[]>([]);
+    const [showScore, setShowScore] = useState(false);
 
     // confirmation for going back to the quiz list
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -85,6 +86,7 @@ const QuizPage = () => {
         } catch (error) {
             console.error(error);
         } finally {
+            setShowScore(true);
             setIsSubmitting(false);
             setIsSubmittingConfirmation(false);
         }
@@ -143,6 +145,14 @@ const QuizPage = () => {
                     <div className="text-center">
                         <h1 className="text-2xl font-bold text-gray-800">{quiz?.quiz_title ?? 'Quiz Title'}</h1>
                     </div>
+                    {showScore && (
+                        <div className="text-center">
+                            <p className="text-lg text-gray-600">
+                                You scored <span className="font-bold text-primary-600">{result.filter(r => r.is_correct).length}</span> out of <span className="font-bold text-primary-600">{quiz?.number_of_questions ?? 0}</span>
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1">Review your answers below</p>
+                        </div>
+                    )}
                     {/* time limit as progress bar */}
                     <div className="w-full rounded-lg overflow-hidden bg-gray-100 p-4">
                         <TimeLimitBar 
