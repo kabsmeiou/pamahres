@@ -22,8 +22,8 @@
 
 ## FRONTEND
 ### FIX
-- [ ] display markdown instead of string
-- [ ] Fix quiz form not resetting after a fresh post req(create quiz)
+- [x] display markdown instead of string
+- [x] Fix quiz form not resetting after a fresh post req(create quiz)
 - [x] Fix quiz connection
 - [x] Edit quiz(?)
 - [x] Fix cors preflight taking too long!!
