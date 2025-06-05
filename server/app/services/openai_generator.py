@@ -17,7 +17,6 @@ client = OpenAI(
   api_key=os.getenv("GROK_API_KEY",),
 )
 
-
 def parse_llm_response(raw_text: str):
   # Use regex to find the first JSON array in the text
   match = re.search(r"\[\s*{.*?}\s*]", raw_text, re.DOTALL)
@@ -116,6 +115,14 @@ def get_completion(model="meta-llama/llama-4-scout-17b-16e-instruct", *, items: 
 
   return response
 
+
+# use deepseek from open router for convo
+# can use openrouter or groq
+openai_client = OpenAI(
+  base_url="https://openrouter.ai/api/v1",
+  api_key=os.getenv("OPENAI_API_KEY"),
+)
+
 # function for handling the conversation with the LLM
 def get_conversational_completion(model="deepseek/deepseek-chat:free", *, previous_messages: list, new_message: str, context: str) -> list:
   """
@@ -128,7 +135,7 @@ def get_conversational_completion(model="deepseek/deepseek-chat:free", *, previo
 
   note that previous_messages is not the full conversation history, but only the last few messages
   """
-  completion = client.chat.completions.create(
+  completion = openai_client.chat.completions.create(
     model=model,
     messages = [
       {

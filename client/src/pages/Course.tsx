@@ -52,16 +52,20 @@ const Course = () => {
       })),
       new_message: message,
     }
-
+    console.log("Sending message to server:", jsonMessage);
     const response = await sendMessage(jsonMessage, courseIdNumber);
     
+    console.log("Response from server:", response);
+    const responseText = response.reply || response.warning;
+
     console.log(response);
 
     const aiResponse: Message = {
       id: (Date.now() + 1).toString(),
-      content: response.reply,
+      content: responseText,
       sender: 'ai'
     };
+    
     setMessages(prev => [...prev, aiResponse]);
     setLoading(false);
   };
