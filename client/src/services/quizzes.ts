@@ -6,6 +6,7 @@ import { useState } from "react";
 // DO NOT REPEAT YOURSELF ok
 // maybe useMemo for the api calls?
 
+import callApi from "../hooks/callApi";
 
 export function useQuizApi() {
     const api = useApiClient();
@@ -14,47 +15,32 @@ export function useQuizApi() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // reusable function for api calls
-    async function callApi<T>(apiCall: () => Promise<{data: T}>): Promise<T> {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await apiCall();
-            return response.data;
-        } catch (err: any) {
-            setError(err.message || 'Something went wrong');
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    }
-
     const getQuizzes = async (id: number | string) => {
-        return callApi(() => api.get<Quiz[]>(`api-quiz/courses/${id}/quizzes/`));
+        return callApi(() => api.get<Quiz[]>(`api-quiz/courses/${id}/quizzes/`), setLoading, setError);
     };
 
     const createQuiz = async (id: number | string, quiz: Quiz) => {
-        return callApi(() => api.post<Quiz>(`api-quiz/courses/${id}/quizzes/`, quiz));
+        return callApi(() => api.post<Quiz>(`api-quiz/courses/${id}/quizzes/`, quiz), setLoading, setError);
     };
 
     const deleteQuiz = async (id: number) => {
-        return callApi(() => api.delete<Quiz>(`api-quiz/quizzes/${id}/delete/`));
+        return callApi(() => api.delete<Quiz>(`api-quiz/quizzes/${id}/delete/`), setLoading, setError);
     };
 
     const generateQuestions = async (id: number) => {
-        return callApi(() => api.post<Quiz>(`api-quiz/quizzes/${id}/generate-questions/`));
+        return callApi(() => api.post<Quiz>(`api-quiz/quizzes/${id}/generate-questions/`), setLoading, setError);
     };
 
     const fetchQuestionsByQuizId = async (id: number) => {
-        return callApi(() => api.get<Question[]>(`api-quiz/quizzes/${id}/questions/`));
+        return callApi(() => api.get<Question[]>(`api-quiz/quizzes/${id}/questions/`), setLoading, setError);
     };
 
     const getQuizById = async (id: number) => {
-        return callApi(() => api.get<Quiz>(`api-quiz/quizzes/${id}/`));
+        return callApi(() => api.get<Quiz>(`api-quiz/quizzes/${id}/`), setLoading, setError);
     };
 
     const submitQuiz = async (id: number, answers: any) => {
-        return callApi(() => api.post<QuizResult>(`api-quiz/quizzes/${id}/check-answers/`, answers));
+        return callApi(() => api.post<QuizResult>(`api-quiz/quizzes/${id}/check-answers/`, answers), setLoading, setError);
     };
 
     return { getQuizzes, createQuiz, generateQuestions, deleteQuiz, loading, error, fetchQuestionsByQuizId, getQuizById, submitQuiz };
