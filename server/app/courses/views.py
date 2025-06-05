@@ -30,7 +30,7 @@ class LLMConversationView(generics.GenericAPIView):
   permission_classes = [IsAuthenticated, IsOwner]
 
   def post(self, request, *args, **kwargs):
-    # start_time = time.time()
+    start_time = time.time()
     serializer = self.get_serializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
@@ -41,12 +41,16 @@ class LLMConversationView(generics.GenericAPIView):
     # get the course id from the url
     course_id = self.kwargs['course_id']
     course = get_object_or_404(Course, id=course_id, user=self.request.user)
+    logger.info(f"Total post method of LLMConversationView took {time.time() - start_time:.3f} seconds")
+    
 
     # get the name of the user
     user_name = self.request.user.first_name
     # get the name of the course
     course_name = course.course_name
 
+    
+    start_time = time.time()
     # get relevant course chunks
     relevant_chunks = query_course(new_message, course_id)
 
@@ -58,14 +62,16 @@ class LLMConversationView(generics.GenericAPIView):
         f"Relevant course material:\n\n"
         + "\n\n".join(relevant_chunks)
     )
+    logger.info(f"time taken to build context: {time.time() - start_time:.3f} seconds")
 
+    start_time = time.time()
     # get the response from the LLM
     response = get_conversational_completion(
       previous_messages=previous_messages, 
       new_message=new_message, 
       context=context
     )
-
+    logger.info(f"time taken to get response from LLM: {time.time() - start_time:.3f} seconds")
     return Response({"reply": response}, status=status.HTTP_200_OK)
     
 # View function for showing the courses that the current user has made.

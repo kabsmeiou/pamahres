@@ -8,7 +8,8 @@ class LLMConversationSerializer(serializers.Serializer):
 
   def validate_previous_messages(self, value):
     if len(value) > 10:
-      raise serializers.ValidationError("Previous messages cannot be more than 10.")
+      # get only the last 10 messages
+      value = value[-10:]
     return value
 
   def validate_new_message(self, value):
