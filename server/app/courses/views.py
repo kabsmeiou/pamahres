@@ -177,7 +177,7 @@ class CourseMaterialDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 # Single instance view of a course, showing details
 # and allowing updates
-class CourseDetailView(generics.RetrieveUpdateAPIView):
+class CourseDetailView(generics.RetrieveUpdateDestroyAPIView):
   serializer_class = CourseSerializer
   permission_classes = [IsAuthenticated, IsOwner]
 
