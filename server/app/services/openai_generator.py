@@ -149,4 +149,7 @@ def get_conversational_completion(model="deepseek/deepseek-chat:free", *, previo
       }
     ]
   )
-  return completion.choices[0].message.content
+  response = completion.choices[0].message.content
+  # clean up the response
+  response = response.strip()
+  return response
