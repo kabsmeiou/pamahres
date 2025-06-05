@@ -14,14 +14,8 @@ from services.helpers import get_content_from_quizId, generate_questions_by_chun
 from services.openai_generator import get_conversational_completion
 import time
 import logging
-import pathlib
-import os
 
 from utils.embedding import embed_and_upsert_chunks, query_course
-
-COURSE_APP_DIR = pathlib.Path(__file__).resolve().parent
-save_dir = COURSE_APP_DIR / "material_embeddings"
-os.makedirs(save_dir, exist_ok=True)
 
 logger = logging.getLogger(__name__)
 
