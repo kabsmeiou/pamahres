@@ -180,6 +180,7 @@ class CourseMaterialDetailView(generics.RetrieveUpdateDestroyAPIView):
 class CourseDetailView(generics.RetrieveUpdateDestroyAPIView):
   serializer_class = CourseSerializer
   permission_classes = [IsAuthenticated, IsOwner]
+  lookup_url_kwarg = "course_id" # Specify the URL keyword argument for course_id
 
   # Look into the course list in database and select the corresponding course_id from the request
   def get_object(self):

@@ -45,7 +45,7 @@ export function useMaterialsApi() {
       return callApi(() => api.post<Material>(`api-courses/courses/${id}/materials/`, data), setLoading, setError);
     };
   
-    const deleteMaterial = async (id: number, courseId: number | string) => {
+    const deleteMaterial = async (courseId: number | string, id: number) => {
       return callApi(() => api.delete<Material>(`api-courses/courses/${courseId}/materials/${id}/`), setLoading, setError);
     };
 

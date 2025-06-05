@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom"
 import { X } from "react-feather";
 
-const ShowConfirmation = ({ courseId, setShowConfirmation, headerMessage, bodyMessage, handleSubmitQuiz, isSubmittingConfirmation, setIsSubmittingConfirmation }: { courseId: number, setShowConfirmation: (show: boolean) => void, headerMessage: string, bodyMessage: string, handleSubmitQuiz: () => void, isSubmittingConfirmation: boolean, setIsSubmittingConfirmation: (isSubmitting: boolean) => void }) => {
+const ShowConfirmation = ({ courseId, action, setShowConfirmation, headerMessage, bodyMessage, handleSubmitItem, isSubmittingConfirmation, setIsSubmittingConfirmation }: { courseId: number, action: string, setShowConfirmation: (show: boolean) => void, headerMessage: string, bodyMessage: string, handleSubmitItem: () => void, isSubmittingConfirmation: boolean, setIsSubmittingConfirmation: (isSubmitting: boolean) => void }) => {
 
     const handleClose = () => {
         setShowConfirmation(false);
         setIsSubmittingConfirmation(false);
     }
+    
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
             <div className="bg-white rounded-2xl w-full max-w-md shadow-lg animate-fadeIn transition-all duration-300">
@@ -36,10 +37,10 @@ const ShowConfirmation = ({ courseId, setShowConfirmation, headerMessage, bodyMe
                 </button>
                 {isSubmittingConfirmation ? (
                     <button
-                    onClick={handleSubmitQuiz}
+                    onClick={handleSubmitItem}
                     className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition"
                     >
-                        Yes, submit
+                        Yes, {action}
                     </button>
                 ) : (   
                     <Link

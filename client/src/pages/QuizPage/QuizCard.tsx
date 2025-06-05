@@ -16,14 +16,21 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [clickedReview, setClickedReview] = useState(false);
 
+  // wrapper function to delete quiz with courseId
+  // This is necessary because the deleteQuiz function expects an id, but we need to pass courseId as well
+  // This is a workaround to match the expected signature of useDeleteItem
+  const deleteQuizWithCourse = async (courseId: number | string, id?: number) => {
+    return deleteQuiz(id!);
+  };
+
   const { isDeleting, handleDelete } = useDeleteItem(
-    deleteQuiz,
+    deleteQuizWithCourse,
     (courseId) => ["quizzes", courseId!]
   );
 
   const handleDeleteConfirm = () => {
     if (quiz.id) {
-      handleDelete(quiz.id, numericCourseId, () => setShowDeleteConfirm(false));
+      handleDelete(numericCourseId, quiz.id, () => setShowDeleteConfirm(false));
     }
   };
   

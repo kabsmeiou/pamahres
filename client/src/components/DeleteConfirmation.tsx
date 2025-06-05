@@ -6,7 +6,7 @@ interface DeleteConfirmationProps {
     isDeleting: boolean;
     handleDelete: () => void;
     itemName: string;
-    itemType: 'Material' | 'Quiz';
+    itemType: 'Material' | 'Quiz' | 'Course';
 }
 
 // improve ux by handling deletion on backend and instantly removing the frontend item(card) after confirmation.

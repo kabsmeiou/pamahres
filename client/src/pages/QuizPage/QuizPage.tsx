@@ -136,10 +136,11 @@ const QuizPage = () => {
             {showConfirmation && !hasSubmitted && (
                 <ShowConfirmation
                     courseId={Number(courseId)}
+                    action="submit"
                     setShowConfirmation={setShowConfirmation}
                     headerMessage={headerMessage}
                     bodyMessage={bodyMessage}
-                    handleSubmitQuiz={handleSubmitQuiz}
+                    handleSubmitItem={handleSubmitQuiz}
                     isSubmittingConfirmation={isSubmittingConfirmation}
                     setIsSubmittingConfirmation={setIsSubmittingConfirmation}
                 />

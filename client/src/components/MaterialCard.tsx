@@ -32,12 +32,12 @@ const MaterialCard = ({
   const [errorDisplay, setErrorDisplay] = useState<boolean>(false)
 
   const { isDeleting, handleDelete } = useDeleteItem(
-    deleteMaterial,
+    deleteMaterial as (courseId: number | string, id?: number) => Promise<Material>,
     (courseId) => ["materials", courseId ?? ""]
   )
 
   const handleDeleteConfirm = () => {
-    handleDelete(material.id!, numericCourseId, () => setShowDeleteConfirm(false));
+    handleDelete(numericCourseId, material.id!, () => setShowDeleteConfirm(false));
     // delete this instance
   };
 
