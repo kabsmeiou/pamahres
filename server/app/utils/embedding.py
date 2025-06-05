@@ -2,6 +2,9 @@ from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone, ServerlessSpec
 import os
 from dotenv import load_dotenv
+import logging
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -48,3 +51,9 @@ def query_course(question: str, course_id: str, top_k=3):
   # Extract the chunk texts from metadata
   relevant_chunks = [match['metadata']['text'] for match in results['matches']]
   return relevant_chunks
+
+def delete_course_chunks(course_id: str):
+  # Delete all vectors associated with the course_id
+  index.delete(filter={"course_id": course_id})
+  logger.info(f"Deleted all chunks for course {course_id}")
+  return True

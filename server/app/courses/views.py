@@ -15,7 +15,7 @@ from services.openai_generator import get_conversational_completion
 import time
 import logging
 
-from utils.embedding import embed_and_upsert_chunks, query_course
+from utils.embedding import embed_and_upsert_chunks, query_course, delete_course_chunks
 
 logger = logging.getLogger(__name__)
 
@@ -189,6 +189,25 @@ class CourseDetailView(generics.RetrieveUpdateDestroyAPIView):
     logger.info(f"Total get_object method of course detail view took {time.time() - start_time:.3f} seconds")
     return course
   
+  # override delete to ensure that index is deleted from Pinecone
+  def delete(self, request, *args, **kwargs):
+    start_time = time.time()
+    course = self.get_object()
+    course_id = str(course.id)
+    # delete all chunks associated with the course
+    try:
+      logger.info(f"Deleting course chunks for course: {course_id}")
+      # delete all chunks associated with the course from Pinecone
+      delete_course_chunks(course_id)
+    except Exception as e:
+      logger.error(f"Error deleting course chunks: {str(e)}")
+      raise ValidationError(f"Error deleting course chunks: {str(e)}")
+    # delete the course object
+    course.delete()
+    logger.info(f"Deleted course: {course_id}")
+    logger.info(f"Total delete method of course detail view took {time.time() - start_time:.3f} seconds")
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
 class MaterialDetailView(generics.RetrieveUpdateDestroyAPIView):
   serializer_class = CourseMaterialSerializer
   permission_classes = [IsAuthenticated, IsOwner]
