@@ -5,6 +5,7 @@
 ## BACKEND
 ### CORE
 - [ ] Allow ai to get context of the pdf by extracting the content
+- [ ] Config text extraction from pdf
 - [x] Chunk the materials into pieces and generate quizzes from different parts of the uploaded PDF
 - [x] Configure AI chat function
 - [x] Add authentication
