@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, Paperclip, MessageCircle, Clock } from 'react-feather';
 import { useChatbot } from '../services/chatbot';
 import { useParams } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+
 interface Message {
   id: string;
   content: string;
@@ -71,9 +73,8 @@ const Course = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto py-6 sm:px-6 sm:py-8 h-[calc(100vh-10rem)]">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-full overflow-hidden
-                      w-full sm:w-auto">
+    <div className="max-w-8xl mx-auto py-6 sm:px-6 sm:py-8 h-[calc(100vh-6rem)]">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-full overflow-hidden w-full sm:w-auto">
         {/* Chat Header */}
         <div className="px-6 py-4 border-b border-gray-100 bg-white sticky top-0 z-10">
           <div className="flex items-center justify-between">
@@ -130,7 +131,9 @@ const Course = () => {
                       }
                     `}
                   >
-                    <p className="leading-relaxed whitespace-pre-wrap break-all">{msg.content}</p>
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <ReactMarkdown>{msg.content.replace(/\\n/g, '\n')}</ReactMarkdown>
+                  </div>
                   </div>
                 </div>
               ))}
@@ -148,7 +151,7 @@ const Course = () => {
         </div>
 
         {/* Message Input */}
-        <form onSubmit={handleSubmit} className="p-4 border-t border-gray-100 bg-white sticky bottom-0">
+        <form onSubmit={handleSubmit} className="p-2 border-t border-gray-100 bg-white sticky bottom-0">
           <div className="flex flex-col gap-3">
             <div className="relative flex-col items-end rounded-lg border-0 border-gray-200 focus-within:border-0 focus-within:ring-0 transition-all">
               <textarea
@@ -168,7 +171,7 @@ const Course = () => {
                   }
                 }}
                 placeholder="Ask anything about your course..."
-                className="max-h-[80px] sm:max-h-[150px] min-h-[60px] w-full flex-1 bg-transparent placeholder:text-gray-400 resize-none p-4 pr-4 overflow-y-auto outline-none focus:ring-0 focus:border-transparent border-0"
+                className="max-h-[80px] sm:max-h-[150px] min-h-[60px] w-full flex-1 bg-transparent placeholder:text-gray-400 resize-none px-4 py-2 pr-4 overflow-y-auto outline-none focus:ring-0 focus:border-transparent border-0"
                 rows={1}
               />
               <div className="bottom-2 right-2 flex justify-end gap-2">
