@@ -78,6 +78,15 @@ const QuizForm = ({ isOpen, onClose, setIsGeneratingQuestions, setCurrentQuizId 
       console.error("Error creating quiz:", err);
     } finally {
       setCreateQuizLoading(false);
+
+      // Reset form state
+      setSelectedMaterialId("");
+      setFormData({
+        quiz_title: "",
+        time_limit_minutes: 10,
+        material_list: [],
+        number_of_questions: 0
+      });
     }
   };
 
