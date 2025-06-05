@@ -14,6 +14,14 @@ from services.helpers import get_content_from_quizId, generate_questions_by_chun
 from services.openai_generator import get_conversational_completion
 import time
 import logging
+import pathlib
+import os
+
+from utils.embedding import embed_and_upsert_chunks, query_course
+
+COURSE_APP_DIR = pathlib.Path(__file__).resolve().parent
+save_dir = COURSE_APP_DIR / "material_embeddings"
+os.makedirs(save_dir, exist_ok=True)
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +36,7 @@ class LLMConversationView(generics.GenericAPIView):
   permission_classes = [IsAuthenticated, IsOwner]
 
   def post(self, request, *args, **kwargs):
-    start_time = time.time()
+    # start_time = time.time()
     serializer = self.get_serializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
@@ -42,19 +50,28 @@ class LLMConversationView(generics.GenericAPIView):
 
     # get the name of the user
     user_name = self.request.user.first_name
-    
-    # get some of the related materials
-    related_materials = course.materials.all()[:5]
-    related_materials_names = [material.file_name for material in related_materials]
-
     # get the name of the course
     course_name = course.course_name
 
-    # get the context for the LLM
-    context = f"You are a helpful assistant that can answer questions about the course {course_name}. The user's name is {user_name}. The related materials are {related_materials_names}."
+    # get relevant course chunks
+    relevant_chunks = query_course(new_message, course_id)
+
+    # build the context for the LLM(man tgey stupid)
+    context = (
+        f"You are a helpful assistant for the course '{course_name}'. Your answers are brief and to the point. "
+        f"If there are no relevant chunks, let the user know that you cannot find any relevant information and tell them to upload at the materials tab. "
+        f"The user's name is {user_name}. "
+        f"Relevant course material:\n\n"
+        + "\n\n".join(relevant_chunks)
+    )
 
     # get the response from the LLM
-    response = get_conversational_completion(previous_messages=previous_messages, new_message=new_message, context=context)
+    response = get_conversational_completion(
+      previous_messages=previous_messages, 
+      new_message=new_message, 
+      context=context
+    )
+
     return Response({"reply": response}, status=status.HTTP_200_OK)
     
 # View function for showing the courses that the current user has made.
@@ -68,10 +85,11 @@ class CourseView(generics.ListCreateAPIView):
     courses = self.request.user.courses.all()
     logger.info(f"Total get_queryset method of course list took {time.time() - start_time:.3f} seconds")
     return courses
-
+  
   def perform_create(self, serializer):
     serializer.save(user=self.request.user)
-  
+
+
 # View for showing all the materials in a course. It will return the materials'
 # associated with the user and the course he clicked.
 # This also serves as a view for uploading new materials.
@@ -95,7 +113,7 @@ class CourseMaterialsView(generics.ListCreateAPIView):
   def perform_create(self, serializer):
     start_time = time.time()
     # get course id from params
-    course_id = self.kwargs['course_id']
+    course_id: str = self.kwargs['course_id']
     course = get_object_or_404(Course, id=course_id)
 
     serializer.save(course=course)
@@ -115,8 +133,11 @@ class CourseMaterialsView(generics.ListCreateAPIView):
     # delay the task to generate questions
     try:
       logger.info(f"Generating questions for quiz: {quiz.id}")
-      current_material_contents = get_content_from_quizId(quiz.id)
+      current_material_contents: list[str] = get_content_from_quizId(quiz.id)
       generate_questions_by_chunks(current_material_contents, quiz, 20) # default to 20 questions for pregenerated quizzes
+
+      # embed current material contents into a vector database for chatbot
+      embed_and_upsert_chunks(chunks=current_material_contents, course_id=course_id)
     except Exception as e:
       raise ValidationError(f"Error generating questions: {str(e)}")
     logger.info(f"Total perform_create of material creation took {time.time() - start_time:.3f} seconds")
