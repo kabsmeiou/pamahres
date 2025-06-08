@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { X, Loader } from "react-feather";
 import { useParams } from "react-router-dom";
 import { useQuizApi } from "../../services/quizzes";
@@ -7,14 +7,18 @@ import { Material } from "../../types/course";
 import { Quiz } from "../../types/quiz";
 import { MaterialsContext } from "../../components/CourseLayout";
 
-interface QuizFormProps {
-  isOpen: boolean;
-  setIsGeneratingQuestions: (isGeneratingQuestions: boolean) => void;
-  setCurrentQuizId: (currentQuizId: number | null) => void;
-  onClose: () => void;
+interface MaterialQuiz {
+  materialId: number;
+  file_name: string;
 }
 
-const QuizForm = ({ isOpen, onClose, setIsGeneratingQuestions, setCurrentQuizId }: QuizFormProps) => {
+interface QuizFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  materialQuiz?: MaterialQuiz // optional prop for quiz creation from material
+}
+
+const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
   // param extraction for course id
   const { courseId } = useParams<{ courseId: string }>();
   const numericCourseId = parseInt(courseId!, 10);
@@ -35,6 +39,19 @@ const QuizForm = ({ isOpen, onClose, setIsGeneratingQuestions, setCurrentQuizId 
   // quiz form state
   const [selectedMaterialId, setSelectedMaterialId] = useState<string>("");
   const [createQuizLoading, setCreateQuizLoading] = useState(false);
+
+
+  useEffect(() => {
+    if (materialQuiz) {
+      setSelectedMaterialId(materialQuiz.materialId.toString());
+      setFormData(prev => ({
+        ...prev,
+        quiz_title: `Quiz for ${materialQuiz.file_name}`,
+        material_list: [materialQuiz.materialId],
+        number_of_questions: 0 // reset to 0 for manual question entry
+      }));
+    }
+  }, [materialQuiz]);
 
   // material context for sidebar
   const context = useContext(MaterialsContext)

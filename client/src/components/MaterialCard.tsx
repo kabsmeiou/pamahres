@@ -14,6 +14,8 @@ import { useDeleteItem } from "../hooks/useDeleteItem"
 import DeleteConfirmation from "./DeleteConfirmation"
 import Error from "./Error"
 
+import QuizForm from "../pages/QuizPage/QuizForm"
+
 const MaterialCard = ({
   material,
   pdfFiles,
@@ -27,9 +29,10 @@ const MaterialCard = ({
   const { courseId } = useParams<{ courseId: string }>()
 
   const numericCourseId = Number.parseInt(courseId!, 10)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [isOpeningPDF, setIsOpeningPDF] = useState(false)
-  const [errorDisplay, setErrorDisplay] = useState<boolean>(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false)
+  const [isOpeningPDF, setIsOpeningPDF] = useState<boolean>(false)
+
+  const [showQuizForm, setShowQuizForm] = useState<boolean>(false)
 
   const { isDeleting, handleDelete } = useDeleteItem(
     deleteMaterial as (courseId: number | string, id?: number) => Promise<Material>,
@@ -83,10 +86,6 @@ const MaterialCard = ({
     }
   }
 
-  const handleErrorDisplay = () => {
-    setErrorDisplay(true)
-  }
-
   const formattedSize = material.file_size ? formatFileSize(material.file_size) : "Unknown size";
 
   return (
@@ -94,9 +93,6 @@ const MaterialCard = ({
       key={material.id}
       className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
     >
-      {errorDisplay &&
-        <Error message="This feature is not available yet. For now, head over the Quizzes section to generate a quiz for this material." />
-      }
       <div className="p-5">
         <div className="flex items-start gap-4">
           {/* File icon */}
@@ -135,7 +131,7 @@ const MaterialCard = ({
           <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 ml-2">
             <button
               onClick={() => {
-                handleErrorDisplay()
+                setShowQuizForm(true)
               }}
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors text-sm font-medium"
             >
@@ -185,6 +181,17 @@ const MaterialCard = ({
         handleDelete={handleDeleteConfirm}
         itemName={material.file_name}
         itemType="Material"
+      />
+
+      <QuizForm 
+        isOpen={showQuizForm}
+        onClose={() => setShowQuizForm(false)}
+        materialQuiz={
+          {
+            materialId: material.id!,
+            file_name: material.file_name!
+          }
+        }
       />
     </div>
   )

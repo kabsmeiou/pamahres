@@ -8,12 +8,7 @@ import { useQuizApi } from "../../services/quizzes";
 
 const QuizHeader = () => {
   const { courseId } = useParams<{ courseId: string }>();
-  const { getQuizById } = useQuizApi();
-  const numericCourseId = parseInt(courseId!, 10);
   const [showQuizForm, setShowQuizForm] = useState(false);
-  const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
-  const [currentQuizId, setCurrentQuizId] = useState<number | null>(null);
-  const queryClient = useQueryClient();
 
   // TODO: add a loading state for the quiz form if the quiz is still being generated
 
@@ -45,8 +40,6 @@ const QuizHeader = () => {
       <QuizForm 
         isOpen={showQuizForm}
         onClose={() => setShowQuizForm(false)}
-        setIsGeneratingQuestions={setIsGeneratingQuestions}
-        setCurrentQuizId={setCurrentQuizId}
       />
     </div>
   );
