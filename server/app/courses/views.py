@@ -14,6 +14,7 @@ from services.helpers import get_content_from_quizId, generate_questions_by_chun
 from services.openai_generator import get_conversational_completion
 import time
 import logging
+import tiktoken
 
 from utils.embedding import embed_and_upsert_chunks, query_course, delete_course_chunks
 
@@ -49,6 +50,8 @@ class LLMConversationView(generics.GenericAPIView):
     # get the name of the course
     course_name = course.course_name
 
+    # get the encoding for the LLM, count tokens for context to optimize the response
+    encoding = tiktoken.get_encoding("cl100k_base")
     
     start_time = time.time()
     # get relevant course chunks
@@ -62,6 +65,9 @@ class LLMConversationView(generics.GenericAPIView):
         f"Relevant course material:\n\n"
         + "\n\n".join(relevant_chunks)
     )
+
+    tokens = encoding.encode(context)
+    logger.info(f"Context tokens count: {len(tokens)}")
     logger.info(f"time taken to build context: {time.time() - start_time:.3f} seconds")
 
     start_time = time.time()
