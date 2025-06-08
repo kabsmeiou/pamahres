@@ -73,7 +73,7 @@ const Course = () => {
   };
 
   return (
-    <div className="max-w-8xl mx-auto py-6 sm:px-6 sm:py-8 h-[calc(100vh-6rem)]">
+    <div className="max-w-8xl mx-auto py-6 sm:px-6 sm:py-8 h-[calc(100vh-8rem)]">
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-full overflow-hidden w-full sm:w-auto">
         {/* Chat Header */}
         <div className="px-6 py-4 border-b border-gray-100 bg-white sticky top-0 z-10">
@@ -91,19 +91,18 @@ const Course = () => {
         </div>
         {/* Messages Area */}
         <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col space-y-6 bg-gray-50">
-          <div className="flex items-center bg-transparent text-sm w-full justify-center p-2">
+          {/* <div className="flex items-center bg-transparent text-sm w-full justify-center p-2">
             <Clock size={14} className="mr-1" />
             <span className="text-red-500 font-bold">This is work in progress</span>
-          </div>
+          </div> */}
           {messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-6 my-auto">
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary-50 text-primary-600 mb-6">
                 <Send size={28} />
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Start a Conversation</h3>
-              <p className="text-gray-500 max-w-md mb-8">Ask questions about your course materials, get explanations, or request summaries.</p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-lg w-full">
+              <h3 className="md:text-xl text-lg font-semibold text-gray-800 mb-2">Start a Conversation</h3>
+              <p className="text-gray-500 max-w-md mb-8 md:text-base text-base">Ask questions about your course materials, get explanations, or request summaries.</p>
+              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-lg w-full">
                 {["How do I solve this problem?", "Explain this concept", "Summarize this material", "Give me a practice quiz"].map((suggestion, index) => (
                   <button 
                     key={index}
@@ -113,7 +112,7 @@ const Course = () => {
                     {suggestion}
                   </button>
                 ))}
-              </div>
+              </div> */}
             </div>
           ) : (
             <div className="space-y-6 py-4">

@@ -23,8 +23,8 @@ const Dashboard = () => {
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl p-8 shadow-sm border border-primary-200">
         <div className="max-w-3xl">
-          <h1 className="text-3xl font-bold text-gray-800">Welcome back, <span className="text-primary-600">{NAME_PLACEHOLDER}</span>!</h1>
-          <p className="mt-3 text-gray-600 text-lg">Pick up where you left off or start something new.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Welcome back, <span className="text-primary-600">{NAME_PLACEHOLDER}</span>!</h1>
+          <p className="mt-3 text-gray-600 md:text-lg">Pick up where you left off or start something new.</p>
           
           <div className="mt-6 flex flex-wrap gap-4">
             <Link 

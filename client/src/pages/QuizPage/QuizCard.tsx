@@ -114,19 +114,19 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
             {/* Action buttons */}
             <div className="flex items-center gap-2">
               <button
-                className={`inline-flex items-center justify-center gap-1.5 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium shadow-sm ${quiz.number_of_questions === 0 ? "hidden" : ""}`}
+                className={`inline-flex items-center justify-center gap-1.5 bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium shadow-sm ${quiz.number_of_questions === 0 ? "hidden" : ""}`}
                 onClick={() => setClickedReview(true)}
               >
-                Review
+                <span className="text-white px-3 py-2">Review</span>
               </button>
               <Link
                 to={`/courses/${courseId}/quizzes/${quiz.id}`}
-                className="inline-flex items-center justify-center gap-1.5 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium shadow-sm cursor-pointer"
+                className="inline-flex items-center justify-center gap-1.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium shadow-sm cursor-pointer"
               >
                 {quiz.last_taken === null ? (
-                  "Take Quiz"
+                  <span className="px-3 py-2">Take Quiz</span>
                 ) : (
-                  "Retake"
+                  <span className="px-3 py-2">Retake</span>
                 )}
               </Link>
               {/* use dots menu to wrap the delete quiz button */}

@@ -88,31 +88,30 @@ const MaterialCard = ({
   const formattedSize = material.file_size ? formatFileSize(material.file_size) : "Unknown size";
 
   return (
-    <div
-      key={material.id}
-      className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+    <div 
+      className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden w-full"
     >
-      <div className="p-5">
-        <div className="flex items-start gap-4">
+      <div className="p-3 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
           {/* File icon */}
-          <div className="p-3 bg-blue-50 text-blue-600 rounded-lg flex-shrink-0">
+          <div className="p-2 bg-blue-50 text-blue-600 rounded-lg flex-shrink-0 mb-2 sm:mb-0">
             <FileText size={22} />
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 w-full">
             {/* File name and type */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-800 truncate group-hover:text-primary-600 transition-colors">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-800 truncate group-hover:text-primary-600 transition-colors">
                 {material.file_name}
               </h3>
-              <p className="mt-1 text-gray-500 text-sm flex items-center gap-1.5">
+              <p className="mt-1 text-gray-500 text-xs sm:text-sm flex items-center gap-1.5">
                 <File size={14} className="text-gray-400" />
                 <span>{material.file_type || 'application/pdf'}</span>
               </p>
             </div>
 
             {/* File metadata */}
-            <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-gray-500">
+            <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-gray-500">
               {material.uploaded_at && (
                 <div className="flex items-center gap-1.5">
                   <Calendar size={14} className="text-gray-400" />
@@ -127,12 +126,12 @@ const MaterialCard = ({
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 ml-2">
+          <div className="flex flex-row sm:flex-col items-end sm:items-center gap-2 ml-0 sm:ml-2 mt-3 sm:mt-0 w-full sm:w-auto justify-end">
             <button
               onClick={() => {
                 setShowQuizForm(true)
               }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors text-sm font-medium"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-1.5 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors text-xs sm:text-sm font-medium"
             >
               <Plus size={16} className="flex-shrink-0" />
               <span>New Quiz</span>
@@ -163,13 +162,13 @@ const MaterialCard = ({
         onClick={() => {
           handleViewPDF(material.file_name!, material.id!)
         }}
-        className="border-t border-gray-100 p-3 bg-gray-50 flex justify-end cursor-pointer"
+        className="border-t border-gray-100 p-2 sm:p-3 bg-gray-50 flex justify-end cursor-pointer"
       >
         <div
-          className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1.5 px-3 py-1 hover:bg-blue-50 rounded-lg transition-colors"
+          className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm font-medium flex items-center gap-1.5 px-2 sm:px-3 py-1 hover:bg-blue-50 rounded-lg transition-colors"
         >
           <FileText size={14} />
-          <span className="text-sm">{isOpeningPDF ? 'Opening...' : 'View PDF'}</span>
+          <span className="text-xs sm:text-sm">{isOpeningPDF ? 'Opening...' : 'View PDF'}</span>
         </div>
       </div>
 
@@ -185,12 +184,10 @@ const MaterialCard = ({
       <QuizForm 
         isOpen={showQuizForm}
         onClose={() => setShowQuizForm(false)}
-        materialQuiz={
-          {
-            materialId: material.id!,
-            file_name: material.file_name!
-          }
-        }
+        materialQuiz={{
+          materialId: material.id!,
+          file_name: material.file_name!
+        }}
       />
     </div>
   )

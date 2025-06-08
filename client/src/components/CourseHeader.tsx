@@ -19,7 +19,14 @@ const CourseHeader = ({
             <p className="mt-1.5 text-gray-600">Manage your PDF documents and generate quizzes</p>
           </div>
         </div>
-        
+      {/* File upload tips */}
+      <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-700 flex items-start gap-3">
+        <FileText size={20} className="flex-shrink-0 text-blue-500 mt-0.5" />
+        <div>
+          <p className="font-medium">Upload PDF documents to get started</p>
+          <p className="mt-1 text-blue-600">Supported file types: PDF. Maximum file size: 10MB.</p>
+        </div>
+      </div>
         <div className="flex items-center gap-3">
           {isUploading && (
             <div className="px-3 py-1.5 bg-primary-50 text-primary-600 rounded-lg flex items-center gap-2 animate-pulse">
@@ -47,19 +54,11 @@ const CourseHeader = ({
             />
           </label>
         </div>
+
       </div>
       
       {/* Divider */}
       <div className="h-px bg-gray-100 my-6"></div>
-      
-      {/* File upload tips */}
-      <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-700 flex items-start gap-3">
-        <FileText size={20} className="flex-shrink-0 text-blue-500 mt-0.5" />
-        <div>
-          <p className="font-medium">Upload PDF documents to get started</p>
-          <p className="mt-1 text-blue-600">Supported file types: PDF. Maximum file size: 10MB.</p>
-        </div>
-      </div>
     </div>
   );
 };

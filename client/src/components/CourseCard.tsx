@@ -44,7 +44,7 @@ const CourseCard = ({
         itemType="Course"
       />
       {/* Card Header */}
-      <div className="p-5">
+      <div className="p-4">
         <div className="flex items-start gap-4">
           <div className="p-3 bg-primary-50 text-primary-600 rounded-lg group-hover:bg-primary-100 transition-colors">
             <BookOpen size={22} />
@@ -52,23 +52,22 @@ const CourseCard = ({
           <div className="flex-1">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 group-hover:text-primary-600 transition-colors">
+                <h3 className="text-base font-semibold text-gray-800 group-hover:text-primary-600 transition-colors md:text-lg">
                   {course_code}
                 </h3>
-                <p className="text-gray-600 mt-1 font-medium">
+                <p className="text-gray-600 mt-1 font-medium md:text-base text-sm">
                   {course_name}
                 </p>
               </div>
               {/* Quiz count badge */}
-              <div className="ml-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
+              <div className="w-fit text-center">
+                <span className="inline-flex md:w-max items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
                   {number_of_quizzes && number_of_quizzes > 0 
                     ? `${number_of_quizzes} ${number_of_quizzes === 1 ? 'Quiz' : 'Quizzes'}` 
                     : 'No Quizzes'}
                 </span>
               </div>
             </div>
-            
             {/* Description */}
             <p className="mt-3 text-sm text-gray-500 line-clamp-2">
               {course_description}
