@@ -28,7 +28,7 @@
 - [x] Edit quiz(?)
 - [x] Fix cors preflight taking too long!!
 ### FEATURES
-- [ ] Setup logout confirmation
+- [x] Setup logout confirmation
 - [ ] Add user profile edit page
 - [ ] Implement user profile forms
 - [ ] Fix user profile page
