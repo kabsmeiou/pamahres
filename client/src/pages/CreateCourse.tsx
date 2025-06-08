@@ -1,11 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCoursesApi } from '../services/courses';
 import { Book, ArrowLeft } from 'react-feather';
-  
+import Toast from '../components/Toast';
+
+type ToastProp = {
+  message: string;
+  type?: 'success' | 'error' | 'info' | 'warning';
+  title?: string;
+};
+
 const CreateCourse = () => {
   const { createCourse } = useCoursesApi();
+
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
+  // State for toast notifications
+  const [toast, setToast] = useState<ToastProp | null>(null);
+  const [showToast, setShowToast] = useState(false);
+
   const [formData, setFormData] = useState({
     course_code: '',
     course_name: '',
@@ -13,18 +27,58 @@ const CreateCourse = () => {
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
+    setIsLoading(true);
     e.preventDefault();
     try {
       await createCourse(formData);
-      // Navigate to the new course (using a mock ID for now)
+      // Navigate to dashboard after successful creation
       navigate('/');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating course:', error);
+      // Show error toast
+      setToast({
+        message: error.response.data.course_code[0] || 'Failed to create course.',
+        type: 'error',
+        title: 'Failed to create course.'
+      });
+      setShowToast(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const [loadingText, setLoadingText] = useState('Creating course.');
+  // Update loading text every second
+  useEffect(() => {
+    if (!isLoading) return;
+    const interval = setInterval(() => {
+      setLoadingText(prev => {
+        if (prev.endsWith('...')) return 'Creating course.';
+        return prev + '.';
+      });
+    }, 300);
+    
+    return () => clearInterval(interval);
+  }, [isLoading]);
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+      {/* Toast Notification */}
+      {showToast && toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          title={toast.title}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+      {isLoading && (
+        <div className="fixed inset-0 bg-gray-100 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <p className="text-gray-700">{loadingText}</p>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
