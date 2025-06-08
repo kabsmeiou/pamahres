@@ -14,7 +14,7 @@ class LLMConversationSerializer(serializers.Serializer):
 
   def validate_new_message(self, value):
     if len(value) > 1000:
-      raise serializers.ValidationError("New message cannot be more than 1000 characters.")
+      raise serializers.ValidationError("Message cannot be more than 1000 characters.")
     return value
 
 class CourseSerializer(serializers.ModelSerializer):
