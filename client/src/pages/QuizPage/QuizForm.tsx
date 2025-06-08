@@ -40,7 +40,9 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
   const [selectedMaterialId, setSelectedMaterialId] = useState<string>("");
   const [createQuizLoading, setCreateQuizLoading] = useState(false);
 
-
+  // if materialQuiz is provided, set initial state based on it
+  // this is used when creating a quiz directly from a material
+  // it will pre-fill the quiz title and material list
   useEffect(() => {
     if (materialQuiz) {
       setSelectedMaterialId(materialQuiz.materialId.toString());
@@ -48,7 +50,7 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
         ...prev,
         quiz_title: `Quiz for ${materialQuiz.file_name}`,
         material_list: [materialQuiz.materialId],
-        number_of_questions: 0 // reset to 0 for manual question entry
+        number_of_questions: 10 // reset to 10 as default
       }));
     }
   }, [materialQuiz]);
