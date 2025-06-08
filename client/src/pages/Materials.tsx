@@ -98,41 +98,36 @@ const Materials = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
         <CourseHeader isUploading={isUploading} handleFileUpload={handleFileUpload} />
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="p-6 border-b border-gray-100">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-800">Course Materials</h2>
-            {isUploading && (
-              <div className="flex items-center text-primary-600 text-sm font-medium">
-                <div className="h-4 w-4 border-2 border-primary-600 border-t-transparent rounded-full animate-spin mr-2"></div>
-                Uploading...
-              </div>
-            )}
-          </div>
-        </div>
-        
-        {materialsLoading ? (
-          <div className="p-4">
-            <MaterialListSkeleton count={1} />
-          </div>
-        ) : materials && materials.length === 0 ? (
-          <div className="py-16">
-            <EmptyFallback />
-          </div>
-        ) : (
-          <div className="p-4">
+        <div className="mt-6">
+          {materialsLoading ? (
+            <div className="p-4">
+              <MaterialListSkeleton count={1} />
+            </div>
+          ) : materials && materials.length === 0 ? (
+            <div className="py-6">
+              <EmptyFallback />
+            </div>
+          ) : (
             <MaterialList 
               materials={materials ?? []} 
               pdfFiles={pdfFiles}
               setPdfFiles={setPdfFiles}
             />
+          )}
+        </div>
+
+      </div>
+      {/* <div className="flex items-center justify-between">
+        {isUploading && (
+          <div className="flex items-center text-primary-600 text-sm font-medium">
+            <div className="h-4 w-4 border-2 border-primary-600 border-t-transparent rounded-full animate-spin mr-2"></div>
+            Uploading...
           </div>
         )}
-      </div>
+      </div> */}
+
     </div>
   )
 }

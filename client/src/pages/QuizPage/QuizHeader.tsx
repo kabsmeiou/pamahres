@@ -1,10 +1,9 @@
 import { Plus, FileText } from "react-feather";
 import { useState } from "react";
 import QuizForm from "./QuizForm";
-import { useParams } from "react-router-dom";
+
 
 const QuizHeader = () => {
-  const { courseId } = useParams<{ courseId: string }>();
   const [showQuizForm, setShowQuizForm] = useState(false);
 
   // TODO: add a loading state for the quiz form if the quiz is still being generated

@@ -58,9 +58,9 @@ const CourseLayout = () => {
 
   return (
     <MaterialsContext.Provider value={{ materials, setMaterials, materialsLoading }}>
-    <div className="h-[calc(100vh-9rem)] flex flex-col lg:flex-row gap-6">
-      {/* Course Navigation Sidebar */}
-      <div className="lg:w-80 bg-white rounded-2xl shadow-soft overflow-hidden flex flex-col sticky">
+    <div className="h-max flex flex-col lg:flex-row gap-6">
+      <div className="lg:w-80 h-fit bg-white rounded-2xl shadow-soft overflow-hidden flex flex-col">
+        {/* Course Navigation Sidebar */}
         <div className="p-6 border-b border-surface-100">
           {course ? (
                 <>
@@ -76,16 +76,16 @@ const CourseLayout = () => {
               ) : (
                 <CourseDetailSkeleton />
               )}
-          </div>
+        </div>
 
         {/* Navigation Links */}
-        <nav className="flex-1 p-4">
-          <div className="space-y-2">
+        <nav className="flex-1 sm:p-4 p-2">
+          <div className="sm:flex-col flex sm:text-base text-sm">
             <Link
               to={`/courses/${courseId}`}
               state={{ course }}
               className={`
-                flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                flex items-center sm:gap-3 gap-2 px-4 py-3 rounded-xl transition-all duration-200
                 ${isActive(`/courses/${courseId}`) 
                   ? 'bg-primary-50 text-primary-600 shadow-sm' 
                   : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900'
@@ -100,7 +100,7 @@ const CourseLayout = () => {
               to={`/courses/${courseId}/materials`}
               state={{ course }}
               className={`
-                flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                flex items-center sm:gap-3 gap-2 px-4 py-3 rounded-xl transition-all duration-200
                 ${isActive(`/courses/${courseId}/materials`) 
                   ? 'bg-primary-50 text-primary-600 shadow-sm' 
                   : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900'
@@ -117,7 +117,7 @@ const CourseLayout = () => {
               to={`/courses/${courseId}/quizzes`}
               state={{ course }}
               className={`
-                flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
+                flex items-center sm:gap-3 gap-2 px-4 py-3 rounded-xl transition-all duration-200
                 ${isActive(`/courses/${courseId}/quizzes`) 
                   ? 'bg-primary-50 text-primary-600 shadow-sm' 
                   : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900'
@@ -130,9 +130,8 @@ const CourseLayout = () => {
               </div>
             </Link>
           </div>
-        </nav>
+        </nav>    
       </div>
-
       {/* Main Content Area */}
       <div className="flex-1">
         <Outlet />
