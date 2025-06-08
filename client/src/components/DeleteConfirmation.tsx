@@ -21,7 +21,6 @@ const DeleteConfirmation = ({
     itemType 
 }: DeleteConfirmationProps) => {
     if (!showDeleteConfirm) return null;
-    
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 px-4 transition-opacity duration-200 backdrop-blur-sm">
             <div 

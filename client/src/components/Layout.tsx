@@ -51,7 +51,7 @@ const Layout = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Top Bar */}
-        <header className="h-16 bg-white border-b border-surface-200 flex items-center px-4 sticky top-0 z-30 shadow-sm">
+        <header className="h-16 bg-white border-b border-surface-200 flex items-center px-4 sticky top-0 z-15 shadow-sm">
           <div className="flex items-center gap-4 w-full max-w-screen-2xl mx-auto">
             {isMobile && (
               <button
