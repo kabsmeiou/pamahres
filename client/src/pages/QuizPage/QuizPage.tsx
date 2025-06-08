@@ -140,7 +140,7 @@ const QuizPage = () => {
                     setShowConfirmation={setShowConfirmation}
                     headerMessage={headerMessage}
                     bodyMessage={bodyMessage}
-                    handleSubmitItem={handleSubmitQuiz}
+                    handleConfirmation={handleSubmitQuiz}
                     isSubmittingConfirmation={isSubmittingConfirmation}
                     setIsSubmittingConfirmation={setIsSubmittingConfirmation}
                 />

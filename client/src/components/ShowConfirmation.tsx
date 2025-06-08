@@ -1,7 +1,18 @@
 import { Link } from "react-router-dom"
 import { X } from "react-feather";
 
-const ShowConfirmation = ({ courseId, action, setShowConfirmation, headerMessage, bodyMessage, handleSubmitItem, isSubmittingConfirmation, setIsSubmittingConfirmation }: { courseId: number, action: string, setShowConfirmation: (show: boolean) => void, headerMessage: string, bodyMessage: string, handleSubmitItem: () => void, isSubmittingConfirmation: boolean, setIsSubmittingConfirmation: (isSubmitting: boolean) => void }) => {
+type ShowConfirmationProps = {
+    courseId?: number;
+    action: string;
+    setShowConfirmation: (show: boolean) => void;
+    headerMessage: string;
+    bodyMessage: string;
+    handleConfirmation: () => void;
+    isSubmittingConfirmation: boolean;
+    setIsSubmittingConfirmation: (isSubmitting: boolean) => void;
+};
+
+const ShowConfirmation = ({ courseId, action, setShowConfirmation, headerMessage, bodyMessage, handleConfirmation, isSubmittingConfirmation, setIsSubmittingConfirmation }: ShowConfirmationProps) => {
 
     const handleClose = () => {
         setShowConfirmation(false);
@@ -37,7 +48,7 @@ const ShowConfirmation = ({ courseId, action, setShowConfirmation, headerMessage
                 </button>
                 {isSubmittingConfirmation ? (
                     <button
-                    onClick={handleSubmitItem}
+                    onClick={handleConfirmation}
                     className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition"
                     >
                         Yes, {action}
