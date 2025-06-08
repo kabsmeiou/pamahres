@@ -1,10 +1,7 @@
 import { Plus, FileText } from "react-feather";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import QuizForm from "./QuizForm";
-import usePolling from "../../hooks/usePolling";
-import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { useQuizApi } from "../../services/quizzes";
 
 const QuizHeader = () => {
   const { courseId } = useParams<{ courseId: string }>();

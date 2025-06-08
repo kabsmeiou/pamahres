@@ -12,7 +12,6 @@ import { useMaterialsApi } from "../services/courses"
 
 import { useDeleteItem } from "../hooks/useDeleteItem"
 import DeleteConfirmation from "./DeleteConfirmation"
-import Error from "./Error"
 
 import QuizForm from "../pages/QuizPage/QuizForm"
 

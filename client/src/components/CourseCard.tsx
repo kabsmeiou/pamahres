@@ -4,7 +4,6 @@ import { Course } from "../types/course";
 import DeleteConfirmation from "./DeleteConfirmation";
 import { useState } from "react";
 import { useCoursesApi } from "../services/courses";
-import { useQuery } from "@tanstack/react-query";
 import { useDeleteItem } from "../hooks/useDeleteItem";
 
 const CourseCard = ({ 

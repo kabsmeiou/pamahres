@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Outlet, useLocation, Link } from "react-router-dom"
+import { Outlet, Link } from "react-router-dom"
 import Sidebar from "./Sidebar"
-import { Menu, Bell, User, Search } from "react-feather"
+import { Menu, User, Search } from "react-feather"
 import { NAME_PLACEHOLDER } from "./dummies"
 
 const Layout = () => {

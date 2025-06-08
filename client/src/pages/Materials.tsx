@@ -1,10 +1,9 @@
 "use client"
 
-import React, { useState, useContext, useEffect } from "react" // Added useState import
+import React, { useState, useContext } from "react" // Added useState import
 import { useMaterialsApi } from "../services/courses"
 import { useParams } from "react-router-dom"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { AlertCircle } from "react-feather"
+import { useQueryClient } from "@tanstack/react-query"
 
 import supabase from "../lib/supabase"
 
@@ -22,7 +21,7 @@ const Materials = () => {
   const { courseId } = useParams<{ courseId: string }>()
   const numericCourseId = Number.parseInt(courseId ?? '', 10)
 
-  const { getMaterials, createMaterial } = useMaterialsApi()
+  const { createMaterial } = useMaterialsApi()
 
   // a state dictionary for pdf files
   const [pdfFiles, setPdfFiles] = useState<Record<string, { file: File; url: string }>>({})

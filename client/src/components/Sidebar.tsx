@@ -11,7 +11,6 @@ import {
 } from "react-feather"
 import { useAuth } from "@clerk/clerk-react";
 import { useState } from "react";
-import ShowConfirmation from "./ShowConfirmation";
 import { Loader2 } from 'lucide-react';
 
 interface SidebarProps {
