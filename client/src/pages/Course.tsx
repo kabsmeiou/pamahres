@@ -17,11 +17,17 @@ const Course = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const { sendMessage } = useChatbot();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   };
 
   useEffect(() => {
@@ -90,7 +96,7 @@ const Course = () => {
           </div>
         </div>
         {/* Messages Area */}
-        <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col space-y-6 bg-gray-50">
+        <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col space-y-6 bg-gray-50" ref={messagesContainerRef} style={{overflowAnchor: 'none'}}>
           {/* <div className="flex items-center bg-transparent text-sm w-full justify-center p-2">
             <Clock size={14} className="mr-1" />
             <span className="text-red-500 font-bold">This is work in progress</span>
@@ -130,9 +136,9 @@ const Course = () => {
                       }
                     `}
                   >
-                  <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <ReactMarkdown>{msg.content.replace(/\\n/g, '\n')}</ReactMarkdown>
-                  </div>
+                    <div className="prose prose-sm dark:prose-invert w-fit">
+                      <ReactMarkdown>{msg.content.replace(/\\n/g, '\n')}</ReactMarkdown>
+                    </div>
                   </div>
                 </div>
               ))}

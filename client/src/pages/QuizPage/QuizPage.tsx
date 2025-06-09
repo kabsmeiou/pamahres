@@ -1,5 +1,5 @@
 import { useParams, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useQuizApi } from "../../services/quizzes";
 import TimeLimitBar from "../../components/TimeLimitBar";
@@ -92,6 +92,14 @@ const QuizPage = () => {
         }
     }
 
+    useEffect(() => {
+        // scroll down the screen if necessary (if questions get lengthy and exceeds height)
+        const quizContainer = document.querySelector('.quiz-item');
+        if (quizContainer) {
+            quizContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, [currentQuestionIndex, questions, hasStarted]);
+
     const handleNextQuestion = () => {
         setCurrentQuestionIndex(Math.min(questions!.length - 1, currentQuestionIndex + 1));
     }
@@ -146,11 +154,10 @@ const QuizPage = () => {
                 />
             )}
             {/* Sidebar or quiz meta info */}
-            <div className="lg:w-1/4 w-full bg-white rounded-xl shadow-md p-6 transition-all duration-300 h-fit sticky top-24">
+            <div className="lg:w-1/4 w-full bg-white rounded-xl shadow-md p-6 transition-all duration-300 h-fit">
                 <div className="flex flex-col gap-6">
                     <div className="text-center">
                         <h1 className="text-2xl font-bold text-gray-800">{quiz?.quiz_title ?? 'Quiz Title'}</h1>
-                    </div>
                     {showScore && (
                         <div className="text-center">
                             <p className="text-lg text-gray-600">
@@ -159,6 +166,7 @@ const QuizPage = () => {
                             <p className="text-sm text-gray-500 mt-1">Review your answers below</p>
                         </div>
                     )}
+                    </div>
                     {/* time limit as progress bar */}
                     <div className="w-full rounded-lg overflow-hidden bg-gray-100 p-4">
                         <TimeLimitBar 
@@ -185,7 +193,7 @@ const QuizPage = () => {
                 </div>
                 <div className="mt-6 mb-4">
                     <h2 className="text-sm font-semibold text-gray-600 mb-3">Question Navigator</h2>
-                    <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-4 gap-2 max-h-[calc(100vh-30rem)] overflow-y-auto pr-1">
+                    <div className="grid grid-cols-5 lg:grid-cols-4 gap-2 max-h-[calc(100vh-30rem)] overflow-y-auto pr-1">
                     {quiz?.current_number_of_questions && quiz?.current_number_of_questions > 0 && Array.isArray(questions) && questions.length > 0
                         ? questions!.map((question, index) => (
                             <button
@@ -242,7 +250,7 @@ const QuizPage = () => {
 
             {/* Question display */}
             {hasStarted ? (
-            <div className="lg:w-3/4 w-full rounded-xl p-6">
+            <div className="lg:w-3/4 w-full rounded-xl sm:p-6 p-2">
                 {isSubmitting ? (
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
@@ -267,10 +275,9 @@ const QuizPage = () => {
                             </span>
                         </div>
                         
-                        <div className="flex-grow mb-6">
+                        <div className="quiz-item flex-grow mb-6">
                             <QuizItem 
                                 question={questions[currentQuestionIndex]} 
-                                numberOfQuestionsAnswered={numberOfQuestionsAnswered} 
                                 setNumberOfQuestionsAnswered={setNumberOfQuestionsAnswered} 
                                 answers={answers}
                                 setAnswers={setAnswers}
