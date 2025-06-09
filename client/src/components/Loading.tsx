@@ -87,33 +87,36 @@ export const Loading = ({
       <div className="space-y-4">
         {Array(count).fill(0).map((_, index) => (
           <div key={index} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="p-5">
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div className="p-4 sm:p-5">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
                 <div className="flex-grow space-y-3">
-                  <div className="flex items-start gap-3">
-                    <Skeleton variant="rounded" width={36} height={36} />
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <Skeleton variant="rounded" width={32} height={32} className="sm:w-[36px] sm:h-[36px]" />
                     <div>
-                      <Skeleton variant="text" width={200} height={28} />
-                      <div className="flex flex-wrap items-center gap-4 mt-2">
-                        <Skeleton variant="text" width={100} height={20} />
-                        <Skeleton variant="text" width={120} height={20} />
+                      <Skeleton variant="text" width={140} height={22} className="sm:w-[200px] sm:h-[28px]" />
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2">
+                        <Skeleton variant="text" width={70} height={16} className="sm:w-[100px] sm:h-[20px]" />
+                        <Skeleton variant="text" width={90} height={16} className="sm:w-[120px] sm:h-[20px]" />
                       </div>
                     </div>
                   </div>
-                  
-                  <Skeleton variant="text" width={150} height={16} style={{ marginTop: 12 }} />
+                  <Skeleton variant="text" width={100} height={12} className="sm:w-[150px] sm:h-[16px] mt-3" />
                 </div>
-                
-                <div className="flex flex-col gap-4 items-end">
-                  <Skeleton variant="text" width={70} height={24} />
+                <div className="flex flex-col gap-3 sm:gap-4 items-end w-full sm:w-auto mt-3 sm:mt-0">
+                  {/* Score display */}
                   <div className="flex items-center gap-2">
-                    <Skeleton variant="rounded" width={100} height={36} />
-                    <Skeleton variant="circular" width={36} height={36} />
+                    <Skeleton variant="text" width={40} height={18} className="sm:w-[70px] sm:h-[24px]" />
+                    <Skeleton variant="circular" width={28} height={28} className="sm:w-[32px] sm:h-[32px]" />
+                  </div>
+                  {/* Action buttons */}
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Skeleton variant="rounded" width={60} height={28} className="sm:w-[100px] sm:h-[36px]" />
+                    <Skeleton variant="rounded" width={60} height={28} className="sm:w-[100px] sm:h-[36px]" />
+                    <Skeleton variant="circular" width={28} height={28} className="sm:w-[36px] sm:h-[36px]" />
                   </div>
                 </div>
               </div>
             </div>
-            
             <Skeleton variant="text" width="100%" height={6} />
           </div>
         ))}

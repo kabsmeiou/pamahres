@@ -51,7 +51,7 @@ const Layout = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Top Bar */}
-        <header className="h-16 bg-white border-b border-surface-200 flex items-center px-4 sticky top-0 z-15 shadow-sm">
+        <header className="h-16 bg-white border-b border-surface-200 flex items-center px-4 sticky top-0 z-40 shadow-sm">
           <div className="flex items-center gap-4 w-full max-w-screen-2xl mx-auto">
             {isMobile && (
               <button
@@ -62,7 +62,7 @@ const Layout = () => {
               </button>
             )}
 
-            {/* Search Bar */}
+            {/* Search Bar
             <div className="flex-1 max-w-2xl hidden md:block">
               <div className="relative">
                 <input
@@ -72,7 +72,7 @@ const Layout = () => {
                 />
                 <Search className="absolute left-3 top-2.5 text-surface-400" size={20} />
               </div>
-            </div>
+            </div> */}
 
             <div className="flex items-center gap-2 ml-auto">
               <Link 
