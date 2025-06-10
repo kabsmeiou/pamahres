@@ -7,7 +7,7 @@ import { Quiz, Question, QuizItemDetails } from "../../types/quiz";
 import QuizItem from "./QuizItem";
 import Skeleton from "@mui/material/Skeleton";
 import { useQueryClient } from "@tanstack/react-query";
-import ShowConfirmation from "../../components/ShowConfirmation";
+import ActionConfirmation from "../../components/ActionConfirmation";
 
 const QuizPage = () => {
     const queryClient = useQueryClient();
@@ -92,6 +92,10 @@ const QuizPage = () => {
         }
     }
 
+    const handleConfirmGoBack = () => {
+        window.history.back();
+    }
+
     useEffect(() => {
         // scroll down the screen if necessary (if questions get lengthy and exceeds height)
         const quizContainer = document.querySelector('.quiz-item');
@@ -109,14 +113,12 @@ const QuizPage = () => {
     }
 
     const handleGoBack = () => {
-        if (!hasSubmitted) {
-            setShowConfirmation(true);
-            setHeaderMessage("Are you sure you want to go back?");
-            setBodyMessage("If you go back, you will lose your progress and the quiz will be marked as incomplete.");
-        } else {
-            // if the quiz has been submitted, go back to the quiz list without confirmation
-            window.history.back();
-        }           
+        if (hasSubmitted) {
+            handleConfirmGoBack();
+        }
+        setShowConfirmation(true);
+        setHeaderMessage("Are you sure you want to go back?");
+        setBodyMessage("If you go back, you will lose your progress and the quiz will be marked as incomplete.");         
     }
 
     const handleSubmit = () => {
@@ -138,19 +140,25 @@ const QuizPage = () => {
         </div>
     }
 
+    const handleAction = () => {
+        if (isSubmittingConfirmation) {
+            return handleSubmitQuiz();
+        } else {
+            return handleConfirmGoBack();
+        }
+    }
+
     return (
         <div className="min-h-[calc(100vh-9rem)] flex flex-col lg:flex-row gap-6 p-4 bg-gray-50">
             {/* pop up confirmation for going back to the quiz list which is currently hidden and opens if back is pressed */}
             {showConfirmation && !hasSubmitted && (
-                <ShowConfirmation
-                    courseId={Number(courseId)}
-                    action="submit"
-                    setShowConfirmation={setShowConfirmation}
+                <ActionConfirmation
                     headerMessage={headerMessage}
                     bodyMessage={bodyMessage}
-                    handleConfirmation={handleSubmitQuiz}
-                    isSubmittingConfirmation={isSubmittingConfirmation}
-                    setIsSubmittingConfirmation={setIsSubmittingConfirmation}
+                    show={showConfirmation}
+                    onConfirm={handleAction}
+                    onClose={() => setShowConfirmation(false)}
+                    isLoading={false}
                 />
             )}
             {/* Sidebar or quiz meta info */}
