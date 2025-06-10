@@ -2,7 +2,7 @@ import { useApiClient } from "./api";
 import { Course } from "../types/course";  // Import the Course type
 import { Material } from "../types/course";
 import { useState } from "react";
-import callApi from "../hooks/callApi";
+import callApi from "../lib/apiHelper";
 
 export function useCoursesApi() {
     const api = useApiClient();

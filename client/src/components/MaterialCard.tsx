@@ -13,7 +13,7 @@ import { useMaterialsApi } from "../services/courses"
 import { useDeleteItem } from "../hooks/useDeleteItem"
 import DeleteConfirmation from "./DeleteConfirmation"
 
-import QuizForm from "../pages/QuizPage/QuizForm"
+import QuizForm from "../pages/QuizView/QuizForm"
 
 const MaterialCard = ({
   material,
