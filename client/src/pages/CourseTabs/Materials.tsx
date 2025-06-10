@@ -1,19 +1,19 @@
 "use client"
 
 import React, { useState, useContext } from "react" // Added useState import
-import { useMaterialsApi } from "../services/courses"
+import { useMaterialsApi } from "../../services/courses"
 import { useParams } from "react-router-dom"
 import { useQueryClient } from "@tanstack/react-query"
 
-import supabase from "../lib/supabase"
+import supabase from "../../lib/supabase"
 
-import CourseHeader from "../components/CourseHeader"
-import MaterialList from "../components/MaterialList"
-import EmptyFallback from "../components/EmptyFallback"
-import MaterialListSkeleton from "../components/MaterialListSkeleton"
+import CourseHeader from "../CourseView/CourseHeader"
+import MaterialList from "../../components/MaterialList"
+import EmptyFallback from "../../components/EmptyFallback"
+import MaterialListSkeleton from "../../components/MaterialListSkeleton"
 
-import type { Material } from "../types/course"
-import { MaterialsContext } from "../components/CourseLayout"
+import type { Material } from "../../types/course"
+import { MaterialsContext } from "../CourseView/CourseLayout"
 
 const Materials = () => {
   const queryClient = useQueryClient()

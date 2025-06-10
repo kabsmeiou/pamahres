@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { Outlet, Link } from "react-router-dom"
 import Sidebar from "./Sidebar"
 import { Menu, User, Search } from "react-feather"
-import { NAME_PLACEHOLDER } from "./dummies"
 
 const Layout = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -82,7 +81,7 @@ const Layout = () => {
                 <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center">
                   <User size={18} />
                 </div>
-                <span className="text-sm font-medium text-surface-900 hidden sm:block">{NAME_PLACEHOLDER}</span>
+                <span className="text-sm font-medium text-surface-900 hidden sm:block">USER</span>
               </Link>
             </div>
           </div>

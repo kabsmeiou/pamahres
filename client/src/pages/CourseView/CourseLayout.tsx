@@ -1,9 +1,9 @@
 import { useParams, Link, Outlet, useLocation } from 'react-router-dom';
 import { MessageSquare, Book, FileText, Clock } from 'react-feather';
-import CourseDetailSkeleton from './CourseDetailSkeleton';
-import { Material } from '../types/course';
+import CourseDetailSkeleton from '../../components/CourseDetailSkeleton';
+import { Material } from '../../types/course';
 import { useQuery } from '@tanstack/react-query';
-import { useCoursesApi, useMaterialsApi } from '../services/courses';
+import { useCoursesApi, useMaterialsApi } from '../../services/courses';
 import { useState, createContext, useEffect } from 'react';
 
 type MaterialsContextType = {

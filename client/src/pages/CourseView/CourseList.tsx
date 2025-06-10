@@ -1,4 +1,4 @@
-import { Course } from '../types/course';
+import { Course } from '../../types/course';
 import CourseCard from './CourseCard';
 
 function CourseList({ courses }: { courses: Course[] }) {
