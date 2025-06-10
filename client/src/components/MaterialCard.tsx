@@ -11,7 +11,7 @@ import supabase from "../lib/supabase"
 import { useMaterialsApi } from "../services/courses"
 
 import { useDeleteItem } from "../hooks/useDeleteItem"
-import DeleteConfirmation from "./DeleteConfirmation"
+import ActionConfirmation from "./ActionConfirmation"
 
 import QuizForm from "../pages/QuizView/QuizForm"
 
@@ -171,14 +171,19 @@ const MaterialCard = ({
           <span className="text-xs sm:text-sm">{isOpeningPDF ? 'Opening...' : 'View PDF'}</span>
         </div>
       </div>
-
-      <DeleteConfirmation
-        showDeleteConfirm={showDeleteConfirm}
-        setShowDeleteConfirm={setShowDeleteConfirm}
-        isDeleting={isDeleting}
-        handleDelete={handleDeleteConfirm}
+      
+      <ActionConfirmation 
+        show={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteConfirm}
+        isLoading={isDeleting}
+        headerMessage="Delete Material"
+        bodyMessage="Are you sure you want to delete this material?"
         itemName={material.file_name}
         itemType="Material"
+        action="delete"
+        confirmButtonText="Delete"
+        confirmButtonColor="red"
       />
 
       <QuizForm 

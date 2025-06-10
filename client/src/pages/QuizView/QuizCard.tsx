@@ -7,7 +7,7 @@ import { useQuizApi } from "../../services/quizzes";
 import { useDeleteItem } from "../../hooks/useDeleteItem";
 
 import Error from "../../components/Error";
-import DeleteConfirmation from "../../components/DeleteConfirmation";
+import ActionConfirmation from "../../components/ActionConfirmation";
 
 const QuizCard = ({quiz}: {quiz: Quiz}) => {
   const { deleteQuiz } = useQuizApi();
@@ -166,13 +166,16 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
         </div>
       )}
       
-      <DeleteConfirmation
-        showDeleteConfirm={showDeleteConfirm}
-        setShowDeleteConfirm={setShowDeleteConfirm}
-        isDeleting={isDeleting}
-        handleDelete={handleDeleteConfirm}
+      <ActionConfirmation
+        show={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteConfirm}
+        isLoading={isDeleting}
+        headerMessage="Delete Quiz"
+        bodyMessage="Are you sure you want to delete this quiz?"
         itemName={quiz.quiz_title}
         itemType="Quiz"
+        action="delete"
       />
     </div>
   );

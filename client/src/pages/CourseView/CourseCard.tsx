@@ -1,7 +1,7 @@
 import { BookOpen, ArrowRight, Delete } from "react-feather";
 import { Link } from "react-router-dom";
 import { Course } from "../../types/course";
-import DeleteConfirmation from "../../components/DeleteConfirmation";
+import ActionConfirmation from "../../components/ActionConfirmation";
 import { useState } from "react";
 import { useCoursesApi } from "../../services/courses";
 import { useDeleteItem } from "../../hooks/useDeleteItem";
@@ -35,14 +35,18 @@ const CourseCard = ({
       className="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col h-full overflow-hidden"
     >
       {/* Delete Confirmation Modal */}
-      <DeleteConfirmation 
-        isDeleting={isDeleting}
-        showDeleteConfirm={showDeleteConfirm}
-        setShowDeleteConfirm={setShowDeleteConfirm}
-        handleDelete={handleDeleteConfirm}
-        itemName={course_name}
-        itemType="Course"
+      <ActionConfirmation
+        show={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteConfirm}
+        isLoading={isDeleting}
+        headerMessage="Delete Course"
+        bodyMessage="Are you sure you want to delete this course?"
+        action="delete"
+        confirmButtonText="Delete"
+        confirmButtonColor="red"
       />
+
       {/* Card Header */}
       <div className="p-4">
         <div className="flex items-start gap-4">
