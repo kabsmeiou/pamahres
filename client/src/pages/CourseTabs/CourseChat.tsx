@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Paperclip, MessageCircle, Clock } from 'react-feather';
-import { useChatbot } from '../services/chatbot';
+import { useChatbot } from '../../services/chatbot';
 import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 
@@ -60,14 +60,12 @@ const Course = () => {
       })),
       new_message: message,
     }
+
     console.log("Sending message to server:", jsonMessage);
-    const response = await sendMessage(jsonMessage, courseIdNumber);
-    
+    const response: any = await sendMessage(jsonMessage, courseIdNumber);
     console.log("Response from server:", response);
     const responseText = response.reply || response.warning;
-
-    console.log(response);
-
+    
     const aiResponse: Message = {
       id: (Date.now() + 1).toString(),
       content: responseText,

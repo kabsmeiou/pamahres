@@ -2,15 +2,15 @@ import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import Dashboard from './pages/Dashboard'
-import Course from './pages/Course'
+import CourseChat from './pages/CourseTabs/CourseChat'
 import CreateCourse from './pages/CreateCourse'
-import Materials from './pages/Materials'
-import Quizzes from './pages/Quizzes'
+import Materials from './pages/CourseTabs/Materials'
+import Quizzes from './pages/CourseTabs/Quizzes'
 import Settings from './pages/Settings'
 import Layout from './components/Layout'
-import CourseLayout from './components/CourseLayout'
+import CourseLayout from './pages/CourseView/CourseLayout'
 import NotFound from './pages/NotFound'
-import QuizPage from './pages/QuizPage/QuizPage'
+import QuizPage from './pages/QuizView/QuizPage'
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
             <Route path="settings" element={<Settings />} />
 
             <Route path="courses/:courseId" element={<CourseLayout />}>
-              <Route index element={<Course />} />
+              <Route index element={<CourseChat />} />
               <Route path="materials" element={<Materials />} />
               <Route path="quizzes" element={<Quizzes />} />
             </Route>

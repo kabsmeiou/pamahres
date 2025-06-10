@@ -5,7 +5,7 @@ import { useQuizApi } from "../../services/quizzes";
 import { useQueryClient } from "@tanstack/react-query";
 import { Material } from "../../types/course";
 import { Quiz } from "../../types/quiz";
-import { MaterialsContext } from "../../components/CourseLayout";
+import { MaterialsContext } from "../CourseView/CourseLayout";
 
 interface MaterialQuiz {
   materialId: number;

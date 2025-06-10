@@ -1,10 +1,10 @@
 import { BookOpen, ArrowRight, Delete } from "react-feather";
 import { Link } from "react-router-dom";
-import { Course } from "../types/course";
-import DeleteConfirmation from "./DeleteConfirmation";
+import { Course } from "../../types/course";
+import DeleteConfirmation from "../../components/DeleteConfirmation";
 import { useState } from "react";
-import { useCoursesApi } from "../services/courses";
-import { useDeleteItem } from "../hooks/useDeleteItem";
+import { useCoursesApi } from "../../services/courses";
+import { useDeleteItem } from "../../hooks/useDeleteItem";
 
 const CourseCard = ({ 
   id, 

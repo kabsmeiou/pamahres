@@ -6,7 +6,7 @@ import { useState } from "react";
 // DO NOT REPEAT YOURSELF ok
 // maybe useMemo for the api calls?
 
-import callApi from "../hooks/callApi";
+import callApi from "../lib/apiHelper";
 
 export function useQuizApi() {
     const api = useApiClient();
