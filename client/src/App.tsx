@@ -8,7 +8,7 @@ import Materials from './pages/CourseTabs/Materials'
 import Quizzes from './pages/CourseTabs/Quizzes'
 import Settings from './pages/Settings'
 import Layout from './components/Layout'
-import CourseLayout from './pages/CourseView/CourseLayout'
+import CourseLayout from './components/CourseLayout'
 import NotFound from './pages/NotFound'
 import QuizPage from './pages/QuizView/QuizPage'
 
