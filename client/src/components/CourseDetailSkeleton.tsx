@@ -10,7 +10,7 @@ type CourseDetailSkeletonProps = {
  */
 const CourseDetailSkeleton = ({ className = '' }: CourseDetailSkeletonProps) => {
   return (
-    <div className={`p-6 border-b border-surface-100 ${className}`}>
+    <div className={`p-6 border-b border-surface-100 dark:border-surface-700 ${className}`}>
       <TextSkeleton width={150} height={32} />
       <TextSkeleton width={250} height={20} className="mt-2" />
       
@@ -23,4 +23,4 @@ const CourseDetailSkeleton = ({ className = '' }: CourseDetailSkeletonProps) => 
   );
 };
 
-export default CourseDetailSkeleton; 
+export default CourseDetailSkeleton;

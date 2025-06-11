@@ -39,19 +39,19 @@ const Error = ({ message, onClose, duration = 4000, title = "Error" }: ErrorProp
           : '-translate-y-4 opacity-0'
       }`}
     >
-      <div className="flex items-start gap-3 bg-white border border-red-200 shadow-lg rounded-lg p-4 max-w-md">
-        <div className="p-2 bg-red-50 rounded-full flex-shrink-0">
-          <AlertCircle className="text-red-600" size={20} />
+      <div className="flex items-start gap-3 bg-white dark:bg-surface-800 border border-red-200 dark:border-red-800/60 shadow-lg rounded-lg p-4 max-w-md">
+        <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-full flex-shrink-0">
+          <AlertCircle className="text-red-600 dark:text-red-400" size={20} />
         </div>
         
         <div className="flex-1 pr-6">
-          <h4 className="font-semibold text-gray-800">{title}</h4>
-          <p className="text-gray-600 text-sm mt-1">{message}</p>
+          <h4 className="font-semibold text-gray-800 dark:text-gray-100">{title}</h4>
+          <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">{message}</p>
         </div>
         
         <button 
           onClick={handleClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           aria-label="Close"
         >
           <X size={16} />

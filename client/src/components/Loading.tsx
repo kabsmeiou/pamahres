@@ -29,7 +29,7 @@ export const Loading = ({
     return (
       <div className="flex flex-col space-y-4 py-6 w-full">
         {message && (
-          <p className="text-gray-500 text-sm font-medium mb-2">{message}</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-2">{message}</p>
         )}
         
         {/* Render multiple skeletons based on count */}
@@ -52,7 +52,7 @@ export const Loading = ({
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array(count).fill(0).map((_, index) => (
-          <div key={index} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col h-full">
+          <div key={index} className="bg-white dark:bg-surface-800 rounded-xl border border-gray-100 dark:border-surface-700 shadow-sm overflow-hidden flex flex-col h-full">
             {/* Card Header */}
             <div className="p-5">
               <div className="flex items-start gap-4">
@@ -71,7 +71,7 @@ export const Loading = ({
             </div>
             
             {/* Card Footer */}
-            <div className="mt-auto px-5 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+            <div className="mt-auto px-5 py-4 border-t border-gray-100 dark:border-surface-700 bg-gray-50 dark:bg-surface-700/50 flex items-center justify-between">
               <Skeleton variant="text" width={120} height={20} />
               <Skeleton variant="text" width={100} height={20} />
             </div>
@@ -86,7 +86,7 @@ export const Loading = ({
     return (
       <div className="space-y-4">
         {Array(count).fill(0).map((_, index) => (
-          <div key={index} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div key={index} className="bg-white dark:bg-surface-800 rounded-xl border border-gray-100 dark:border-surface-700 shadow-sm overflow-hidden">
             <div className="p-4 sm:p-5">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
                 <div className="flex-grow space-y-3">
@@ -100,24 +100,15 @@ export const Loading = ({
                       </div>
                     </div>
                   </div>
-                  <Skeleton variant="text" width={100} height={12} className="sm:w-[150px] sm:h-[16px] mt-3" />
+                  <Skeleton variant="text" width="85%" height={16} className="sm:h-[20px]" />
+                  <Skeleton variant="text" width="70%" height={16} className="sm:h-[20px]" />
                 </div>
-                <div className="flex flex-col gap-3 sm:gap-4 items-end w-full sm:w-auto mt-3 sm:mt-0">
-                  {/* Score display */}
-                  <div className="flex items-center gap-2">
-                    <Skeleton variant="text" width={40} height={18} className="sm:w-[70px] sm:h-[24px]" />
-                    <Skeleton variant="circular" width={28} height={28} className="sm:w-[32px] sm:h-[32px]" />
-                  </div>
-                  {/* Action buttons */}
-                  <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <Skeleton variant="rounded" width={60} height={28} className="sm:w-[100px] sm:h-[36px]" />
-                    <Skeleton variant="rounded" width={60} height={28} className="sm:w-[100px] sm:h-[36px]" />
-                    <Skeleton variant="circular" width={28} height={28} className="sm:w-[36px] sm:h-[36px]" />
-                  </div>
+                <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 sm:gap-3 mt-2 sm:mt-0">
+                  <Skeleton variant="rounded" width={80} height={32} className="sm:w-[100px] sm:h-[36px]" />
+                  <Skeleton variant="rounded" width={80} height={32} className="sm:w-[100px] sm:h-[36px]" />
                 </div>
               </div>
             </div>
-            <Skeleton variant="text" width="100%" height={6} />
           </div>
         ))}
       </div>
@@ -129,7 +120,7 @@ export const Loading = ({
     return (
       <div className="space-y-4 w-full">
         {Array(count).fill(0).map((_, index) => (
-          <div key={index} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div key={index} className="bg-white dark:bg-surface-800 rounded-xl border border-gray-100 dark:border-surface-700 shadow-sm overflow-hidden">
             <div className="p-5">
               <div className="flex items-start gap-4">
                 {/* File icon placeholder */}
@@ -160,17 +151,13 @@ export const Loading = ({
                   </div>
                 </div>
                 
-                {/* Actions */}
-                <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 ml-2">
-                  <Skeleton variant="rounded" width={110} height={30} />
-                  <Skeleton variant="circular" width={32} height={32} />
+                {/* Action buttons */}
+                <div className="flex-shrink-0 flex gap-2">
+                  <Skeleton variant="rounded" width={36} height={36} />
+                  <Skeleton variant="rounded" width={36} height={36} />
+                  <Skeleton variant="rounded" width={36} height={36} />
                 </div>
               </div>
-            </div>
-            
-            {/* View PDF button section */}
-            <div className="border-t border-gray-100 p-3 bg-gray-50 flex justify-end">
-              <Skeleton variant="rounded" width={110} height={30} />
             </div>
           </div>
         ))}

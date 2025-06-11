@@ -112,13 +112,13 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl">
+    <div className="fixed inset-0 bg-black dark:bg-surface-900 bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-surface-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-surface-900">Create New Quiz</h3>
+          <h3 className="text-xl font-bold text-surface-900 dark:text-surface-100">Create New Quiz</h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-surface-100 rounded-lg text-surface-500"
+            className="p-2 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg text-surface-500 dark:text-surface-400"
           >
             <X size={20} />
           </button>
@@ -126,7 +126,7 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-surface-700 mb-1">
+            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
               Quiz Title
             </label>
             <input
@@ -134,13 +134,13 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
               required
               value={formData.quiz_title}
               onChange={(e) => setFormData(prev => ({ ...prev, quiz_title: e.target.value }))}
-              className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-surface-200 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400"
               placeholder="Enter quiz title"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-surface-700 mb-1">
+            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
               Time Limit (minutes)
             </label>
             <input
@@ -149,23 +149,23 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
               min="1"
               value={formData.time_limit_minutes}
               onChange={(e) => setFormData(prev => ({ ...prev, time_limit_minutes: parseInt(e.target.value) }))}
-              className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-surface-200 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-surface-700 mb-1">
+            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
               Select Material (Optional)
             </label>
             {materialsLoading ? (
-              <div className="w-full px-3 py-2 border border-surface-200 rounded-lg bg-gray-100 text-surface-500">
+              <div className="w-full px-3 py-2 border border-surface-200 dark:border-surface-600 rounded-lg bg-gray-100 dark:bg-surface-700 text-surface-500 dark:text-surface-400">
                 Loading materials...
               </div>
             ) : (
               <select
                 value={selectedMaterialId}
                 onChange={(e) => setSelectedMaterialId(e.target.value)}
-                className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-surface-200 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400"
               >
                 <option value="">No material (manual questions)</option>
                 {materials?.map((material: Material) => (
@@ -180,7 +180,7 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
 
           {selectedMaterialId && (
             <div>
-              <label className="block text-sm font-medium text-surface-700 mb-1">
+              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
                 Number of Questions
               </label>
               <input
@@ -190,9 +190,9 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
                 max="20"
                 value={formData.number_of_questions}
                 onChange={(e) => setFormData(prev => ({ ...prev, number_of_questions: parseInt(e.target.value) }))}
-                className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-surface-200 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400"
               />
-              <p className="mt-1 text-sm text-surface-500">Maximum 20 questions</p>
+              <p className="mt-1 text-sm text-surface-500 dark:text-surface-400">Maximum 20 questions</p>
             </div>
           )}
 
@@ -201,14 +201,14 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
               type="button"
               onClick={onClose}
               disabled={createQuizLoading}
-              className="px-4 py-2 rounded-xl border border-surface-200 text-surface-700 hover:bg-surface-50 transition-colors"
+              className="px-4 py-2 rounded-xl border border-surface-200 dark:border-surface-600 text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createQuizLoading}
-              className="px-4 py-2 rounded-xl bg-primary-500 text-white hover:bg-primary-600 transition-colors flex items-center gap-2"
+              className="px-4 py-2 rounded-xl bg-primary-500 dark:bg-primary-600 text-white hover:bg-primary-600 dark:hover:bg-primary-700 transition-colors flex items-center gap-2"
             >
               {createQuizLoading ? (
                 <>
@@ -226,4 +226,4 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
   );
 };
 
-export default QuizForm; 
+export default QuizForm;

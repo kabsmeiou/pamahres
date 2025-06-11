@@ -59,16 +59,16 @@ const CourseLayout = () => {
   return (
     <MaterialsContext.Provider value={{ materials, setMaterials, materialsLoading }}>
     <div className="h-max flex flex-col lg:flex-row gap-6">
-      <div className="lg:w-80 h-fit bg-white rounded-2xl shadow-soft overflow-hidden flex flex-col">
+      <div className="lg:w-80 h-fit bg-white dark:bg-surface-800 rounded-2xl shadow-soft overflow-hidden flex flex-col">
         {/* Course Navigation Sidebar */}
-        <div className="p-6 border-b border-surface-100">
+        <div className="p-6 border-b border-surface-100 dark:border-surface-700">
           {course ? (
                 <>
-                  <h1 className="text-xl font-bold text-surface-900">{course.course_code}</h1>
-                  <p className="text-surface-600 mt-2 text-sm">{course.course_description}</p>
+                  <h1 className="text-xl font-bold text-surface-900 dark:text-surface-100">{course.course_code}</h1>
+                  <p className="text-surface-600 mt-2 text-sm dark:text-surface-300">{course.course_description}</p>
 
                   {/* Last Accessed */}
-                  <div className="flex items-center gap-2 mt-4 text-sm text-surface-500">
+                  <div className="flex items-center gap-2 mt-4 text-sm text-surface-500 dark:text-surface-400">
                     <Clock size={14} />
                     <span>Last accessed {course.last_updated_at}</span>
                   </div>
@@ -87,8 +87,8 @@ const CourseLayout = () => {
               className={`
                 flex items-center sm:gap-3 gap-2 px-4 py-3 rounded-xl transition-all duration-200
                 ${isActive(`/courses/${courseId}`) 
-                  ? 'bg-primary-50 text-primary-600 shadow-sm' 
-                  : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900'
+                  ? 'bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-900 dark:text-primary-300 dark:shadow-none' 
+                  : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-700 dark:hover:text-surface-100'
                 }
               `}
             >
@@ -102,8 +102,8 @@ const CourseLayout = () => {
               className={`
                 flex items-center sm:gap-3 gap-2 px-4 py-3 rounded-xl transition-all duration-200
                 ${isActive(`/courses/${courseId}/materials`) 
-                  ? 'bg-primary-50 text-primary-600 shadow-sm' 
-                  : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900'
+                  ? 'bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-900 dark:text-primary-300 dark:shadow-none' 
+                  : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-700 dark:hover:text-surface-100'
                 }
               `}
             >
@@ -119,8 +119,8 @@ const CourseLayout = () => {
               className={`
                 flex items-center sm:gap-3 gap-2 px-4 py-3 rounded-xl transition-all duration-200
                 ${isActive(`/courses/${courseId}/quizzes`) 
-                  ? 'bg-primary-50 text-primary-600 shadow-sm' 
-                  : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900'
+                  ? 'bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-900 dark:text-primary-300 dark:shadow-none' 
+                  : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-700 dark:hover:text-surface-100'
                 }
               `}
             >

@@ -23,30 +23,30 @@ const Toast = ({
   // Configure styles based on toast type
   const styles = {
     success: {
-      borderColor: 'border-green-200',
-      bgColor: 'bg-green-50',
-      iconColor: 'text-green-600',
+      borderColor: 'border-green-200 dark:border-green-800/60',
+      bgColor: 'bg-green-50 dark:bg-green-900/30',
+      iconColor: 'text-green-600 dark:text-green-400',
       icon: CheckCircle,
       defaultTitle: 'Success'
     },
     error: {
-      borderColor: 'border-red-200',
-      bgColor: 'bg-red-50',
-      iconColor: 'text-red-600',
+      borderColor: 'border-red-200 dark:border-red-800/60',
+      bgColor: 'bg-red-50 dark:bg-red-900/30',
+      iconColor: 'text-red-600 dark:text-red-400',
       icon: AlertCircle,
       defaultTitle: 'Error'
     },
     info: {
-      borderColor: 'border-blue-200',
-      bgColor: 'bg-blue-50',
-      iconColor: 'text-blue-600',
+      borderColor: 'border-blue-200 dark:border-blue-800/60',
+      bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+      iconColor: 'text-blue-600 dark:text-blue-400',
       icon: Info,
       defaultTitle: 'Information'
     },
     warning: {
-      borderColor: 'border-yellow-200',
-      bgColor: 'bg-yellow-50',
-      iconColor: 'text-yellow-600',
+      borderColor: 'border-yellow-200 dark:border-yellow-800/60',
+      bgColor: 'bg-yellow-50 dark:bg-yellow-900/30',
+      iconColor: 'text-yellow-600 dark:text-yellow-400',
       icon: AlertTriangle,
       defaultTitle: 'Warning'
     }
@@ -85,19 +85,19 @@ const Toast = ({
       role="alert"
       aria-live="assertive"
     >
-      <div className={`flex items-start gap-3 bg-white border ${borderColor} shadow-lg rounded-lg p-4 max-w-md`}>
+      <div className={`flex items-start gap-3 bg-white dark:bg-surface-800 border ${borderColor} shadow-lg rounded-lg p-4 max-w-md`}>
         <div className={`p-2 ${bgColor} rounded-full flex-shrink-0`}>
           <Icon className={iconColor} size={20} />
         </div>
         
         <div className="flex-1 pr-6">
-          <h4 className="font-semibold text-gray-800">{toastTitle}</h4>
-          <p className="text-gray-600 text-sm mt-1">{message}</p>
+          <h4 className="font-semibold text-gray-800 dark:text-gray-100">{toastTitle}</h4>
+          <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">{message}</p>
         </div>
         
         <button 
           onClick={handleClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           aria-label="Close"
         >
           <X size={16} />
@@ -107,4 +107,4 @@ const Toast = ({
   );
 };
 
-export default Toast; 
+export default Toast;

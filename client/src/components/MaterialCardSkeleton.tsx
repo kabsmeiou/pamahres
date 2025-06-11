@@ -13,8 +13,8 @@ const MaterialCardSkeleton = ({ className = '' }: MaterialCardSkeletonProps) => 
       <div className="p-3 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
           {/* File icon placeholder */}
-          <div className="flex-shrink-0 p-2 sm:p-3 bg-blue-50 rounded-lg mb-2 sm:mb-0">
-            <RoundedSkeleton width={22} height={22} className="bg-blue-200" />
+          <div className="flex-shrink-0 p-2 sm:p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg mb-2 sm:mb-0">
+            <RoundedSkeleton width={22} height={22} className="bg-blue-200 dark:bg-blue-700" />
           </div>
           <div className="flex-1 min-w-0 w-full">
             {/* File name and type */}
@@ -39,14 +39,14 @@ const MaterialCardSkeleton = ({ className = '' }: MaterialCardSkeletonProps) => 
           </div>
           {/* Actions */}
           <div className="flex flex-row sm:flex-col items-end sm:items-center gap-2 ml-0 sm:ml-2 mt-3 sm:mt-0 w-full sm:w-auto justify-end">
-            <RoundedSkeleton width={70} height={24} className="sm:w-[110px] sm:h-[30px] bg-primary-50" />
+            <RoundedSkeleton width={70} height={24} className="sm:w-[110px] sm:h-[30px] bg-primary-50 dark:bg-primary-900/30" />
             <CircularSkeleton width={28} height={28} className="sm:w-[32px] sm:h-[32px]" />
           </div>
         </div>
       </div>
       {/* View PDF button section */}
-      <div className="border-t border-gray-100 p-2 sm:p-3 bg-gray-50 flex justify-end">
-        <RoundedSkeleton width={70} height={24} className="sm:w-[110px] sm:h-[30px] bg-blue-50" />
+      <div className="border-t border-gray-100 dark:border-surface-700 p-2 sm:p-3 bg-gray-50 dark:bg-surface-700/50 flex justify-end">
+        <RoundedSkeleton width={70} height={24} className="sm:w-[110px] sm:h-[30px] bg-blue-50 dark:bg-blue-900/30" />
       </div>
     </CardSkeleton>
   );

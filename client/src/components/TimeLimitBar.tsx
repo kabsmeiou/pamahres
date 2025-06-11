@@ -25,9 +25,9 @@ const TimeLimitBar = ({ totalMinutes = 10, isPaused = false }: { totalMinutes?: 
     
     // Determine color based on time left
     const getColorClass = () => {
-        if (percentage > 60) return "bg-green-500";
-        if (percentage > 30) return "bg-yellow-500";
-        return "bg-red-500";
+        if (percentage > 60) return "bg-green-500 dark:bg-green-600";
+        if (percentage > 30) return "bg-yellow-500 dark:bg-yellow-600";
+        return "bg-red-500 dark:bg-red-600";
     };
 
     // Format time for display
@@ -38,33 +38,33 @@ const TimeLimitBar = ({ totalMinutes = 10, isPaused = false }: { totalMinutes?: 
         <div className="flex items-center w-full gap-3">
             <div className="w-full">
                 {!showTime &&
-                    <p className={`flex text-gray-700 justify-between mb-1.5 text-sm font-medium transition-opacity duration-300`}>Good luck, have fun!</p>
+                    <p className={`flex text-gray-700 dark:text-gray-300 justify-between mb-1.5 text-sm font-medium transition-opacity duration-300`}>Good luck, have fun!</p>
                 }
                 {showTime && (
                     <div className={`flex justify-between mb-1.5 text-sm font-medium transition-opacity duration-300 ${!showTime ? 'opacity-0' : 'opacity-100'}`}>
                         <div className="flex items-center">
-                            <span className="text-gray-700">
-                                Time Remaining: <span className={percentage <= 30 ? "text-red-600 font-semibold" : "text-gray-900"}>
+                            <span className="text-gray-700 dark:text-gray-300">
+                                Time Remaining: <span className={percentage <= 30 ? "text-red-600 dark:text-red-400 font-semibold" : "text-gray-900 dark:text-gray-100"}>
                                     {formattedMinutes}:{formattedSeconds}
                                 </span>
                             </span>
                         </div>
                     </div>
                 )}
-                <div className="relative w-full h-3.5 bg-gray-300 rounded-full overflow-hidden">
+                <div className="relative w-full h-3.5 bg-gray-300 dark:bg-gray-600 rounded-full overflow-hidden">
                     <div
                         className={`h-full ${getColorClass()} rounded-full transition-all duration-1000 ease-linear`}
                         style={{ width: `${percentage}%` }}
                     />
                     {isPaused && (
-                        <div className="absolute inset-0 bg-gray-200 bg-opacity-50 flex items-center justify-center">
-                            <span className="text-xs font-medium text-gray-600">PAUSED</span>
+                        <div className="absolute inset-0 bg-gray-200 bg-opacity-50 dark:bg-gray-800 dark:bg-opacity-70 flex items-center justify-center">
+                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">PAUSED</span>
                         </div>
                     )}
                 </div>
             </div>
             <button
-                className="p-2 rounded-full text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200 flex-shrink-0"
+                className="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 transition-all duration-200 flex-shrink-0"
                 onClick={() => setShowTime(!showTime)}
                 aria-label={showTime ? "Hide time" : "Show time"}
                 title={showTime ? "Hide time" : "Show time"}
