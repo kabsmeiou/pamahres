@@ -13,7 +13,7 @@ import EmptyFallback from "../../components/EmptyFallback"
 import MaterialListSkeleton from "../../components/MaterialListSkeleton"
 
 import type { Material } from "../../types/course"
-import { MaterialsContext } from "../CourseView/CourseLayout"
+import { MaterialsContext } from "../../components/CourseLayout"
 
 const Materials = () => {
   const queryClient = useQueryClient()
