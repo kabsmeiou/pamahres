@@ -89,37 +89,37 @@ const MaterialCard = ({
 
   return (
     <div 
-      className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden w-full"
+      className="bg-white dark:bg-surface-800 rounded-xl border border-gray-100 dark:border-surface-700 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden w-full"
     >
       <div className="p-3 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
           {/* File icon */}
-          <div className="p-2 bg-blue-50 text-blue-600 rounded-lg flex-shrink-0 mb-2 sm:mb-0">
+          <div className="p-2 bg-blue-50 dark:bg-primary-900 text-blue-600 dark:text-blue-400 rounded-lg flex-shrink-0 mb-2 sm:mb-0">
             <FileText size={22} />
           </div>
 
           <div className="flex-1 min-w-0 w-full">
             {/* File name and type */}
             <div>
-              <h3 className="text-base sm:text-lg font-semibold text-gray-800 truncate group-hover:text-primary-600 transition-colors">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                 {material.file_name}
               </h3>
-              <p className="mt-1 text-gray-500 text-xs sm:text-sm flex items-center gap-1.5">
-                <File size={14} className="text-gray-400" />
+              <p className="mt-1 text-gray-500 dark:text-gray-300 text-xs sm:text-sm flex items-center gap-1.5">
+                <File size={14} className="text-gray-400 dark:text-gray-500" />
                 <span>{material.file_type || 'application/pdf'}</span>
               </p>
             </div>
 
             {/* File metadata */}
-            <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-gray-500">
+            <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-gray-500 dark:text-gray-400">
               {material.uploaded_at && (
                 <div className="flex items-center gap-1.5">
-                  <Calendar size={14} className="text-gray-400" />
+                  <Calendar size={14} className="text-gray-400 dark:text-gray-500" />
                   <span>{material.uploaded_at}</span>
                 </div>
               )}
               <div className="flex items-center gap-1.5">
-                <Download size={14} className="text-gray-400" />
+                <Download size={14} className="text-gray-400 dark:text-gray-500" />
                 <span>{formattedSize}</span>
               </div>
             </div>
@@ -131,7 +131,7 @@ const MaterialCard = ({
               onClick={() => {
                 setShowQuizForm(true)
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-1.5 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors text-xs sm:text-sm font-medium"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-1.5 bg-primary-50 dark:bg-primary-900 text-primary-700 dark:text-primary-400 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors text-xs sm:text-sm font-medium"
             >
               <Plus size={16} className="flex-shrink-0" />
               <span>New Quiz</span>
@@ -142,7 +142,7 @@ const MaterialCard = ({
               className={`p-2 rounded-lg transition-colors ${
                 isDeleting 
                   ? "text-gray-400 cursor-not-allowed" 
-                  : "text-gray-400 hover:text-red-500 hover:bg-red-50"
+                  : "text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900"
               }`}
               aria-label="Delete material"
               title="Delete material"
@@ -162,10 +162,10 @@ const MaterialCard = ({
         onClick={() => {
           handleViewPDF(material.file_name!, material.id!)
         }}
-        className="border-t border-gray-100 p-2 sm:p-3 bg-gray-50 flex justify-end cursor-pointer"
+        className="border-t border-gray-100 dark:border-surface-700 p-2 sm:p-3 bg-gray-50 dark:bg-surface-900 flex justify-end cursor-pointer"
       >
         <div
-          className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm font-medium flex items-center gap-1.5 px-2 sm:px-3 py-1 hover:bg-blue-50 rounded-lg transition-colors"
+          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-500 text-xs sm:text-sm font-medium flex items-center gap-1.5 px-2 sm:px-3 py-1 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors"
         >
           <FileText size={14} />
           <span className="text-xs sm:text-sm">{isOpeningPDF ? 'Opening...' : 'View PDF'}</span>
