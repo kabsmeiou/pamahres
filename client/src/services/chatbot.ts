@@ -16,7 +16,7 @@ export const useChatbot = () => {
   const [error, setError] = useState<string | null>(null);
 
   const sendMessage = async (message: Message, courseId: number) => {
-    return callApi(() => api.post(`api-courses/courses/${courseId}/chat/`, message), setLoading, setError);
+    return callApi(() => api.post(`api-courses/chat/${courseId}/`, message), setLoading, setError);
   };
 
   return { sendMessage, loading, error };
