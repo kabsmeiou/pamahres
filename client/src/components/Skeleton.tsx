@@ -64,7 +64,7 @@ export const CardSkeleton = ({
   children: ReactNode;
 }) => {
   return (
-    <div className={`bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden ${className}`}>
+    <div className={`bg-white dark:bg-surface-800 rounded-xl border border-gray-100 dark:border-surface-700 shadow-sm overflow-hidden ${className}`}>
       {children}
     </div>
   );
@@ -122,4 +122,4 @@ export const IconWithTextSkeleton = ({
 
 // Default export of the MUI Skeleton for general use
 const Skeleton = MuiSkeleton;
-export default Skeleton; 
+export default Skeleton;

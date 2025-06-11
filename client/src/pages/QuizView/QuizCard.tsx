@@ -19,7 +19,7 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
   // wrapper function to delete quiz with courseId
   // This is necessary because the deleteQuiz function expects an id, but we need to pass courseId as well
   // This is a workaround to match the expected signature of useDeleteItem
-  const deleteQuizWithCourse = async (courseId: number | string, id?: number) => {
+  const deleteQuizWithCourse = async (_courseId: number | string, id?: number) => {
     return deleteQuiz(id!);
   };
 
@@ -49,11 +49,11 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
   const scorePercentage = quiz.quiz_score && quiz.current_number_of_questions 
     ? (quiz.quiz_score / quiz.current_number_of_questions) * 100 
     : 0;
-  const scoreColor = scorePercentage >= 70 ? 'text-green-600' : scorePercentage >= 40 ? 'text-yellow-600' : 'text-red-600';
+  const scoreColor = scorePercentage >= 70 ? 'text-green-600 dark:text-green-400' : scorePercentage >= 40 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400';
 
   return (
     <div 
-      className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+      className="bg-white dark:bg-surface-800 rounded-xl border border-gray-100 dark:border-surface-700 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
     >
       {clickedReview && (
         <Error message="This feature is not available yet. Please check back later." />
@@ -66,19 +66,19 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
               state={quiz}
               className="group inline-flex items-start gap-3 hover:no-underline cursor-pointer"
             >
-              <div className="p-2 bg-primary-50 text-primary-600 rounded-lg flex-shrink-0 mt-0.5 group-hover:bg-primary-100 transition-colors">
+              <div className="p-2 bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400 rounded-lg flex-shrink-0 mt-0.5 group-hover:bg-primary-100 dark:group-hover:bg-primary-800 transition-colors">
                 <FileText size={20} />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 group-hover:text-primary-600 transition-colors">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                   {quiz.quiz_title}
                 </h3>
                 <div className="flex flex-wrap items-center gap-4 mt-2">
-                  <div className="flex items-center gap-1.5 text-gray-500">
+                  <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
                     <Clock size={15} />
                     <span className="text-sm">{quiz.time_limit_minutes} minutes</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-gray-500">
+                  <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
                     <AlertCircle size={15} />
                     {quiz.number_of_questions === 0 ? (
                       <span className="text-sm">No questions</span>
@@ -91,7 +91,7 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
             </Link>
             
             {/* Last taken information */}
-            <div className="flex items-center gap-1.5 text-gray-500 mt-3">
+            <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mt-3">
               <Calendar size={14} className="flex-shrink-0" />
               <span className="text-xs">{lastTaken}</span>
             </div>
@@ -103,9 +103,9 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
               <div className="flex items-center gap-2">
                 <div className={`text-sm font-medium ${scoreColor}`}>
                   <span className="text-lg font-bold">{quiz.quiz_score}</span>
-                  <span className="text-gray-600">/{quiz.number_of_questions}</span>
+                  <span className="text-gray-600 dark:text-gray-400">/{quiz.number_of_questions}</span>
                 </div>
-                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-50">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-50 dark:bg-surface-700">
                   <CheckCircle className={`${scoreColor}`} size={16} />
                 </div>
               </div>
@@ -114,14 +114,14 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
             {/* Action buttons */}
             <div className="flex items-center gap-2">
               <button
-                className={`inline-flex items-center justify-center gap-1.5 bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium shadow-sm ${quiz.number_of_questions === 0 ? "hidden" : ""}`}
+                className={`inline-flex items-center justify-center gap-1.5 bg-primary-600 dark:bg-primary-700 rounded-lg hover:bg-primary-700 dark:hover:bg-primary-800 transition-colors text-sm font-medium shadow-sm ${quiz.number_of_questions === 0 ? "hidden" : ""}`}
                 onClick={() => setClickedReview(true)}
               >
                 <span className="text-white px-3 py-2">Review</span>
               </button>
               <Link
                 to={`/courses/${courseId}/quizzes/${quiz.id}`}
-                className="inline-flex items-center justify-center gap-1.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium shadow-sm cursor-pointer"
+                className="inline-flex items-center justify-center gap-1.5 bg-primary-600 dark:bg-primary-700 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-800 transition-colors text-sm font-medium shadow-sm cursor-pointer"
               >
                 {quiz.last_taken === null ? (
                   <span className="px-3 py-2">Take Quiz</span>
@@ -136,8 +136,8 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
                 disabled={isDeleting}
                 className={`p-2 rounded-lg transition-colors ${
                   isDeleting 
-                    ? "text-gray-400 cursor-not-allowed" 
-                    : "text-gray-400 hover:text-red-500 hover:bg-red-50"
+                    ? "text-gray-400 dark:text-gray-500 cursor-not-allowed" 
+                    : "text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"
                 }`}
                 aria-label="Delete quiz"
                 title="Delete quiz"
@@ -154,12 +154,12 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
       </div>
       
       {quiz.quiz_score !== undefined && !isNaN(scorePercentage) && (
-        <div className="w-full h-1.5 bg-gray-100">
+        <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-700">
           <div 
             className={`h-full ${
-              scorePercentage >= 70 ? 'bg-green-500' : 
-              scorePercentage >= 40 ? 'bg-yellow-500' : 
-              'bg-red-500'
+              scorePercentage >= 70 ? 'bg-green-500 dark:bg-green-600' : 
+              scorePercentage >= 40 ? 'bg-yellow-500 dark:bg-yellow-600' :
+              'bg-red-500 dark:bg-red-600'
             }`} 
             style={{ width: `${scorePercentage}%` }}
           />

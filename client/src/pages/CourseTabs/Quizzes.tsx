@@ -29,8 +29,8 @@ const Quizzes = () => {
   // };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-8">
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+    <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 sm:py-0 space-y-8">
+      <div className="bg-white dark:bg-surface-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-surface-700">
         <QuizHeader />
         
         {/* Error Display */}
