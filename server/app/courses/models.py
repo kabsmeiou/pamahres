@@ -38,3 +38,14 @@ class CourseMaterial(models.Model):
   #   def public_url(self):
   #       # Generate the public URL if needed
   #       return f"https://<your-project>.supabase.co/storage/v1/object/public/materials-all/{self.file_path}"
+
+
+class ChatHistory(models.Model):
+  course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='conversations')
+  name_filter = models.CharField(max_length=100, null=False, blank=True)  # name for the conversation: yyyy-mm-dd-course_code since course_code is unique
+  previous_messages = models.JSONField() 
+
+  class Meta:
+    indexes = [
+      models.Index(fields=['course', 'name_filter']),
+    ]

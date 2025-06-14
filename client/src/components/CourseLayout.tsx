@@ -80,7 +80,7 @@ const CourseLayout = () => {
 
         {/* Navigation Links */}
         <nav className="flex-1 sm:p-4 p-2">
-          <div className="sm:flex-col flex sm:text-base text-sm">
+          <div className="sm:flex-col flex sm:text-base text-sm max-w-[calc(40vh)] overflow-x-auto">
             <Link
               to={`/courses/${courseId}`}
               state={{ course }}
@@ -93,7 +93,22 @@ const CourseLayout = () => {
               `}
             >
               <MessageSquare size={20} />
-              <span className="font-medium">AI Chat</span>
+              <span className="font-medium">Tutor</span>
+            </Link>
+
+            <Link
+              to={`/courses/${courseId}/chat-history`}
+              state={{ course }}
+              className={`
+                flex items-center sm:gap-3 gap-2 px-4 py-3 rounded-xl transition-all duration-200
+                ${isActive(`/courses/${courseId}/chat-history`) 
+                  ? 'bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-900 dark:text-primary-300 dark:shadow-none' 
+                  : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-700 dark:hover:text-surface-100'
+                }
+              `}
+            >
+              <MessageSquare size={20} />
+              <span className="font-medium">History</span>
             </Link>
             
             <Link

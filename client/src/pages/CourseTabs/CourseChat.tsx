@@ -3,18 +3,13 @@ import { Send, Paperclip, MessageCircle, Clock } from 'react-feather';
 import { useChatbot } from '../../services/chatbot';
 import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-
-interface Message {
-  id: string;
-  content: string;
-  sender: 'user' | 'ai';
-}
+import { ChatMessage } from '../../types/course';
 
 const Course = () => {
   const { courseId } = useParams();
   const courseIdNumber = parseInt(courseId as string);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -30,6 +25,18 @@ const Course = () => {
     }
   };
 
+  // client-side storage for current chat history
+  useEffect(() => {
+    const stored = localStorage.getItem("chat-messages");
+    if (stored) {
+      setMessages(JSON.parse(stored));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("chat-messages", JSON.stringify(messages));
+  }, [messages]);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -43,7 +50,7 @@ const Course = () => {
     setLoading(true);
 
     // Add user message
-    const newMessage: Message = {
+    const newMessage: ChatMessage = {
       id: Date.now().toString(),
       content: message,
       sender: 'user'
@@ -66,7 +73,7 @@ const Course = () => {
     console.log("Response from server:", response);
     const responseText = response.reply || response.warning;
     
-    const aiResponse: Message = {
+    const aiResponse: ChatMessage = {
       id: (Date.now() + 1).toString(),
       content: responseText,
       sender: 'ai'
