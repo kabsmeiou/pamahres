@@ -98,7 +98,7 @@ const Materials = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-0">
-      <div className="bg-surface-800 rounded-xl shadow-sm p-6 border border-surface-700 dark:bg-surface-800 dark:border-surface-700">
+      <div className="bg-white rounded-xl shadow-sm p-6 border dark:bg-surface-800 dark:border-surface-700">
         <CourseHeader isUploading={isUploading} handleFileUpload={handleFileUpload} />
         <div className="mt-6">
           {materialsLoading ? (
