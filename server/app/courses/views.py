@@ -1,21 +1,20 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, BasePermission
-from courses.serializers import CourseSerializer, CourseMaterialSerializer, LLMConversationSerializer
+from courses.serializers import CourseSerializer, CourseMaterialSerializer, LLMConversationSerializer, ChatHistorySerializer
 from django.shortcuts import get_object_or_404
-from .models import Course, CourseMaterial
+from .models import Course, CourseMaterial, ChatHistory
 from rest_framework.exceptions import ValidationError
 from supabase_client import supabase
 from rest_framework.response import Response
 from rest_framework import status
-from urllib.parse import urlparse
 from quiz.models import QuizModel
 from quiz.tasks import delete_material_and_quiz
-from services.helpers import get_content_from_quizId, generate_questions_by_chunks
+from services.helpers import get_content_from_quizId, generate_questions_by_chunks, add_to_chat_history
 from services.openai_generator import get_conversational_completion
 import time
 import logging
 import tiktoken
-
+import datetime
 from utils.embedding import embed_and_upsert_chunks, query_course, delete_course_chunks
 
 logger = logging.getLogger(__name__)
@@ -25,6 +24,20 @@ class IsOwner(BasePermission):
   def has_object_permission(self, request, view, obj):
     return obj.user == request.user
 
+
+# view to get chat history
+class ChatHistoryView(generics.RetrieveAPIView):
+  serializer_class = ChatHistorySerializer
+  permission_classes = [IsAuthenticated, IsOwner]
+
+  def get_object(self):
+    start_time = time.time()
+    # get the course id from the url
+    course_id = self.kwargs['course_id']
+    # filter chat history by course id and user
+    chat_history = get_object_or_404(ChatHistory,course_id=course_id, name_filter=f"{datetime.datetime.now().strftime('%Y-%m-%d')}-{course_id}")
+    logger.info(f"Total get_queryset method of chat history took {time.time() - start_time:.3f} seconds {chat_history}")
+    return chat_history
 
 class LLMConversationView(generics.GenericAPIView):
   serializer_class = LLMConversationSerializer
@@ -39,12 +52,22 @@ class LLMConversationView(generics.GenericAPIView):
     previous_messages = serializer.validated_data['previous_messages']
     new_message = serializer.validated_data['new_message']
 
+    # save the new message to the chat history
+    name_filter = f"{datetime.datetime.now().strftime('%Y-%m-%d')}-{self.kwargs['course_id']}"
+    add_to_chat_history(
+      name_filter=name_filter,
+      new_message=new_message,
+      sender="user",
+      user_id=self.request.user.id,
+      course_id=self.kwargs['course_id']
+    )
+    logger.info(f"{name_filter} chat history updated with new message.")
+
     # get the course id from the url
-    course_id = self.kwargs['course_id']
+    course_id: str = self.kwargs['course_id']
     course = get_object_or_404(Course, id=course_id, user=self.request.user)
     logger.info(f"Total post method of LLMConversationView took {time.time() - start_time:.3f} seconds")
     
-
     # get the name of the user
     user_name = self.request.user.first_name
     # get the name of the course
@@ -72,11 +95,20 @@ class LLMConversationView(generics.GenericAPIView):
 
     start_time = time.time()
     # get the response from the LLM
-    response = get_conversational_completion(
+    response: str = get_conversational_completion(
       previous_messages=previous_messages, 
       new_message=new_message, 
       context=context
     )
+    # add the llm response to the chat history
+    add_to_chat_history(
+      name_filter=name_filter,
+      new_message=response,
+      sender="ai",
+      user_id=self.request.user.id,
+      course_id=self.kwargs['course_id']
+    )
+    logger.info(f"Response from LLM: {response}")
     logger.info(f"time taken to get response from LLM: {time.time() - start_time:.3f} seconds")
     return Response({"reply": response}, status=status.HTTP_200_OK)
     

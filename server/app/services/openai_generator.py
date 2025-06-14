@@ -124,7 +124,7 @@ openai_client = OpenAI(
 )
 
 # function for handling the conversation with the LLM
-def get_conversational_completion(model="deepseek/deepseek-chat:free", *, previous_messages: list, new_message: str, context: str) -> list:
+def get_conversational_completion(model="deepseek/deepseek-chat:free", *, previous_messages: list, new_message: str, context: str) -> str:
   """
   This function handles the conversation with the LLM.
   It takes in a list of previous messages and a new message, and returns a list of responses from the LLM.
