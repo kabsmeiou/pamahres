@@ -59,7 +59,7 @@ class LLMConversationView(generics.GenericAPIView):
 
     # build the context for the LLM(man tgey stupid)
     context = (
-        f"You are a helpful assistant for the course '{course_name}'. Your answers are brief and to the point. "
+        f"You are a helpful assistant for the course '{course_name}'. Your answers are brief and to the point. Strictly 4 sentences maximum."
         f"If there are no relevant chunks, let the user know that you cannot find any relevant information and tell them to upload at the materials tab. "
         f"The user's name is {user_name}. "
         f"Relevant course material:\n\n"
