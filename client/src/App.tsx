@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard"
 import CourseChat from "./pages/CourseTabs/CourseChat"
 import CreateCourse from "./pages/CreateCourse"
 import Materials from "./pages/CourseTabs/Materials"
+import ChatHistory from "./pages/CourseTabs/ChatHistory"
 import Quizzes from "./pages/CourseTabs/Quizzes"
 import Settings from "./pages/Settings"
 import Layout from "./components/Layout"
@@ -26,6 +27,7 @@ function App() {
 
               <Route path="courses/:courseId" element={<CourseLayout />}>
                 <Route index element={<CourseChat />} />
+                <Route path="chat-history" element={<ChatHistory />} />
                 <Route path="materials" element={<Materials />} />
                 <Route path="quizzes" element={<Quizzes />} />
               </Route>

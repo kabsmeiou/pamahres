@@ -8,6 +8,12 @@ export interface Course {
     number_of_quizzes?: number;
 }
 
+export interface ChatMessage {
+  id?: string;
+  content: string;
+  sender: 'user' | 'ai';
+}
+
 // fields = ['id', 'material_file_url', 'file_name', 'file_size', 'file_type', 'uploaded_at']
 // read_only_fields = ['uploaded_at']
 
