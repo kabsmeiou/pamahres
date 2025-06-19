@@ -14,6 +14,10 @@ export interface ChatMessage {
   sender: 'user' | 'ai';
 }
 
+export interface ChatHistoryProps {
+  previous_messages: ChatMessage[];
+  name_filter: string;
+}
 // fields = ['id', 'material_file_url', 'file_name', 'file_size', 'file_type', 'uploaded_at']
 // read_only_fields = ['uploaded_at']
 

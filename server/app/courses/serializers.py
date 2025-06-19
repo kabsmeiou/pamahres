@@ -20,7 +20,7 @@ class LLMConversationSerializer(serializers.Serializer):
 class ChatHistorySerializer(serializers.ModelSerializer):
   class Meta:
     model = ChatHistory
-    fields = ['previous_messages']
+    fields = ['previous_messages', 'name_filter']
 
 
 class CourseSerializer(serializers.ModelSerializer):

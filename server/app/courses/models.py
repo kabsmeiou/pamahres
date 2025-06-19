@@ -39,7 +39,8 @@ class CourseMaterial(models.Model):
   #       # Generate the public URL if needed
   #       return f"https://<your-project>.supabase.co/storage/v1/object/public/materials-all/{self.file_path}"
 
-
+# make new model for messages to allow pagination
+# currently, it will be very expensive to store all messages in a single field especially if convo gets too large
 class ChatHistory(models.Model):
   course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='conversations')
   name_filter = models.CharField(max_length=100, null=False, blank=True)  # name for the conversation: yyyy-mm-dd-course_code since course_code is unique

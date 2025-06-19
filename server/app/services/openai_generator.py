@@ -29,7 +29,6 @@ def parse_llm_response(raw_text: str):
     raise ValueError("No JSON array found in response.")
 
 
-# deepseek/deepseek-chat:free 
 def get_completion(model="meta-llama/llama-4-scout-17b-16e-instruct", *, items: int=5, pdf_content="", max_retries: int=3) -> list:
   """
   This function generates a list of quiz questions from a given material.
@@ -116,8 +115,6 @@ def get_completion(model="meta-llama/llama-4-scout-17b-16e-instruct", *, items: 
   return response
 
 
-# use deepseek from open router for convo
-# can use openrouter or groq
 openai_client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
   api_key=os.getenv("OPENAI_API_KEY"),
