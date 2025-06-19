@@ -26,19 +26,24 @@ class IsOwner(BasePermission):
 
 
 # view to get chat history
-class ChatHistoryView(generics.RetrieveAPIView):
+class ChatHistoryView(generics.ListAPIView):
   serializer_class = ChatHistorySerializer
   permission_classes = [IsAuthenticated, IsOwner]
 
-  def get_object(self):
+  def get_queryset(self):
     start_time = time.time()
     # get the course id from the url
     course_id = self.kwargs['course_id']
-    # filter chat history by course id and user
-    chat_history = get_object_or_404(ChatHistory,course_id=course_id, name_filter=f"{datetime.datetime.now().strftime('%Y-%m-%d')}-{course_id}")
-    logger.info(f"Total get_queryset method of chat history took {time.time() - start_time:.3f} seconds {chat_history}")
-    return chat_history
-
+    
+    # filter chat history based on course_id AND user_id for better security
+    chat_histories = ChatHistory.objects.filter(
+        course__id=course_id,
+        course__user=self.request.user
+    ).order_by('-id')
+    
+    logger.info(f"Total get_queryset method of chat history took {time.time() - start_time:.3f} seconds")
+    return chat_histories
+  
 class LLMConversationView(generics.GenericAPIView):
   serializer_class = LLMConversationSerializer
   permission_classes = [IsAuthenticated, IsOwner]

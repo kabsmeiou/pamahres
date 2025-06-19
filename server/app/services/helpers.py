@@ -109,9 +109,10 @@ def add_to_chat_history(name_filter: str, new_message: str, sender: str, user_id
   
   # append new message with structure
   formatted_message = {
-    "role": sender,
+    "sender": sender,
     "content": new_message,
   }
+  
   chat_history.previous_messages.append(formatted_message)
   # Save the chat history
   chat_history.save()
