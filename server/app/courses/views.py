@@ -25,6 +25,15 @@ class IsOwner(BasePermission):
     return obj.user == request.user
 
 
+# ########################
+# FLOW FOR CHAT MESSAGES
+# user -> client -> client sends to server
+# server -> stores Message object in current ChatHistory(name_filter)
+# server -> returns the chat history to the client
+# client receives the current day ChatHistory -> back to user
+# other history can be fetched on the history tab
+# ########################
+
 # view to get chat history
 class ChatHistoryView(generics.ListAPIView):
   serializer_class = ChatHistorySerializer
@@ -35,13 +44,15 @@ class ChatHistoryView(generics.ListAPIView):
     # get the course id from the url
     course_id = self.kwargs['course_id']
     
-    # filter chat history based on course_id AND user_id for better security
+    # filter chat history based on course_id AND user_id
     chat_histories = ChatHistory.objects.filter(
-        course__id=course_id,
-        course__user=self.request.user
+      course__id=course_id,
+      course__user=self.request.user
     ).order_by('-id')
-    
-    logger.info(f"Total get_queryset method of chat history took {time.time() - start_time:.3f} seconds")
+
+    if not chat_histories:
+      logger.info(f"No chat histories found for course_id: {course_id} and user_id: {self.request.user.id}")
+
     return chat_histories
   
 class LLMConversationView(generics.GenericAPIView):
