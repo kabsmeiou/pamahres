@@ -65,3 +65,10 @@ class Message(models.Model):
   chat_history = models.ForeignKey(ChatHistory, on_delete=models.CASCADE, related_name='messages')
   sender = models.CharField(choices=SENDER_CHOICES, blank=False, default='user', max_length=5)
   content = models.TextField()
+  timestamp = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    indexes = [
+      models.Index(fields=['chat_history']),
+    ]
+    ordering = ['-timestamp']  # Order messages by timestamp in descending order

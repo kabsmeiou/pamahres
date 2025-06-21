@@ -1,8 +1,8 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, BasePermission
-from courses.serializers import CourseSerializer, CourseMaterialSerializer, LLMConversationSerializer, ChatHistorySerializer
+from courses.serializers import CourseSerializer, CourseMaterialSerializer, LLMConversationSerializer, ChatHistorySerializer, MessageSerializer
 from django.shortcuts import get_object_or_404
-from .models import Course, CourseMaterial, ChatHistory
+from .models import Course, CourseMaterial, ChatHistory, Message
 from rest_framework.exceptions import ValidationError
 from supabase_client import supabase
 from rest_framework.response import Response
@@ -34,13 +34,26 @@ class IsOwner(BasePermission):
 # other history can be fetched on the history tab
 # ########################
 
+class ChatHistoryMessageView(generics.ListCreateAPIView):
+  serializer_class = MessageSerializer
+  permission_classes = [IsAuthenticated, IsOwner]
+
+  def get_queryset(self):
+    chat_history_id = self.kwargs['chat_history_id']
+
+    chat_history_messages = Message.objects.filter(
+      chat_history=chat_history_id,
+    )
+    
+    return chat_history_messages
+
+
 # view to get chat history
 class ChatHistoryView(generics.ListAPIView):
   serializer_class = ChatHistorySerializer
   permission_classes = [IsAuthenticated, IsOwner]
 
   def get_queryset(self):
-    start_time = time.time()
     # get the course id from the url
     course_id = self.kwargs['course_id']
     
@@ -79,23 +92,13 @@ class LLMConversationView(generics.GenericAPIView):
     )
     logger.info(f"{name_filter} chat history updated with new message.")
 
-    # get the course id from the url
+    # get course info
     course_id: str = self.kwargs['course_id']
     course = get_object_or_404(Course, id=course_id, user=self.request.user)
-    logger.info(f"Total post method of LLMConversationView took {time.time() - start_time:.3f} seconds")
-    
-    # get the name of the user
     user_name = self.request.user.first_name
-    # get the name of the course
     course_name = course.course_name
 
-    # get the encoding for the LLM, count tokens for context to optimize the response
-    encoding = tiktoken.get_encoding("cl100k_base")
-    
-    start_time = time.time()
-    # get relevant course chunks
     relevant_chunks = query_course(new_message, course_id)
-
     # build the context for the LLM(man tgey stupid)
     context = (
         f"You are a helpful assistant for the course '{course_name}'. Your answers are brief and to the point. Strictly 4 sentences maximum."
@@ -105,7 +108,10 @@ class LLMConversationView(generics.GenericAPIView):
         + "\n\n".join(relevant_chunks)
     )
 
+    # get the encoding for the LLM, count tokens for context to optimize the response
+    encoding = tiktoken.get_encoding("cl100k_base")
     tokens = encoding.encode(context)
+
     logger.info(f"Context tokens count: {len(tokens)}")
     logger.info(f"time taken to build context: {time.time() - start_time:.3f} seconds")
 
@@ -124,7 +130,6 @@ class LLMConversationView(generics.GenericAPIView):
       user_id=self.request.user.id,
       course_id=self.kwargs['course_id']
     )
-    logger.info(f"Response from LLM: {response}")
     logger.info(f"time taken to get response from LLM: {time.time() - start_time:.3f} seconds")
     return Response({"reply": response}, status=status.HTTP_200_OK)
     

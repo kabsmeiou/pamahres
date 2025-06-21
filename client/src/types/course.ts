@@ -15,7 +15,8 @@ export interface ChatMessage {
 }
 
 export interface ChatHistoryProps {
-  previous_messages: ChatMessage[];
+  id?: number;
+  date_created: string;
   name_filter: string;
 }
 // fields = ['id', 'material_file_url', 'file_name', 'file_size', 'file_type', 'uploaded_at']
