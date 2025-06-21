@@ -9,6 +9,7 @@ import { useState, createContext, useEffect } from 'react';
 type MaterialsContextType = {
   materials: Material[] | null;
   setMaterials: React.Dispatch<React.SetStateAction<Material[] | null>>;
+  setShowNavigation: React.Dispatch<React.SetStateAction<boolean>>;
   materialsLoading: boolean;
 };
 
@@ -56,10 +57,12 @@ const CourseLayout = () => {
     }
   }, [fetchedMaterials])
 
+  const [showNavigation, setShowNavigation] = useState(true);
+  console.log(showNavigation);
   return (
-    <MaterialsContext.Provider value={{ materials, setMaterials, materialsLoading }}>
+    <MaterialsContext.Provider value={{ materials, setMaterials, materialsLoading, setShowNavigation}}>
     <div className="h-max flex flex-col lg:flex-row gap-6">
-      <div className="lg:w-80 h-fit bg-white dark:bg-surface-800 rounded-2xl shadow-soft overflow-hidden flex flex-col">
+      <div className={`bg-white dark:bg-surface-800 rounded-2xl shadow-soft overflow-hidden flex flex-col ${showNavigation ? 'h-fit lg:w-80' : 'h-0 w-0'} transition-width duration-300`}>
         {/* Course Navigation Sidebar */}
         <div className="p-6 border-b border-surface-100 dark:border-surface-700">
           {course ? (
