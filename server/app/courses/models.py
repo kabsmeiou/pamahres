@@ -39,7 +39,6 @@ class CourseMaterial(models.Model):
   #       # Generate the public URL if needed
   #       return f"https://<your-project>.supabase.co/storage/v1/object/public/materials-all/{self.file_path}"
 
-
 # make new model for messages to allow pagination
 # currently, it will be very expensive to store all messages in a single field especially if convo gets too large
 class ChatHistory(models.Model):

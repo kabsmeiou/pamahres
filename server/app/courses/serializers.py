@@ -28,6 +28,7 @@ class ChatHistorySerializer(serializers.ModelSerializer):
     fields = ['previous_messages', 'name_filter', 'date_created']
 
 
+
 class CourseSerializer(serializers.ModelSerializer):
   number_of_quizzes = serializers.IntegerField(source='get_number_of_quizzes', read_only=True)
 

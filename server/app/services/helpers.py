@@ -103,9 +103,10 @@ def add_to_chat_history(name_filter: str, new_message: str, sender: str, user_id
     name_filter=name_filter,
     defaults={'previous_messages': []}
   )
-  
+
   Message.objects.create(
     chat_history=chat_history,
     sender=sender,
     content=new_message
   )
+
