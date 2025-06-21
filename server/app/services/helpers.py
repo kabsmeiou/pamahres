@@ -7,7 +7,7 @@ from utils.question_generator import create_questions_and_options
 from quiz.tasks import generate_questions_task
 from rest_framework.exceptions import ValidationError
 import datetime
-from courses.models import Course, ChatHistory
+from courses.models import Course, ChatHistory, Message
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +95,7 @@ def generate_questions_by_chunks(pdf_content_chunks: list[str], quiz: QuizModel,
     logger.info(f"Generated {requested_count} questions for quiz {quiz}.")
 
 
-def add_to_chat_history(name_filter: str, new_message: str, sender: str, user_id: int, course_id: int):
+def add_to_chat_history(name_filter: str, new_message: str, sender: str, user_id: int, course_id: int) -> None:
   course = get_object_or_404(Course, id=course_id, user_id=user_id)
 
   chat_history, created = ChatHistory.objects.get_or_create(
@@ -103,17 +103,10 @@ def add_to_chat_history(name_filter: str, new_message: str, sender: str, user_id
     name_filter=name_filter,
     defaults={'previous_messages': []}
   )
-  
-  if chat_history.previous_messages is None:
-      chat_history.previous_messages = []
-  
-  # append new message with structure
-  formatted_message = {
-    "sender": sender,
-    "content": new_message,
-  }
-  
-  chat_history.previous_messages.append(formatted_message)
-  # Save the chat history
-  chat_history.save()
-  return chat_history
+
+  Message.objects.create(
+    chat_history=chat_history,
+    sender=sender,
+    content=new_message
+  )
+
