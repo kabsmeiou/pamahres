@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, CourseMaterial, ChatHistory
+from .models import Course, CourseMaterial, ChatHistory, Message
 
 class LLMConversationSerializer(serializers.Serializer):
   previous_messages = serializers.JSONField()
@@ -16,11 +16,17 @@ class LLMConversationSerializer(serializers.Serializer):
       raise serializers.ValidationError("Message cannot be more than 1000 characters.")
     return value
 
+class MessageSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Message
+    fields = ['sender', 'content']
+
 
 class ChatHistorySerializer(serializers.ModelSerializer):
   class Meta:
     model = ChatHistory
-    fields = ['previous_messages', 'name_filter']
+    fields = ['previous_messages', 'name_filter', 'date_created']
+
 
 
 class CourseSerializer(serializers.ModelSerializer):

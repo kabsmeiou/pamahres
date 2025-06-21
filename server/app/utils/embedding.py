@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
+# find a way to load model only when needed(once only)
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # Initialize Pinecone with your API key and environment (check your Pinecone dashboard for env name)

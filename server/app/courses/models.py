@@ -44,9 +44,24 @@ class CourseMaterial(models.Model):
 class ChatHistory(models.Model):
   course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='conversations')
   name_filter = models.CharField(max_length=100, null=False, blank=True)  # name for the conversation: yyyy-mm-dd-course_code since course_code is unique
-  previous_messages = models.JSONField() 
+  date_created = models.DateTimeField(auto_now_add=True)
 
   class Meta:
     indexes = [
       models.Index(fields=['course', 'name_filter']),
     ]
+
+  # custom get date to return only the mm-dd-yyyy format
+  def get_date(self):
+    return self.date_created.strftime("%m-%d-%Y")
+
+
+SENDER_CHOICES = [
+  ('user', 'User'),
+  ('ai', 'AI'),
+]
+
+class Message(models.Model):
+  chat_history = models.ForeignKey(ChatHistory, on_delete=models.CASCADE, related_name='messages')
+  sender = models.CharField(choices=SENDER_CHOICES, blank=False, default='user', max_length=5)
+  content = models.TextField()
