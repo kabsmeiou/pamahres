@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 import Dashboard from "./pages/Dashboard"
 import CourseChat from "./pages/CourseTabs/CourseChat"
+import ChatHistoryView from "./pages/ChatHistoryView/ChatHistoryView"
+import ChatHistoryIndex from "./pages/ChatHistoryView/ChatHistoryIndex"
 import CreateCourse from "./pages/CreateCourse"
 import Materials from "./pages/CourseTabs/Materials"
 import ChatHistory from "./pages/CourseTabs/ChatHistory"
@@ -27,11 +29,14 @@ function App() {
 
               <Route path="courses/:courseId" element={<CourseLayout />}>
                 <Route index element={<CourseChat />} />
-                <Route path="chat-history" element={<ChatHistory />} />
+                <Route path="chat-history" element={<ChatHistory />}>
+                  <Route index element={<ChatHistoryIndex />} />
+                  <Route path=":chatId" element={<ChatHistoryView />} />
+                </Route>
                 <Route path="materials" element={<Materials />} />
                 <Route path="quizzes" element={<Quizzes />} />
+                <Route path="quizzes/:quizId" element={<QuizPage />} />
               </Route>
-              <Route path="courses/:courseId/quizzes/:quizId" element={<QuizPage />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

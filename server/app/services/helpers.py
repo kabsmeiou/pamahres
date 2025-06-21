@@ -101,7 +101,6 @@ def add_to_chat_history(name_filter: str, new_message: str, sender: str, user_id
   chat_history, created = ChatHistory.objects.get_or_create(
     course=course,
     name_filter=name_filter,
-    defaults={'previous_messages': []}
   )
 
   Message.objects.create(

@@ -25,8 +25,7 @@ class MessageSerializer(serializers.ModelSerializer):
 class ChatHistorySerializer(serializers.ModelSerializer):
   class Meta:
     model = ChatHistory
-    fields = ['previous_messages', 'name_filter', 'date_created']
-
+    fields = ['id', 'name_filter', 'date_created']
 
 
 class CourseSerializer(serializers.ModelSerializer):

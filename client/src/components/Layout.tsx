@@ -25,7 +25,7 @@ const Layout = () => {
   }, [])
 
   return (
-    <div className="flex min-h-screen bg-surface-50 dark:bg-surface-900 transition-colors">
+    <div className="flex h-screen bg-surface-50 dark:bg-surface-900 transition-colors">
       {/* Mobile Sidebar Overlay */}
       {isMobile && showMobileSidebar && (
         <div
