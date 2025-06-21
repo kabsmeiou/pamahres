@@ -96,7 +96,7 @@ const Layout = () => {
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-auto bg-surface-50 dark:bg-surface-900 transition-colors">
-          <div className="container mx-auto px-4 sm:px-6 py-8 max-w-screen-2xl">
+          <div className="container mx-auto px-4 sm:px-6 sm:py-8 max-w-screen-2xl">
             <Outlet />
           </div>
         </main>

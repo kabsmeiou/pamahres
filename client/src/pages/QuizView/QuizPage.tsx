@@ -1,5 +1,5 @@
 import { useParams, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useQuizApi } from "../../services/quizzes";
 import TimeLimitBar from "../../components/TimeLimitBar";
@@ -8,8 +8,12 @@ import QuizItem from "./QuizItem";
 import Skeleton from "@mui/material/Skeleton";
 import { useQueryClient } from "@tanstack/react-query";
 import ActionConfirmation from "../../components/ActionConfirmation";
+import { MaterialsContext } from "../../components/CourseLayout"
 
 const QuizPage = () => {
+    const context = useContext(MaterialsContext);
+    const setShowNavigation = context?.setShowNavigation;
+
     const queryClient = useQueryClient();
 
     // quiz api and ids
@@ -93,8 +97,18 @@ const QuizPage = () => {
     }
 
     const handleConfirmGoBack = () => {
+        if (setShowNavigation) {
+            console.log("Setting show navigation to true");
+            setShowNavigation(true);
+        }
         window.history.back();
     }
+
+    useEffect(() => {
+        if (setShowNavigation) {
+            setShowNavigation(false);
+        }
+    }, []);
 
     useEffect(() => {
         // scroll down the screen if necessary (if questions get lengthy and exceeds height)
@@ -133,13 +147,6 @@ const QuizPage = () => {
         setIsPaused(false);
     }
 
-    // if everything is still loading, show a loading screen
-    if (quizLoading) {
-        return <div className="flex items-center justify-center h-full">
-            <div className="w-16 h-16 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 dark:border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
-        </div>
-    }
-
     const handleAction = () => {
         if (isSubmittingConfirmation) {
             return handleSubmitQuiz();
@@ -162,7 +169,7 @@ const QuizPage = () => {
                 />
             )}
             {/* Sidebar or quiz meta info */}
-            <div className="lg:w-1/4 w-full bg-white dark:bg-surface-800 rounded-xl shadow-md p-6 transition-all duration-300 h-fit">
+            <div className="lg:w-96 w-full h-fit md:bg-white md:dark:bg-surface-800 rounded-xl md:shadow-md md:p-6 transition-all duration-300">
                 <div className="flex flex-col gap-6">
                     <div className="text-center">
                         <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{quiz?.quiz_title ?? 'Quiz Title'}</h1>
@@ -189,7 +196,7 @@ const QuizPage = () => {
                             <Skeleton variant="text" width={100} height={20} />
                         ) : (
                             <p className="font-medium text-gray-700 dark:text-gray-300">
-                                Questions Left:                                <span className="text-primary-600 dark:text-primary-400">{quiz?.number_of_questions ? quiz?.number_of_questions - numberOfQuestionsAnswered : 0}</span>
+                                Questions Left: <span className="text-primary-600 dark:text-primary-400">{quiz?.number_of_questions ? quiz?.number_of_questions - numberOfQuestionsAnswered : 0}</span>
                             </p>
                         )}
 
@@ -201,7 +208,7 @@ const QuizPage = () => {
                 </div>
                 <div className="mt-6 mb-4">
                     <h2 className="text-sm font-semibold text-gray-600 dark:text-gray-200 mb-3">Question Navigator</h2>
-                    <div className="grid grid-cols-5 lg:grid-cols-4 gap-2 max-h-[calc(100vh-30rem)] overflow-y-auto pr-1">
+                    <div className="grid grid-cols-6 lg:grid-cols-4 gap-2 max-h-[calc(100vh-30rem)] overflow-y-auto pr-1">
                     {quiz?.current_number_of_questions && quiz?.current_number_of_questions > 0 && Array.isArray(questions) && questions.length > 0
                         ? questions!.map((question, index) => (
                             <button
