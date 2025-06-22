@@ -5,7 +5,7 @@ import { Material, Course } from '../types/course';
 import { useQuery } from '@tanstack/react-query';
 import { useCoursesApi, useMaterialsApi } from '../services/courses';
 import { useState, createContext, useEffect, useContext } from 'react';
-import { CourseContext } from '../components/Layout';
+import { LayoutContext } from '../components/Layout';
 import { Loader2 } from "lucide-react";
 type MaterialsContextType = {
   materials: Material[] | null;
@@ -23,7 +23,7 @@ const CourseLayout = () => {
   const numericCourseId = parseInt(courseId!, 10);
 
   // check whether the courseId is included from the course list from dashboard
-  const context = useContext(CourseContext) as { courses?: Course[]; isFetchingCourses?: boolean } ?? {};
+  const context = useContext(LayoutContext) as { courses?: Course[]; isFetchingCourses?: boolean } ?? {};
   const { courses, isFetchingCourses } = context;
   const courseFromList = courses?.find(course => course.id === numericCourseId);
   

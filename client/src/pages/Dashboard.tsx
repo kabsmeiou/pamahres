@@ -6,16 +6,21 @@ import { Link } from "react-router-dom";
 import EmptyFallback from "../components/EmptyFallback";
 import Loading from "../components/Loading";
 import CourseList from "./CourseView/CourseList";
-
-
+import { LayoutContext } from "../components/Layout";
+import { useContext } from "react";
 
 const Dashboard = () => {
-  const { getCourses } = useCoursesApi();
+  const context = (useContext(LayoutContext) ?? {}) as {
+    courses?: Course[];
+    isFetchingCourses?: boolean;
+    setShowToast?: (show: boolean) => void;
+  };
 
-  const { data: courses, isLoading, error } = useQuery<Course[]>({
-    queryKey: ['courses'],
-    queryFn: () => getCourses(),
-  });
+  const { courses, isFetchingCourses, setShowToast } = context;
+
+  function handleError() {
+    setShowToast?.(true); // use optional chaining in case it's undefined
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-8">
@@ -54,7 +59,9 @@ const Dashboard = () => {
             <button className="px-6 py-2.5 text-sm font-medium rounded-lg bg-white dark:bg-surface-700 shadow-sm text-surface-800 dark:text-surface-100 border border-surface-100 dark:border-surface-600/40 transition-all">
               All
             </button>
-            <button className="px-6 py-2.5 text-sm font-medium rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 hover:text-surface-800 dark:hover:text-surface-100 transition-all">
+            <button 
+              onClick={handleError}
+              className="px-6 py-2.5 text-sm font-medium rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 hover:text-surface-800 dark:hover:text-surface-100 transition-all">
               Favorites
             </button>
           </div>
@@ -72,17 +79,11 @@ const Dashboard = () => {
                 </svg>
               </div>
             </div>
-            
-            <button className="p-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-700 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
-            </button>
           </div>
         </div>
         
         <div className="min-h-[300px]">
-          {isLoading ? (
+          {isFetchingCourses ? (
             <Loading type="course" count={3} />
           ) : courses && courses.length > 0 ? (
             <CourseList courses={courses} />
