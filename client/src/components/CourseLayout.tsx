@@ -1,11 +1,12 @@
-import { useParams, Link, Outlet, useLocation } from 'react-router-dom';
+import { useParams, Link, Outlet, useLocation, Navigate } from 'react-router-dom';
 import { MessageSquare, Book, FileText, Clock } from 'react-feather';
 import CourseDetailSkeleton from './CourseDetailSkeleton';
-import { Material } from '../types/course';
+import { Material, Course } from '../types/course';
 import { useQuery } from '@tanstack/react-query';
 import { useCoursesApi, useMaterialsApi } from '../services/courses';
-import { useState, createContext, useEffect } from 'react';
-
+import { useState, createContext, useEffect, useContext } from 'react';
+import { CourseContext } from '../components/Layout';
+import { Loader2 } from "lucide-react";
 type MaterialsContextType = {
   materials: Material[] | null;
   setMaterials: React.Dispatch<React.SetStateAction<Material[] | null>>;
@@ -13,17 +14,35 @@ type MaterialsContextType = {
   materialsLoading: boolean;
 };
 
+// materials for sharing between components under the layout(same course)
+// this is a workaround to avoid fetching materials for materials page and quizzes page
 export const MaterialsContext = createContext<MaterialsContextType | null>(null); 
 
 const CourseLayout = () => {
-  // materials for sharing between components under the layout(same course)
-  // this is a workaround to avoid fetching materials for materials page and quizzes page
-  const [materials, setMaterials] = useState<Material[] | null>(null);
-
   const { courseId } = useParams();
   const numericCourseId = parseInt(courseId!, 10);
 
+  // check whether the courseId is included from the course list from dashboard
+  const context = useContext(CourseContext) as { courses?: Course[]; isFetchingCourses?: boolean } ?? {};
+  const { courses, isFetchingCourses } = context;
+  const courseFromList = courses?.find(course => course.id === numericCourseId);
+  
+  if (isFetchingCourses) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <Loader2 className="animate-spin w-6 h-6 text-muted-foreground" />
+      </div>
+    );
+  }
+
+  // redirect to an invalid url if courseId is not found in the course list
+  if (!courseFromList && courseId) {
+    return <Navigate to="/invalid-course" replace />;
+  }
+
   const location = useLocation();
+
+  const [materials, setMaterials] = useState<Material[] | null>(null);
 
   const { getCourseById } = useCoursesApi();
   const { getMaterials } = useMaterialsApi();

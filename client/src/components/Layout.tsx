@@ -8,18 +8,35 @@ import { Menu, User, Calendar } from "react-feather"
 import { UserDetail } from '../types/user';
 import { useQuery } from '@tanstack/react-query';
 import { useUserApi } from '../services/users';
+import { createContext } from "react"
+import { Course as CourseType } from "../types/course";
+import { useCoursesApi } from "../services/courses";
 
+type CourseContext = {  
+  courses: CourseType[] | null;
+  isFetchingCourses?: boolean;
+};
+
+export const CourseContext = createContext<CourseContext | null>(null); 
 
 const Layout = () => {
   const [collapsed, setCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [showMobileSidebar, setShowMobileSidebar] = useState(false)
   const { getUserDetails } = useUserApi();
+
   const { data: userInfo, isLoading: userLoading } = useQuery<UserDetail>({
     queryKey: ['profile'],
     queryFn: () => getUserDetails() as Promise<UserDetail>,
   });
   
+
+  const { getCourses } = useCoursesApi();
+
+  const { data: courses, isLoading: isFetchingCourses } = useQuery<CourseType[]>({
+    queryKey: ['courses'],
+    queryFn: () => getCourses(),
+  });
 
   useEffect(() => {
     const checkMobile = () => {
@@ -124,13 +141,15 @@ const Layout = () => {
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-auto bg-surface-50 dark:bg-surface-900 transition-colors">
-          <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-screen-2xl">
-            <div className="relative z-10">
-              <Outlet />
+        <CourseContext.Provider value={{ courses: courses ?? null, isFetchingCourses }}>
+          <main className="flex-1 overflow-auto bg-surface-50 dark:bg-surface-900 transition-colors">
+            <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-screen-2xl">
+              <div className="relative z-10">
+                <Outlet />
+              </div>
             </div>
-          </div>
-        </main>
+          </main>
+        </CourseContext.Provider>
       </div>
     </div>
   )
