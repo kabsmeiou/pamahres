@@ -44,11 +44,11 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
   // this is used when creating a quiz directly from a material
   // it will pre-fill the quiz title and material list
   useEffect(() => {
-    if (materialQuiz) {
-      setSelectedMaterialId(materialQuiz.materialId.toString());
+    if (materialQuiz && materialQuiz.materialId !== undefined) {
+      setSelectedMaterialId(String(materialQuiz.materialId));
       setFormData(prev => ({
         ...prev,
-        quiz_title: `Quiz for ${materialQuiz.file_name}`,
+        quiz_title: `Quiz for ${materialQuiz.file_name || 'Material'}`,
         material_list: [materialQuiz.materialId],
         number_of_questions: 10 // reset to 10 as default
       }));

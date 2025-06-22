@@ -32,7 +32,7 @@ const CourseCard = ({
 
   return (
     <div 
-      className="group bg-white dark:bg-surface-800 rounded-xl border border-gray-100 dark:border-surface-700 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col h-full overflow-hidden"
+      className="group bg-white dark:bg-surface-800 rounded-xl border border-surface-200/60 dark:border-surface-700/40 shadow-md hover:shadow-lg transition-all duration-200 flex flex-col h-full overflow-hidden hover:border-primary-200 dark:hover:border-primary-700/50 transform hover:-translate-y-1"
     >
       {/* Delete Confirmation Modal */}
       <ActionConfirmation
@@ -47,59 +47,72 @@ const CourseCard = ({
         confirmButtonColor="red"
       />
 
-      {/* Card Header */}
-      <div className="p-4">
+      {/* Card Header - Course Identifier with gradient */}
+      <div className="bg-gradient-to-r from-primary-600 to-primary-400 dark:from-primary-700 dark:to-primary-500 px-5 py-3 flex justify-between items-center">
+        <h3 className="text-base font-semibold text-white">
+          {course_code}
+        </h3>
+        {/* Quiz count badge */}
+        <div>
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-white/90 dark:bg-surface-800/90 text-primary-700 dark:text-primary-300 shadow-sm backdrop-blur-sm">
+            {number_of_quizzes && number_of_quizzes > 0 
+              ? `${number_of_quizzes} ${number_of_quizzes === 1 ? 'Quiz' : 'Quizzes'}` 
+              : 'No Quizzes'}
+          </span>
+        </div>
+      </div>
+
+      {/* Card Content */}
+      <div className="p-5 flex-1 flex flex-col">
         <div className="flex items-start gap-4">
-          <div className="p-3 bg-primary-50 dark:bg-primary-900 text-primary-600 rounded-lg group-hover:bg-primary-100 dark:group-hover:bg-primary-800 transition-colors">
+          <div className="p-3 bg-gradient-to-br from-primary-50 to-primary-100/70 dark:from-primary-900/50 dark:to-primary-800/30 text-primary-600 dark:text-primary-400 rounded-lg group-hover:from-primary-100 group-hover:to-primary-200/70 dark:group-hover:from-primary-800/50 dark:group-hover:to-primary-700/30 transition-colors shadow-sm">
             <BookOpen size={22} />
           </div>
           <div className="flex-1">
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors md:text-lg">
-                  {course_code}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 mt-1 font-medium md:text-base text-sm">
-                  {course_name}
-                </p>
-              </div>
-              {/* Quiz count badge */}
-              <div className="w-fit text-center">
-                <span className="inline-flex md:w-max items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-50 dark:bg-primary-900 text-primary-700 dark:text-primary-300">
-                  {number_of_quizzes && number_of_quizzes > 0 
-                    ? `${number_of_quizzes} ${number_of_quizzes === 1 ? 'Quiz' : 'Quizzes'}` 
-                    : 'No Quizzes'}
-                </span>
-              </div>
-            </div>
-            {/* Description */}
-            <p className="mt-3 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-              {course_description}
+            <p className="text-surface-800 dark:text-surface-200 mb-3 font-semibold md:text-lg group-hover:text-primary-700 dark:group-hover:text-primary-400 transition-colors">
+              {course_name}
             </p>
+            
+            {/* Description */}
+            <p className="text-sm text-surface-500 dark:text-surface-400 line-clamp-3">
+              {course_description || "No description provided for this course."}
+            </p>
+            
+            {/* Last updated timestamp with prettier design */}
+            <div className="mt-4 flex items-center text-xs text-surface-500 dark:text-surface-400 bg-surface-50 dark:bg-surface-700/30 rounded-full py-1 px-2.5 w-fit">
+              <svg className="w-3.5 h-3.5 mr-1.5 text-primary-500 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Updated {last_updated_at ? new Date(last_updated_at).toLocaleDateString("en-US", {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+              }) : 'recently'}
+            </div>
           </div>
         </div>
       </div>
       
-      {/* Card Footer */}
-      <div className="mt-auto px-5 py-4 border-t border-gray-100 dark:border-surface-700 bg-gray-50 dark:bg-surface-800 flex items-center justify-between">
+      {/* Card Footer with improved styling */}
+      <div className="px-5 py-4 border-t border-surface-100 dark:border-surface-700/50 bg-surface-50/70 dark:bg-surface-800/50 flex items-center justify-between backdrop-blur-sm">
         <Link 
         to={`/courses/${id}`}
         state={{ course: { course_code, course_name, course_description, last_updated_at } }}
-        className="text-primary-600 dark:text-primary-400 font-medium text-sm flex items-center hover:underline">
+        className="text-primary-600 dark:text-primary-400 font-medium text-sm flex items-center group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
           <span className="mr-1">Enter course</span>
-          <ArrowRight size={16} className="transform transition-transform group-hover:translate-x-1" />
+          <ArrowRight size={16} className="transform transition-transform group-hover:translate-x-1.5" />
         </Link>
-        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-          <Delete 
-            size={16} 
-            className="cursor-pointer hover:text-red-600 dark:hover:text-red-400 transition-colors"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowDeleteConfirm(true);
-            }}
-          />
-        </div>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowDeleteConfirm(true);
+          }}
+          className="p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-surface-400 dark:text-surface-500 hover:text-red-600 dark:hover:text-red-400 transition-colors hover:shadow-sm"
+          aria-label="Delete course"
+        >
+          <Delete size={16} />
+        </button>
       </div>
     </div>
   );

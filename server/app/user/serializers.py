@@ -11,9 +11,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
   class Meta:
     model = User
     fields = [
-      'id', 'username', 'email', 
+      'username', 'email', 
       'first_name', 'last_name',
-      'password'
     ]
   
   def create(self, validated_data):
@@ -28,8 +27,18 @@ class ProfileSerializer(serializers.ModelSerializer):
     model = Profile
     fields = [
       'id', 'user', 'mbti_type', 'age', 
-      'education_level', 'course', 'target_study_hours', 
+      'education_level', 'user_course', 'target_study_hours', 
       'current_grade'
+    ]
+
+class UserWithProfileSerializer(serializers.HyperlinkedModelSerializer):
+  profile = ProfileSerializer(read_only=True)
+
+  class Meta:
+    model = User
+    fields = [
+      'id', 'username', 'email', 
+      'first_name', 'last_name', 'profile'
     ]
 
 class UserSettingsSerializer(serializers.HyperlinkedModelSerializer):
