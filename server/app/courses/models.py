@@ -25,7 +25,7 @@ class Course(models.Model):
 class CourseMaterial(models.Model):
   course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='materials')
   material_file_url = models.CharField(max_length=100)  # Use URLField for external file URLs
-  file_name = models.CharField(max_length=100)
+  file_name = models.CharField(max_length=100, null=False, blank=False, unique=False)
   file_size = models.PositiveIntegerField()
   file_type = models.CharField(max_length=50)
   uploaded_at = models.DateTimeField(auto_now_add=True)
@@ -36,6 +36,7 @@ class CourseMaterial(models.Model):
     indexes = [
       models.Index(fields=['course', 'uploaded_at']),
     ]
+    unique_together = [('course', 'file_name')]
     ordering = ['-uploaded_at']
 
   

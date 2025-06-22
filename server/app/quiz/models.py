@@ -31,7 +31,7 @@ class QuizModel(models.Model):
       MaxValueValidator(20),  # Max 20 questions
     ],
   )
-  quiz_title = models.CharField(max_length=100, unique=True)
+  quiz_title = models.CharField(max_length=100, unique=False, null=False, blank=False)
   is_generated = models.BooleanField(default=False)
   uploaded_at = models.DateTimeField(auto_now_add=True)
 
@@ -43,8 +43,9 @@ class QuizModel(models.Model):
       models.UniqueConstraint(
         fields=['course', 'quiz_title'],
         name='unique_quiz_title_per_course'
-      ),
+      ), 
     ]
+    unique_together = [('course', 'quiz_title')]
     ordering = ['-uploaded_at']
 
   def __str__(self):
