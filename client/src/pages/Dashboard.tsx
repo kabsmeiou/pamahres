@@ -1,13 +1,13 @@
-import { useCoursesApi } from "../services/courses";
 import { Course } from "../types/course";
-import { useQuery } from "@tanstack/react-query";
 import { PlusCircle } from "react-feather";
 import { Link } from "react-router-dom";
 import EmptyFallback from "../components/EmptyFallback";
 import Loading from "../components/Loading";
 import CourseList from "./CourseView/CourseList";
 import { LayoutContext } from "../components/Layout";
-import { useContext } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
+
+const debounceDelay = 300;
 
 const Dashboard = () => {
   const context = (useContext(LayoutContext) ?? {}) as {
@@ -18,9 +18,48 @@ const Dashboard = () => {
 
   const { courses, isFetchingCourses, setShowToast } = context;
 
+  const [currentCourses, setCurrentCourses] = useState<Course[]>([]);
+
+  useEffect(() => {
+    if (courses) {
+      setCurrentCourses(courses);
+    }
+  }, [courses]);
+
   function handleError() {
     setShowToast?.(true); // use optional chaining in case it's undefined
   }
+  
+  const [searchTerm, setSearchTerm] = useState('');
+  const debounceRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = window.setTimeout(() => {
+      const term = searchTerm.toLowerCase().trim();
+
+      if (!term) {
+        setCurrentCourses(courses || []);
+        return;
+      }
+
+      const filtered = courses?.filter(course =>
+        course.course_name?.toLowerCase().includes(term) ||
+        course.course_code?.toLowerCase().includes(term)
+      ) || [];
+
+      setCurrentCourses(filtered);
+    }, debounceDelay);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchTerm, courses]);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-8">
@@ -69,6 +108,8 @@ const Dashboard = () => {
           <div className="flex items-center gap-2">
             <div className="relative">
               <input
+                onChange={handleSearch}
+                autoComplete="off"
                 type="search"
                 placeholder="Search courses..."
                 className="py-2.5 pl-10 pr-4 rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-sm focus:ring-2 focus:ring-primary-500/50 dark:focus:ring-primary-400/50 w-full md:w-64 transition-all focus:w-72"
@@ -86,7 +127,7 @@ const Dashboard = () => {
           {isFetchingCourses ? (
             <Loading type="course" count={3} />
           ) : courses && courses.length > 0 ? (
-            <CourseList courses={courses} />
+            <CourseList courses={currentCourses} />
           ) : (
             <div className="rounded-2xl border border-surface-100/60 dark:border-surface-700/40 bg-white dark:bg-surface-800/50 p-8 shadow-sm">
               <EmptyFallback 

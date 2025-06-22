@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCoursesApi } from '../services/courses';
+import { useQueryClient } from '@tanstack/react-query';
 import { Book, ArrowLeft } from 'react-feather';
 import Toast from '../components/Toast';
 
@@ -12,6 +13,7 @@ type ToastProp = {
 
 const CreateCourse = () => {
   const { createCourse } = useCoursesApi();
+  const queryClient = useQueryClient();
 
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +33,9 @@ const CreateCourse = () => {
     e.preventDefault();
     try {
       await createCourse(formData);
+      // Invalidate courses query to refresh the course list
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      
       // Navigate to dashboard after successful creation
       navigate('/');
     } catch (error: any) {
