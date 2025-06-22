@@ -76,12 +76,7 @@ const Toast = ({
   };
 
   return (
-    <div 
-      className={`fixed top-6 right-6 z-50 transform transition-all duration-300 ${
-        isVisible 
-          ? 'translate-y-0 opacity-100' 
-          : '-translate-y-4 opacity-0'
-      }`}
+<div className={`absolute top-6 right-6 pointer-events-auto transform transition-all duration-300 z-40 ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
       role="alert"
       aria-live="assertive"
     >
