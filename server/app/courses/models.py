@@ -71,4 +71,4 @@ class Message(models.Model):
     indexes = [
       models.Index(fields=['chat_history']),
     ]
-    ordering = ['-timestamp']  # Order messages by timestamp in descending order
+    ordering = ['timestamp']  # Order messages by timestamp in ascending order
