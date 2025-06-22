@@ -11,13 +11,15 @@ import { useUserApi } from '../services/users';
 import { createContext } from "react"
 import { Course as CourseType } from "../types/course";
 import { useCoursesApi } from "../services/courses";
+import Toast from "../components/Toast";
 
-type CourseContext = {  
+type LayoutContext = {  
   courses: CourseType[] | null;
   isFetchingCourses?: boolean;
+  setShowToast?: (show: boolean) => void;
 };
 
-export const CourseContext = createContext<CourseContext | null>(null); 
+export const LayoutContext = createContext<LayoutContext | null>(null); 
 
 const Layout = () => {
   const [collapsed, setCollapsed] = useState(false)
@@ -50,6 +52,13 @@ const Layout = () => {
     window.addEventListener("resize", checkMobile)
     return () => window.removeEventListener("resize", checkMobile)
   }, [])
+
+  const [showToast, setShowToast] = useState(false);
+
+  function onCloseToast() {
+    console.log("Toast closed");
+    setShowToast(false);
+  }
 
   return (
     <div className="flex h-screen bg-surface-50 dark:bg-surface-900">
@@ -139,17 +148,24 @@ const Layout = () => {
             </div>
           </div>
         </header>
-
         {/* Main Content Area */}
-        <CourseContext.Provider value={{ courses: courses ?? null, isFetchingCourses }}>
+        <LayoutContext.Provider value={{ courses: courses ?? null, isFetchingCourses, setShowToast }}>
           <main className="flex-1 overflow-auto bg-surface-50 dark:bg-surface-900 transition-colors">
             <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-screen-2xl">
+                { showToast && (
+                  <Toast 
+                    message="This feature is currently unavailable. Please try again later." 
+                    type="error"
+                    title="Error"
+                    onClose={onCloseToast}
+                  />
+                )}
               <div className="relative z-10">
                 <Outlet />
               </div>
             </div>
           </main>
-        </CourseContext.Provider>
+        </LayoutContext.Provider>
       </div>
     </div>
   )
