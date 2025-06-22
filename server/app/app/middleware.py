@@ -101,16 +101,6 @@ class JWTAuthenticationMiddleware(BaseAuthentication):
 
         if not user:
             return None
-        
-        # Fetch additional user info from Clerk API
-        info, found = self.clerk_sdk.fetch_user_info(user.username)
-
-        if found:
-            user.email = info["email_address"]
-            user.first_name = info["first_name"]
-            user.last_name = info["last_name"]
-            user.last_login = info["last_login"]
-            user.save()
 
         return user, None
 
@@ -137,22 +127,25 @@ class JWTAuthenticationMiddleware(BaseAuthentication):
 
         user_id = payload.get("sub")  # Get user ID from payload
 
+        # logging.info(payload)
         if user_id:
             get_or_create_start = time.time()
+            created = False
             try:
                 user = User.objects.get(username=user_id)
-                created = False
             except User.DoesNotExist:
-                user = User.objects.create(username=user_id)
+                info, found = self.clerk_sdk.fetch_user_info(user_id)
+                user = User.objects.create(
+                    username=user_id,
+                    first_name=info["first_name"],
+                    last_name=info["last_name"],
+                    email=info["email_address"],
+                )
                 created = True
             get_or_create_end = time.time()
             logger.info(f"Time to get or create user: {get_or_create_end - get_or_create_start:.3f} seconds")
             if created:
                 logger.info(f"User {user_id} created in database")
-                user.email = payload.get("email_address")
-                user.first_name = payload.get("first_name")
-                user.last_name = payload.get("last_name")
-                user.save()
                 Profile.objects.create(user=user)
                 UserActivity.objects.create(user=user)
             return user

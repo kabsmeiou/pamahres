@@ -7,6 +7,39 @@ export default {
   ],
   theme: {
   	extend: {
+  	    animation: {
+  	        'shine': 'shine 2s infinite linear',
+  	        'subtle-bounce': 'subtle-bounce 2s infinite ease-in-out',
+  	        'fadeIn': 'fadeIn 0.3s ease-in-out',
+  	        'scaleIn': 'scaleIn 0.3s ease-in-out',
+  	        'gradient-x': 'gradient-x 3s ease infinite',
+  	    },
+  	    keyframes: {
+  	        'shine': {
+  	            'from': { transform: 'translateX(-100%)' },
+  	            'to': { transform: 'translateX(100%)' }
+  	        },
+  	        'subtle-bounce': {
+  	            '0%, 100%': { transform: 'translateY(0)' },
+  	            '50%': { transform: 'translateY(-10%)' }
+  	        },
+  	        'fadeIn': {
+  	            '0%': { opacity: '0' },
+  	            '100%': { opacity: '1' }
+  	        },
+  	        'scaleIn': {
+  	            '0%': { transform: 'scale(0.9)', opacity: '0' },
+  	            '100%': { transform: 'scale(1)', opacity: '1' }
+  	        },
+  	        'gradient-x': {
+  	            '0%, 100%': {
+  	                'background-position': '0% 50%'
+  	            },
+  	            '50%': {
+  	                'background-position': '100% 50%'
+  	            }
+  	        }
+  	    },
   		colors: {
   			primary: {
   				'50': '#eef2ff',

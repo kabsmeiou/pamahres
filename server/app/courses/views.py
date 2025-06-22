@@ -46,12 +46,12 @@ class ChatHistoryMessageView(generics.ListCreateAPIView):
       today = datetime.datetime.now().strftime("%Y-%m-%d")
       name_filter = f"{today}-{course_id}"
       # get chat history based on course_id, name_filter, user_id
-      chat_history_id = get_object_or_404(
-        ChatHistory,
+      chat_history_id = ChatHistory.objects.filter(
         course__id=course_id,
         name_filter=name_filter,
         course__user=self.request.user,
-      )
+      ).first()
+
       if not chat_history_id:
         return Message.objects.none()
     else:
@@ -119,7 +119,7 @@ class LLMConversationView(generics.GenericAPIView):
     context = (
         f"You are a helpful assistant for the course '{course_name}'. Your answers are brief and to the point. Strictly 4 sentences maximum."
         f"If there are no relevant chunks, let the user know that you cannot find any relevant information and tell them to upload at the materials tab. "
-        f"The user's name is {user_name}. "
+        f"The user's name is {user_name.split(' ')[0]}. "
         f"Relevant course material:\n\n"
         + "\n\n".join(relevant_chunks)
     )

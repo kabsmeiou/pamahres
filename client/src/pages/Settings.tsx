@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Save, Bell, Moon, RefreshCw, User, Shield, Database } from 'react-feather';
 import Error from '../components/Error';
+import { UserDetail } from '../types/user';
+import { useQuery } from '@tanstack/react-query';
+import { useUserApi } from '../services/users';
 
 interface Settings {
   notifications: boolean;
@@ -15,19 +18,37 @@ const Settings = () => {
     autoSave: true
   });
 
+  const { getUserDetails } = useUserApi();
+
+  const { data: UserInfo, isLoading } = useQuery<UserDetail>({
+    queryKey: ['profile'],
+    queryFn: () => getUserDetails() as Promise<UserDetail>,
+  });
+
+  console.log('User:', UserInfo);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implement settings update logic
     console.log('Saving settings:', settings);
   };
 
+
+  // if (true) {
+  //   return (
+  //     <div>
+  //       Work in progress...
+  //     </div>
+  //   )
+  // }
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-4xl mx-auto">
       <Error message="Settings page is under construction" />
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Settings</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">Customize your QuizMe experience and preferences</p>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">Customize your Pamahres experience and preferences</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -68,68 +89,47 @@ const Settings = () => {
 
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               <div className="space-y-6">
-                <div className="flex items-center justify-between py-4 border-b border-gray-100 dark:border-surface-600">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-primary-50 dark:bg-primary-900/50 rounded-lg text-primary-600 dark:text-primary-400">
-                      <Bell size={20} />
-                    </div>
-                    <div>
-                      <h3 className="text-gray-800 dark:text-gray-100 font-medium">Notifications</h3>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Receive updates about your courses and quizzes</p>
+                {/* user name, degree, mbti type, age,  */}
+                { isLoading ? (
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-6 bg-gray-200 dark:bg-surface-700 rounded w-1/3"></div>
+                    <div className="h-6 bg-gray-200 dark:bg-surface-700 rounded w-1/2"></div>
+                    <div className="h-6 bg-gray-200 dark:bg-surface-700 rounded w-2/3"></div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col space-y-4">
+                    <div className='flex space-x-4 w-full'>
+                      <div>
+                        <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          First Name
+                        </label>
+                        <input
+                          type="text"
+                          id="first_name"
+                          value={UserInfo?.first_name || ''}
+                          onChange={(e) => setSettings(prev => ({ ...prev, first_name: e.target.value }))}
+                          className="w-full px-3 py-2 border border-gray-200 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 shadow-sm"
+                          placeholder="Enter your first name"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        id="last_name"
+                        value={UserInfo?.last_name || ''}
+                        onChange={(e) => setSettings(prev => ({ ...prev, last_name: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-200 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 shadow-sm"
+                        placeholder="Enter your last name"
+                        required
+                      /> 
+                      </div>
                     </div>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={settings.notifications}
-                      onChange={(e) => setSettings(prev => ({ ...prev, notifications: e.target.checked }))}
-                      className="sr-only peer"
-                    />
-                    <div className="w-12 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 dark:after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-700"></div>
-                  </label>
-                </div>
-
-                <div className="flex items-center justify-between py-4 border-b border-gray-100 dark:border-surface-600">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-indigo-50 dark:bg-indigo-900/50 rounded-lg text-indigo-600 dark:text-indigo-400">
-                      <Moon size={20} />
-                    </div>
-                    <div>
-                      <h3 className="text-gray-800 dark:text-gray-100 font-medium">Dark Mode</h3>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Use dark theme for better night viewing and reduced eye strain</p>
-                    </div>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={settings.darkMode}
-                      onChange={(e) => setSettings(prev => ({ ...prev, darkMode: e.target.checked }))}
-                      className="sr-only peer"
-                    />
-                    <div className="w-12 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 dark:after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-700"></div>
-                  </label>
-                </div>
-
-                <div className="flex items-center justify-between py-4 border-b border-gray-100 dark:border-surface-600">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-green-50 dark:bg-green-900/50 rounded-lg text-green-600 dark:text-green-400">
-                      <RefreshCw size={20} />
-                    </div>
-                    <div>
-                      <h3 className="text-gray-800 dark:text-gray-100 font-medium">Auto-save Progress</h3>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Automatically save quiz progress as you complete questions</p>
-                    </div>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={settings.autoSave}
-                      onChange={(e) => setSettings(prev => ({ ...prev, autoSave: e.target.checked }))}
-                      className="sr-only peer"
-                    />
-                    <div className="w-12 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 dark:peer-focus:ring-primary-900/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 dark:after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600 dark:peer-checked:bg-primary-700"></div>
-                  </label>
-                </div>
+                )}
               </div>
 
               <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-surface-600">

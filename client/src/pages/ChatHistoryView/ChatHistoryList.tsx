@@ -1,34 +1,33 @@
 
 import { ChatHistoryProps } from "../../types/course"
 import { ChatHistoryCard } from "./ChatHistoryCard"
+import EmptyFallback from "../../components/EmptyFallback"
 
-export const ChatHistoryList = (  { histories }: { histories: ChatHistoryProps[] })  => {
-    // render cards with name_filter only
-    console.log("ChatHistoryList", histories);
+export const ChatHistoryList = ({ histories }: { histories: ChatHistoryProps[] })  => {
     return (
         <div className="flex flex-col h-full">
             {histories.length > 0 ? (
-                <ul className="w-full max-w-3xl space-y-4 max-h-[calc(70vh)] overflow-y-auto">
-                    {histories.map((item, idx) => (
-                        <ChatHistoryCard
-                            key={idx}
-                            date_created={item.date_created}
-                            id={item.id} 
-                        />                    
-                    ))}
-                </ul>
+                <div className="w-full max-w-4xl">
+                    <ul className="space-y-4 max-h-[calc(75vh)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-surface-300 dark:scrollbar-thumb-surface-600 scrollbar-track-transparent">
+                        {histories.map((item, idx) => (
+                            <li key={idx}>
+                                <ChatHistoryCard
+                                    date_created={item.date_created}
+                                    id={item.id} 
+                                />
+                            </li>                   
+                        ))}
+                    </ul>
+                </div>
             ) : (
-                <p className="text-gray-600 dark:text-gray-400">No chat history found.</p>
+                <div className="bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 shadow-sm p-8">
+                    <EmptyFallback 
+                        icon="book"
+                        message="No chat history yet"
+                        description="Start a conversation with your course materials to see your chat history here."
+                    />
+                </div>
             )}
         </div>
     )
 };
-
-/* 
-<div className="text-gray-800 dark:text-gray-200">
-    {item.previous_messages.map((msg, msgIdx) => (
-        <div key={msgIdx} className={`mb-2 ${msg.sender === 'user' ? 'text-gray-800 dark:text-gray-200' : 'text-primary-700 dark:text-primary-400'}`}>
-            <span className="font-medium">{msg.sender === 'user' ? 'You' : 'AI'}:</span> {msg.content}
-        </div>
-    ))}
-</div> */
