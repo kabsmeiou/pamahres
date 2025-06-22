@@ -39,7 +39,23 @@ class ChatHistoryMessageView(generics.ListCreateAPIView):
   permission_classes = [IsAuthenticated, IsOwner]
 
   def get_queryset(self):
-    chat_history_id = self.kwargs['chat_history_id']
+    chat_history_id = None
+    if 'chat_history_id' not in self.kwargs:
+      # get the current date and course_id from the url
+      course_id = self.kwargs['course_id']
+      today = datetime.datetime.now().strftime("%Y-%m-%d")
+      name_filter = f"{today}-{course_id}"
+      # get chat history based on course_id, name_filter, user_id
+      chat_history_id = get_object_or_404(
+        ChatHistory,
+        course__id=course_id,
+        name_filter=name_filter,
+        course__user=self.request.user,
+      )
+      if not chat_history_id:
+        return Message.objects.none()
+    else:
+      chat_history_id = self.kwargs['chat_history_id']
 
     chat_history_messages = Message.objects.filter(
       chat_history=chat_history_id,

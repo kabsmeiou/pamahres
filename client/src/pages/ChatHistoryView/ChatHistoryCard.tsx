@@ -1,5 +1,4 @@
 import { Link, useParams } from "react-router-dom";
-import { ChatHistoryProps } from "../../types/course";
 
 export const ChatHistoryCard = ({
     id,

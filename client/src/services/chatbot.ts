@@ -27,5 +27,9 @@ export const useChatbot = () => {
     return callApi(() => api.get(`api-courses/chat/${courseId}/history/${chatId}/`), setLoading, setError);
   };
 
-  return { sendMessage, getHistory, getHistoryMessages, loading, error };
+  const getHistoryToday = async (courseId: number) => {
+    return callApi(() => api.get(`api-courses/chat/${courseId}/history/today/`), setLoading, setError);
+  };
+
+  return { sendMessage, getHistory, getHistoryMessages, getHistoryToday, loading, error };
 }
