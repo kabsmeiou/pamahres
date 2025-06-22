@@ -12,6 +12,7 @@ interface ChatboxProps {
     setMessage: (message: string) => void;
     message: string;
     loading?: boolean;
+    fetchLoading?: boolean;
     handleSubmit: (e: React.FormEvent) => void;
 }
 
@@ -21,6 +22,7 @@ const Chatbox = ({
     setMessage,
     messages,
     loading = false,
+    fetchLoading = false,
     handleSubmit,
  }: ChatboxProps) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -57,7 +59,11 @@ const Chatbox = ({
         </div>
         {/* Messages Area */}
         <div className="flex-1 p-4 md:p-6 overflow-y-auto flex flex-col space-y-6 bg-gray-50 dark:bg-surface-900" ref={messagesContainerRef} style={{overflowAnchor: 'none'}}>
-          {messages.length === 0 ? (
+          { fetchLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-primary-600 dark:border-primary-400 border-solid"></div>
+            </div>
+          ) : messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-6 my-auto">
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400 mb-6">
                 <Send size={28} />

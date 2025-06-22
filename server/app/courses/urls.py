@@ -12,4 +12,5 @@ urlpatterns = [
   path('chat/<int:course_id>/', LLMConversationView.as_view(), name='llm-conversation'),
   path('chat/<int:course_id>/history/', ChatHistoryView.as_view(), name='chat-history'),
   path('chat/<int:course_id>/history/<int:chat_history_id>/', ChatHistoryMessageView.as_view(), name='chat-history-messages'),
+  path('chat/<int:course_id>/history/today/', ChatHistoryMessageView.as_view(), name='chat-history-messages-today'),
 ]

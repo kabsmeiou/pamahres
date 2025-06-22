@@ -1,8 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
-import { Send, Paperclip, MessageCircle, Clock } from 'react-feather';
+import { useState, useEffect } from 'react';
 import { useChatbot } from '../../services/chatbot';
 import { useParams } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
+import { useQuery } from '@tanstack/react-query';
 import { ChatMessage } from '../../types/course';
 import Chatbox from '../../components/Chatbox';
 
@@ -11,20 +10,20 @@ const Course = () => {
   const courseIdNumber = parseInt(courseId as string);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const { sendMessage } = useChatbot();
+  const { sendMessage, getHistoryToday } = useChatbot();
   const [loading, setLoading] = useState(false);
 
-  // client-side storage for current chat history
-  useEffect(() => {
-    const stored = localStorage.getItem("chat-messages");
-    if (stored) {
-      setMessages(JSON.parse(stored));
-    }
-  }, []);
+  const {data: current_messages, isLoading, isError} = useQuery<ChatMessage[]>({
+    queryKey: ['chat-history', courseIdNumber],
+    queryFn: () => getHistoryToday(courseIdNumber) as Promise<ChatMessage[]>,
+    enabled: !!courseIdNumber,
+  });
 
   useEffect(() => {
-    localStorage.setItem("chat-messages", JSON.stringify(messages));
-  }, [messages]);
+    if (current_messages) {
+      setMessages(current_messages);
+    }
+  }, [current_messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,6 +72,7 @@ const Course = () => {
       setMessage={setMessage}
       messages={messages}
       loading={loading}
+      fetchLoading={isLoading}
       handleSubmit={handleSubmit}
     />
   )
