@@ -3,10 +3,11 @@ import { Course } from "../types/course";
 import { useQuery } from "@tanstack/react-query";
 import { PlusCircle } from "react-feather";
 import { Link } from "react-router-dom";
-
 import EmptyFallback from "../components/EmptyFallback";
 import Loading from "../components/Loading";
 import CourseList from "./CourseView/CourseList";
+
+
 
 const Dashboard = () => {
   const { getCourses } = useCoursesApi();
