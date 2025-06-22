@@ -32,12 +32,12 @@ const Layout = () => {
     queryFn: () => getUserDetails() as Promise<UserDetail>,
   });
   
-
   const { getCourses } = useCoursesApi();
-
+  
   const { data: courses, isLoading: isFetchingCourses } = useQuery<CourseType[]>({
     queryKey: ['courses'],
     queryFn: () => getCourses(),
+    enabled: true, // Fetch courses on initial load
   });
 
   useEffect(() => {
