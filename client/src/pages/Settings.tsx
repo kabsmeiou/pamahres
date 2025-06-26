@@ -338,7 +338,7 @@ const Settings = () => {
                         <input
                           type="number"
                           id="age"
-                          value={isEditing ? formData.age : (UserInfo?.age || '')}
+                          value={isEditing ? formData.age : (UserInfo?.profile.age || '')}
                           disabled={!isEditing}
                           onChange={(e) => handleFieldChange('age', e.target.value)}
                           className={`w-full px-3.5 py-2.5 border rounded-lg focus:ring-2 focus:ring-primary-500/50 dark:focus:ring-primary-400/50 focus:border-primary-500 dark:focus:border-primary-400 shadow-sm transition-all ${
