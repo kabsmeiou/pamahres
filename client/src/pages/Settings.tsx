@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Save, Bell, User, Shield, Database } from 'react-feather';
-import Error from '../components/Error';
 import { UserDetail } from '../types/user';
 import { useQuery } from '@tanstack/react-query';
 import { useUserApi } from '../services/users';
 import ActionConfirmation from '../components/ActionConfirmation';
 import { useQueryClient } from '@tanstack/react-query';
+import Toast from '../components/Toast';
 
 interface Settings {
   notifications: boolean;
@@ -14,7 +14,6 @@ interface Settings {
 }
 
 const Settings = () => {
-  // Place this at the top of your component, after other hooks:
   const queryClient = useQueryClient();
 
   function invalidateQueries({ queryKey }: { queryKey: string[] }) {
@@ -27,7 +26,8 @@ const Settings = () => {
     queryKey: ['profile'],
     queryFn: () => getUserDetails() as Promise<UserDetail>,
   });
-
+  
+  const [showToast, setShowToast] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [madeChanges, setMadeChanges] = useState(false);
   const [formData, setFormData] = useState({
@@ -60,7 +60,7 @@ const Settings = () => {
         first_name: formData.first_name,
         last_name: formData.last_name,
         email: formData.email,
-        user_course: formData.user_course, // Map to backend field name
+        user_course: formData.user_course,
         age: formData.age ? parseInt(formData.age, 10) : null, // convert to number or null
         mbti_type: UserInfo?.profile.mbti_type || '',
         target_study_hours: UserInfo?.profile.target_study_hours || null,
@@ -92,7 +92,6 @@ const Settings = () => {
     setIsEditing(false);
     setMadeChanges(false);
     setShowActionConfirmation(false);
-    // Reset form data to original values
     if (UserInfo) {
       setFormData({
         first_name: UserInfo.first_name || '',
@@ -103,7 +102,7 @@ const Settings = () => {
       });
     }
   };
-  console.log("UserInfo", UserInfo);
+
   const handleFieldChange = (field: string, value: string) => {
     setMadeChanges(true);
     setFormData(prev => ({
@@ -112,8 +111,22 @@ const Settings = () => {
     }));
   };
 
+
+  const handleDeleteAccount = () => {
+    return;
+  }
+  
+
   return (
     <div className="max-w-6xl mx-auto">
+      {showToast && (
+        <Toast
+          message="This feature is not available yet. Please check back later."
+          title="Feature Unavailable"
+          type="error"
+          onClose={() => setShowToast(false)}
+        />
+      )}
       <ActionConfirmation
         show={showActionConfirmation}
         onClose={() => setShowActionConfirmation(false)}
@@ -139,21 +152,25 @@ const Settings = () => {
                 <User size={18} strokeWidth={2.5} />
                 <span>My Profile</span>
               </button>
-              <button className="w-full px-5 py-3.5 flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-surface-700 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+              <button className="w-full px-5 py-3.5 flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-surface-700 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                onClick={() => setShowToast(true)}>
                 <Bell size={18} strokeWidth={2} />
                 <span>Notifications</span>
               </button>
-              <button className="w-full px-5 py-3.5 flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-surface-700 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+              <button className="w-full px-5 py-3.5 flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-surface-700 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+              onClick={() => setShowToast(true)}>
                 <Shield size={18} strokeWidth={2} />
                 <span>Security</span>
               </button>
-              <button className="w-full px-5 py-3.5 flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-surface-700 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+              {/* <button className="w-full px-5 py-3.5 flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-surface-700 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+              onClick={() => setShowToast(true)}>
                 <Database size={18} strokeWidth={2} />
                 <span>Data Export</span>
-              </button>
+              </button> */}
             </div>
             <div className="px-5 py-4 mt-4 border-t border-gray-100 dark:border-surface-700">
-              <button className="w-full py-2.5 text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 text-sm font-medium transition-colors flex items-center justify-center">
+              <button className="w-full py-2.5 text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 text-sm font-medium transition-colors flex items-center justify-center"
+              onClick={handleDeleteAccount}>
                 Delete Account
               </button>
             </div>
