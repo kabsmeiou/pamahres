@@ -42,7 +42,7 @@ const Layout = () => {
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
+      setIsMobile(window.innerWidth < 768) // always recheck on isMobile to ensure responsiveness when switching back and forth(keeping it in the if statement below causes issues when returing to higher widths)
       if (window.innerWidth < 768) {
         setCollapsed(true)
       }
@@ -86,11 +86,11 @@ const Layout = () => {
         />
       </div>
 
-      {/* Main Content */}
+      {/* Main content */}
       <div className="flex-1 flex flex-col min-h-screen">
-        {/* Top Bar */}
+        {/* header where stuff like profile is at */}
         <header className="h-16 bg-white dark:bg-surface-800 border-b border-surface-100/60 dark:border-surface-700/40 flex justify-center items-center px-4 sticky top-0 shadow-sm transition-colors z-10">
-          <div className="flex items-center justify-between md:justify-end gap-4 w-full max-w-screen-2xl mx-auto">
+          <div className="flex items-center justify-between md:justify-end gap-4 w-full w-full mx-auto">
             {isMobile && (
               <button
                 onClick={() => setShowMobileSidebar(true)}

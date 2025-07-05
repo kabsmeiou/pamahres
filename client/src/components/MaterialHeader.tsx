@@ -1,6 +1,6 @@
 import { Loader, Upload, FileText, Book } from "react-feather";
 
-const CourseHeader = ({
+const MaterialHeader = ({
   isUploading, 
   handleFileUpload
 }: {
@@ -9,7 +9,7 @@ const CourseHeader = ({
 }) => {
   return (
     <div className="mb-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-3">
           <div className="p-2.5 bg-indigo-50 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 rounded-lg flex-shrink-0 hidden sm:flex">
             <Book size={22} />
@@ -63,4 +63,4 @@ const CourseHeader = ({
   );
 };
 
-export default CourseHeader;
+export default MaterialHeader;

@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query"
 
 import supabase from "../../lib/supabase"
 
-import CourseHeader from "../CourseView/CourseHeader"
+import MaterialHeader from "../../components/MaterialHeader"
 import MaterialList from "../../components/MaterialList"
 import EmptyFallback from "../../components/EmptyFallback"
 import MaterialListSkeleton from "../../components/MaterialListSkeleton"
@@ -97,9 +97,9 @@ const Materials = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-0">
+    <div className="w-full mx-auto px-4 py-8 sm:px-6 sm:py-0 space-y-8">
       <div className="bg-white rounded-xl shadow-sm p-6 border dark:bg-surface-800 dark:border-surface-700">
-        <CourseHeader isUploading={isUploading} handleFileUpload={handleFileUpload} />
+        <MaterialHeader isUploading={isUploading} handleFileUpload={handleFileUpload} />
         <div className="mt-6">
           {materialsLoading ? (
             <div className="p-4">

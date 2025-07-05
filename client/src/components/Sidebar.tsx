@@ -149,7 +149,7 @@ const Sidebar = ({ collapsed, setCollapsed, isMobile, onClose }: SidebarProps) =
         h-screen flex flex-col shadow-xl
         transition-all duration-300 ease-in-out
         dark:bg-surface-800 relative
-        border-r border-surface-100/60 dark:border-surface-700/40
+        border-r border-surface-100/60 dark:border-surface-700/40 
       `}
     >
 
@@ -190,7 +190,7 @@ const Sidebar = ({ collapsed, setCollapsed, isMobile, onClose }: SidebarProps) =
           {!isMobile && (
             <button 
               onClick={() => setCollapsed(!collapsed)}
-              className="p-1.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-300 transition-all hover:shadow-sm"
+              className={`p-${collapsed ? .8 : 1.5} rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-300 transition-all hover:shadow-sm`}
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
