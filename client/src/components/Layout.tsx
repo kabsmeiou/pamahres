@@ -151,7 +151,7 @@ const Layout = () => {
         {/* Main Content Area */}
         <LayoutContext.Provider value={{ courses: courses ?? null, isFetchingCourses, setShowToast }}>
           <main className="flex-1 overflow-auto bg-surface-50 dark:bg-surface-900 transition-colors">
-            <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-screen-2xl">
+            <div>
                 { showToast && (
                   <Toast 
                     message="This feature is currently unavailable. Please try again later." 
