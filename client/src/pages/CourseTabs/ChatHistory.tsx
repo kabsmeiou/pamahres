@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 
 const ChatHistory = () => {
     return (
-        <div className="flex flex-col max-h-screen">
+        <div className="h-full">
             <Outlet />
         </div>
     );

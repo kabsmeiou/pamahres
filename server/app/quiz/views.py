@@ -16,7 +16,7 @@ from utils.validators import validate_quiz_question
 import time
 import logging
 from django.core.cache import cache
-from services.helpers import get_content_from_quizId, generate_questions_by_chunks
+from services.helpers import get_content_from_quizId, generate_questions_by_chunks, save_answers_of_best_score
 
 logger = logging.getLogger(__name__)
 
@@ -129,17 +129,17 @@ class CheckQuizAnswerView(generics.GenericAPIView):
     quiz.save()
 
     # get the list of option_ids
-    answer_list = request.data
+    answer_list: list = request.data
 
     # check if the answer_list is empty
     if not answer_list:
       raise ValidationError("No answers provided.")
 
     score: int = 0
-    # check if the answer is correct
+    # checking asnwers
     results: list[dict] = []
     question_ids = [answer['question_id'] for answer in answer_list]
-    questions = QuestionModel.objects.filter(id__in=question_ids).in_bulk()
+    questions: dict = QuestionModel.objects.filter(id__in=question_ids).in_bulk()
 
     for answer in answer_list:
       question = questions[answer['question_id']]
@@ -152,8 +152,14 @@ class CheckQuizAnswerView(generics.GenericAPIView):
       if results[-1]['is_correct']: # check if the answer is correct (last appended item)
         score += 1
 
-    # update the quiz score
-    quiz.quiz_score = max(quiz.quiz_score, score)
+    # update the quiz score and save the answers of the current best score
+    if (score > quiz.quiz_score):
+      logger.info(f"Updating quiz score from {quiz.quiz_score} to {score}")
+      logger.info(f"asnwers: {answer_list}")
+      save_answers_of_best_score(answer_list, questions)
+      quiz.quiz_score = score
+
+
     quiz.save()
     logger.info(f"Total check quiz answer time took {time.time() - start_time:.3f} seconds")
 

@@ -112,21 +112,34 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black dark:bg-surface-900 bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-surface-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-surface-900 dark:text-surface-100">Create New Quiz</h3>
+    <div className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-xl flex items-center justify-center">
+              <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Create New Quiz</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Generate questions from your materials</p>
+            </div>
+          </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg text-surface-500 dark:text-surface-400"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-gray-500 dark:text-gray-400 transition-colors"
           >
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Quiz Title */}
           <div>
-            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
               Quiz Title
             </label>
             <input
@@ -134,40 +147,48 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
               required
               value={formData.quiz_title}
               onChange={(e) => setFormData(prev => ({ ...prev, quiz_title: e.target.value }))}
-              className="w-full px-3 py-2 border border-surface-200 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400"
-              placeholder="Enter quiz title"
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all"
+              placeholder="Enter quiz title..."
             />
           </div>
 
+          {/* Time Limit */}
           <div>
-            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-              Time Limit (minutes)
+            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+              Time Limit
             </label>
-            <input
-              type="number"
-              required
-              min="1"
-              value={formData.time_limit_minutes}
-              onChange={(e) => setFormData(prev => ({ ...prev, time_limit_minutes: parseInt(e.target.value) }))}
-              className="w-full px-3 py-2 border border-surface-200 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400"
-            />
+            <div className="relative">
+              <input
+                type="number"
+                required
+                min="1"
+                value={formData.time_limit_minutes}
+                onChange={(e) => setFormData(prev => ({ ...prev, time_limit_minutes: parseInt(e.target.value) }))}
+                className="w-full px-4 py-3 pr-20 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all"
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400">
+                minutes
+              </span>
+            </div>
           </div>
 
+          {/* Material Selection */}
           <div>
-            <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-              Select Material (Optional)
+            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+              Course Material
             </label>
             {materialsLoading ? (
-              <div className="w-full px-3 py-2 border border-surface-200 dark:border-surface-600 rounded-lg bg-gray-100 dark:bg-surface-700 text-surface-500 dark:text-surface-400">
+              <div className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-blue-600 rounded-full animate-spin"></div>
                 Loading materials...
               </div>
             ) : (
               <select
                 value={selectedMaterialId}
                 onChange={(e) => setSelectedMaterialId(e.target.value)}
-                className="w-full px-3 py-2 border border-surface-200 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all"
               >
-                <option value="">No material (manual questions)</option>
+                <option value="">Select a material (optional)</option>
                 {materials?.map((material: Material) => (
                   <option key={material.id} value={material.id}>
                     {material.file_name}
@@ -175,12 +196,15 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
                 ))}
               </select>
             )}
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              Choose a material to auto-generate questions, or leave empty for manual questions
+            </p>
           </div>
 
-
+          {/* Number of Questions */}
           {selectedMaterialId && (
             <div>
-              <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
+              <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
                 Number of Questions
               </label>
               <input
@@ -190,29 +214,32 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
                 max="20"
                 value={formData.number_of_questions}
                 onChange={(e) => setFormData(prev => ({ ...prev, number_of_questions: parseInt(e.target.value) }))}
-                className="w-full px-3 py-2 border border-surface-200 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-100 rounded-lg focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all"
               />
-              <p className="mt-1 text-sm text-surface-500 dark:text-surface-400">Maximum 20 questions</p>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                Maximum 20 questions per quiz
+              </p>
             </div>
           )}
 
-          <div className="flex justify-end gap-3 mt-6">
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
               disabled={createQuizLoading}
-              className="px-4 py-2 rounded-xl border border-surface-200 dark:border-surface-600 text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors"
+              className="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createQuizLoading}
-              className="px-4 py-2 rounded-xl bg-primary-500 dark:bg-primary-600 text-white hover:bg-primary-600 dark:hover:bg-primary-700 transition-colors flex items-center gap-2"
+              className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {createQuizLoading ? (
                 <>
-                  <Loader size={16} className="animate-spin" />
+                  <Loader size={18} className="animate-spin" />
                   <span>Creating...</span>
                 </>
               ) : (

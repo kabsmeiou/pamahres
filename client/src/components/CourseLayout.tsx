@@ -1,5 +1,5 @@
 import { useParams, Link, Outlet, useLocation, Navigate } from 'react-router-dom';
-import { MessageSquare, Book, FileText, Clock } from 'react-feather';
+import { MessageSquare, Book, FileText, Clock, ArrowLeft } from 'react-feather';
 import CourseDetailSkeleton from './CourseDetailSkeleton';
 import { Material, Course } from '../types/course';
 import { useQuery } from '@tanstack/react-query';
@@ -7,6 +7,7 @@ import { useCoursesApi, useMaterialsApi } from '../services/courses';
 import { useState, createContext, useEffect, useContext } from 'react';
 import { LayoutContext } from '../components/Layout';
 import { Loader2 } from "lucide-react";
+
 type MaterialsContextType = {
   materials: Material[] | null;
   setMaterials: React.Dispatch<React.SetStateAction<Material[] | null>>;
@@ -29,8 +30,11 @@ const CourseLayout = () => {
   
   if (isFetchingCourses) {
     return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <Loader2 className="animate-spin w-6 h-6 text-muted-foreground" />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="animate-spin w-6 h-6 text-primary-600 dark:text-primary-400" />
+          <span className="text-surface-600 dark:text-surface-300">Loading course...</span>
+        </div>
       </div>
     );
   }
@@ -77,103 +81,107 @@ const CourseLayout = () => {
   }, [fetchedMaterials])
 
   const [showNavigation, setShowNavigation] = useState(true);
-  console.log(showNavigation);
+
+  const navigationItems = [
+    { 
+      name: 'Tutor', 
+      path: `/courses/${courseId}`,
+      icon: MessageSquare,
+      description: 'AI-powered course assistant'
+    },
+    { 
+      name: 'History', 
+      path: `/courses/${courseId}/chat-history`,
+      icon: Clock,
+      description: 'Previous conversations'
+    },
+    { 
+      name: 'Materials', 
+      path: `/courses/${courseId}/materials`,
+      icon: FileText,
+      description: 'Course resources and files'
+    },
+    { 
+      name: 'Quizzes', 
+      path: `/courses/${courseId}/quizzes`,
+      icon: Book,
+      description: 'Practice and assessments'
+    },
+  ];
+
   return (
     <MaterialsContext.Provider value={{ materials, setMaterials, materialsLoading, setShowNavigation}}>
-    <div className="h-max flex flex-col lg:flex-row gap-6">
-      <div className={`bg-white dark:bg-surface-800 rounded-2xl shadow-soft overflow-hidden flex flex-col ${showNavigation ? 'h-fit lg:w-80' : 'h-0 w-0'} transition-width duration-300`}>
-        {/* Course Navigation Sidebar */}
-        <div className="p-6 border-b border-surface-100 dark:border-surface-700">
-          {course ? (
-                <>
-                  <h1 className="text-xl font-bold text-surface-900 dark:text-surface-100">{course.course_code}</h1>
-                  <p className="text-surface-600 mt-2 text-sm dark:text-surface-300">{course.course_description}</p>
-
-                  {/* Last Accessed */}
-                  <div className="flex items-center gap-2 mt-4 text-sm text-surface-500 dark:text-surface-400">
-                    <Clock size={14} />
-                    <span>Last accessed {course.last_updated_at}</span>
+      <div className="min-h-screen bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950">
+        {/* Course Header */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-950/30 dark:to-blue-950/30 border-b border-surface-200/50 dark:border-surface-800/50">
+          <div className="absolute inset-0 bg-grid-surface-100/50 dark:bg-grid-surface-800/20" />
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Link 
+                  to="/"
+                  className="inline-flex items-center gap-2 px-3 py-2 bg-white dark:bg-surface-900 text-surface-700 dark:text-surface-300 font-medium rounded-lg shadow-sm border border-surface-200 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200"
+                >
+                  <ArrowLeft size={16} />
+                  <span>Dashboard</span>
+                </Link>
+                
+                {course ? (
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
+                      <Book className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+                    </div>
+                    <div>
+                      <h1 className="text-2xl font-bold text-surface-900 dark:text-white">
+                        {course.course_code}
+                      </h1>
+                      <p className="text-surface-600 dark:text-surface-300">
+                        {course.course_name}
+                      </p>
+                    </div>
                   </div>
-                </>
-              ) : (
-                <CourseDetailSkeleton />
-              )}
+                ) : (
+                  <CourseDetailSkeleton />
+                )}
+              </div>
+            </div>
+
+            {/* Navigation Tabs */}
+            {showNavigation && (
+              <div className="mt-6">
+                <nav className="flex space-x-2 overflow-x-auto pb-2">
+                  {navigationItems.map((item) => {
+                    const Icon = item.icon;
+                    const active = isActive(item.path);
+                    return (
+                      <Link
+                        key={item.name}
+                        to={item.path}
+                        state={{ course }}
+                        className={`
+                          flex items-center space-x-2 px-4 py-3 rounded-xl transition-all duration-200 whitespace-nowrap
+                          ${active 
+                            ? 'bg-white dark:bg-surface-900 text-primary-600 dark:text-primary-400 shadow-sm border border-surface-200 dark:border-surface-800' 
+                            : 'text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100 hover:bg-white/50 dark:hover:bg-surface-900/50'
+                          }
+                        `}
+                      >
+                        <Icon size={18} />
+                        <span className="font-medium">{item.name}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Navigation Links */}
-        <nav className="flex-1 sm:p-4 p-2">
-          <div className="sm:flex-col flex sm:text-base text-sm max-w-[calc(40vh)] overflow-x-auto">
-            <Link
-              to={`/courses/${courseId}`}
-              state={{ course }}
-              className={`
-                flex items-center sm:gap-3 gap-2 px-4 py-3 rounded-xl transition-all duration-200
-                ${isActive(`/courses/${courseId}`) 
-                  ? 'bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-900 dark:text-primary-300 dark:shadow-none' 
-                  : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-700 dark:hover:text-surface-100'
-                }
-              `}
-            >
-              <MessageSquare size={20} />
-              <span className="font-medium">Tutor</span>
-            </Link>
-
-            <Link
-              to={`/courses/${courseId}/chat-history`}
-              state={{ course }}
-              className={`
-                flex items-center sm:gap-3 gap-2 px-4 py-3 rounded-xl transition-all duration-200
-                ${isActive(`/courses/${courseId}/chat-history`) 
-                  ? 'bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-900 dark:text-primary-300 dark:shadow-none' 
-                  : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-700 dark:hover:text-surface-100'
-                }
-              `}
-            >
-              <MessageSquare size={20} />
-              <span className="font-medium">History</span>
-            </Link>
-            
-            <Link
-              to={`/courses/${courseId}/materials`}
-              state={{ course }}
-              className={`
-                flex items-center sm:gap-3 gap-2 px-4 py-3 rounded-xl transition-all duration-200
-                ${isActive(`/courses/${courseId}/materials`) 
-                  ? 'bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-900 dark:text-primary-300 dark:shadow-none' 
-                  : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-700 dark:hover:text-surface-100'
-                }
-              `}
-            >
-              <Book size={20} />
-              <div>
-                <span className="font-medium">Materials</span>
-              </div>
-            </Link>
-            
-            <Link
-              to={`/courses/${courseId}/quizzes`}
-              state={{ course }}
-              className={`
-                flex items-center sm:gap-3 gap-2 px-4 py-3 rounded-xl transition-all duration-200
-                ${isActive(`/courses/${courseId}/quizzes`) 
-                  ? 'bg-primary-50 text-primary-600 shadow-sm dark:bg-primary-900 dark:text-primary-300 dark:shadow-none' 
-                  : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-700 dark:hover:text-surface-100'
-                }
-              `}
-            >
-              <FileText size={20} />
-              <div>
-                <span className="font-medium">Quizzes</span>
-              </div>
-            </Link>
-          </div>
-        </nav>    
+        {/* Main Content Area */}
+        <main className="flex-1">
+          <Outlet />
+        </main>
       </div>
-      {/* Main Content Area */}
-      <div className="flex-1">
-        <Outlet />
-      </div>
-    </div>
     </MaterialsContext.Provider>
   );
 };

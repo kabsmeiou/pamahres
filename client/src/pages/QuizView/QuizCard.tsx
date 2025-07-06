@@ -52,84 +52,89 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
   const scoreColor = scorePercentage >= 70 ? 'text-green-600 dark:text-green-400' : scorePercentage >= 40 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400';
 
   return (
-    <div 
-      className="bg-white dark:bg-surface-800 rounded-xl border border-gray-100 dark:border-surface-700 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
-    >
+    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group">
       {clickedReview && (
         <Error message="This feature is not available yet. Please check back later." />
       )}
-      <div className="p-5">
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-          <div className="flex-grow space-y-3">
+      
+      <div className="p-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          {/* Quiz Info */}
+          <div className="flex-1 space-y-4">
             <Link 
               to={`/courses/${courseId}/quizzes/${quiz.id}`}
               state={quiz}
-              className="group inline-flex items-start gap-3 hover:no-underline cursor-pointer"
+              className="group/link inline-flex items-start gap-4 hover:no-underline cursor-pointer"
             >
-              <div className="p-2 bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-400 rounded-lg flex-shrink-0 mt-0.5 group-hover:bg-primary-100 dark:group-hover:bg-primary-800 transition-colors">
-                <FileText size={20} />
+              <div className="p-3 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 text-blue-600 dark:text-blue-400 rounded-xl flex-shrink-0 group-hover/link:from-blue-200 group-hover/link:to-indigo-200 dark:group-hover/link:from-blue-800/60 dark:group-hover/link:to-indigo-800/60 transition-all duration-200">
+                <FileText size={22} />
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+              <div className="min-w-0 flex-1">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover/link:text-blue-600 dark:group-hover/link:text-blue-400 transition-colors duration-200 mb-2">
                   {quiz.quiz_title}
                 </h3>
-                <div className="flex flex-wrap items-center gap-4 mt-2">
-                  <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
-                    <Clock size={15} />
-                    <span className="text-sm">{quiz.time_limit_minutes} minutes</span>
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <Clock size={16} />
+                    <span className="text-sm font-medium">{quiz.time_limit_minutes} minutes</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
-                    <AlertCircle size={15} />
-                    {quiz.number_of_questions === 0 ? (
-                      <span className="text-sm">No questions</span>
-                    ) : (
-                      <span className="text-sm">{quiz.number_of_questions} questions</span>
-                    )}
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <AlertCircle size={16} />
+                    <span className="text-sm font-medium">
+                      {quiz.number_of_questions === 0 ? 'No questions' : `${quiz.number_of_questions} questions`}
+                    </span>
                   </div>
                 </div>
               </div>
             </Link>
             
-            {/* Last taken information */}
-            <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 mt-3">
-              <Calendar size={14} className="flex-shrink-0" />
-              <span className="text-xs">{lastTaken}</span>
+            {/* Last taken info */}
+            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+              <Calendar size={14} />
+              <span className="text-sm">{lastTaken}</span>
             </div>
           </div>
           
-          <div className="flex flex-col gap-4 items-end">
-            {/* Score display */}
+          {/* Quiz Stats & Actions */}
+          <div className="flex flex-col lg:items-end gap-4">
+            {/* Score Display */}
             {quiz.quiz_score !== undefined && (
-              <div className="flex items-center gap-2">
-                <div className={`text-sm font-medium ${scoreColor}`}>
-                  <span className="text-lg font-bold">{quiz.quiz_score}</span>
-                  <span className="text-gray-600 dark:text-gray-400">/{quiz.number_of_questions}</span>
+              <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl px-4 py-3">
+                <div className="text-center">
+                  <div className={`text-2xl font-bold ${scoreColor}`}>
+                    {quiz.quiz_score}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    /{quiz.number_of_questions}
+                  </div>
                 </div>
-                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-50 dark:bg-surface-700">
-                  <CheckCircle className={`${scoreColor}`} size={16} />
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  scorePercentage >= 70 ? 'bg-green-100 dark:bg-green-900/40' : 
+                  scorePercentage >= 40 ? 'bg-yellow-100 dark:bg-yellow-900/40' : 
+                  'bg-red-100 dark:bg-red-900/40'
+                }`}>
+                  <CheckCircle className={scoreColor} size={20} />
                 </div>
               </div>
             )}
             
-            {/* Action buttons */}
-            <div className="flex items-center gap-2">
-              <button
-                className={`inline-flex items-center justify-center gap-1.5 bg-primary-600 dark:bg-primary-700 rounded-lg hover:bg-primary-700 dark:hover:bg-primary-800 transition-colors text-sm font-medium shadow-sm ${quiz.number_of_questions === 0 ? "hidden" : ""}`}
-                onClick={() => setClickedReview(true)}
-              >
-                <span className="text-white px-3 py-2">Review</span>
-              </button>
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3">
+              {(quiz.number_of_questions ?? 0) > 0 && (
+                <button
+                  className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
+                  onClick={() => setClickedReview(true)}
+                >
+                  Review
+                </button>
+              )}
+              
               <Link
                 to={`/courses/${courseId}/quizzes/${quiz.id}`}
-                className="inline-flex items-center justify-center gap-1.5 bg-primary-600 dark:bg-primary-700 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-800 transition-colors text-sm font-medium shadow-sm cursor-pointer"
+                className="inline-flex items-center justify-center px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md"
               >
-                {quiz.last_taken === null ? (
-                  <span className="px-3 py-2">Take Quiz</span>
-                ) : (
-                  <span className="px-3 py-2">Retake</span>
-                )}
+                {quiz.last_taken === null ? 'Take Quiz' : 'Retake Quiz'}
               </Link>
-              {/* use dots menu to wrap the delete quiz button */}
               
               <button
                 onClick={() => setShowDeleteConfirm(true)}
@@ -139,7 +144,6 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
                     ? "text-gray-400 dark:text-gray-500 cursor-not-allowed" 
                     : "text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"
                 }`}
-                aria-label="Delete quiz"
                 title="Delete quiz"
               >
                 {isDeleting ? (
@@ -153,13 +157,14 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
         </div>
       </div>
       
+      {/* Progress Bar */}
       {quiz.quiz_score !== undefined && !isNaN(scorePercentage) && (
-        <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-700">
+        <div className="h-2 bg-gray-100 dark:bg-gray-700">
           <div 
-            className={`h-full ${
-              scorePercentage >= 70 ? 'bg-green-500 dark:bg-green-600' : 
-              scorePercentage >= 40 ? 'bg-yellow-500 dark:bg-yellow-600' :
-              'bg-red-500 dark:bg-red-600'
+            className={`h-full transition-all duration-300 ${
+              scorePercentage >= 70 ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 
+              scorePercentage >= 40 ? 'bg-gradient-to-r from-yellow-500 to-orange-500' :
+              'bg-gradient-to-r from-red-500 to-pink-500'
             }`} 
             style={{ width: `${scorePercentage}%` }}
           />

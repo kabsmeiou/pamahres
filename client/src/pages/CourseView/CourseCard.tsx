@@ -65,9 +65,6 @@ const CourseCard = ({
       {/* Card Content */}
       <div className="p-5 flex-1 flex flex-col">
         <div className="flex items-start gap-4">
-          <div className="p-3 bg-gradient-to-br from-primary-50 to-primary-100/70 dark:from-primary-900/50 dark:to-primary-800/30 text-primary-600 dark:text-primary-400 rounded-lg group-hover:from-primary-100 group-hover:to-primary-200/70 dark:group-hover:from-primary-800/50 dark:group-hover:to-primary-700/30 transition-colors shadow-sm">
-            <BookOpen size={22} />
-          </div>
           <div className="flex-1">
             <p className="text-surface-800 dark:text-surface-200 mb-3 font-semibold md:text-lg group-hover:text-primary-700 dark:group-hover:text-primary-400 transition-colors">
               {course_name}

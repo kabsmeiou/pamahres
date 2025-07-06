@@ -1,11 +1,13 @@
 import { Course } from "../types/course";
-import { PlusCircle } from "react-feather";
+import { PlusCircle, Search, TrendingUp, Calendar, BookOpen, Clock } from "react-feather";
 import { Link } from "react-router-dom";
 import EmptyFallback from "../components/EmptyFallback";
 import Loading from "../components/Loading";
 import CourseList from "./CourseView/CourseList";
 import { LayoutContext } from "../components/Layout";
 import { useContext, useState, useEffect, useRef } from "react";
+// use pamahres from assets
+import Pamahres from "../assets/pamahres.png"; // Assuming this is the correct path to the image
 
 const debounceDelay = 300;
 
@@ -16,22 +18,16 @@ const Dashboard = () => {
     setShowToast?: (show: boolean) => void;
   };
 
-  const { courses, isFetchingCourses, setShowToast } = context;
-
+  const { courses, isFetchingCourses } = context;
   const [currentCourses, setCurrentCourses] = useState<Course[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const debounceRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (courses) {
       setCurrentCourses(courses);
     }
   }, [courses]);
-
-  function handleError() {
-    setShowToast?.(true); // use optional chaining in case it's undefined
-  }
-  
-  const [searchTerm, setSearchTerm] = useState('');
-  const debounceRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -61,84 +57,142 @@ const Dashboard = () => {
     setSearchTerm(e.target.value);
   };
 
+  const currentDate = new Date();
+  const greeting = () => {
+    const hour = currentDate.getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-8">
-      {/* Welcome Section */}
-      <div className="bg-gradient-to-br from-white to-primary-50 dark:from-surface-800 dark:to-surface-900/80 rounded-2xl p-6 md:p-8 shadow-md border border-surface-100/60 dark:border-surface-700/40">
-        <div className="max-w-3xl relative overflow-hidden">          
-          <h1 className="text-2xl md:text-3xl font-bold text-surface-800 dark:text-surface-100">
-            Your Learning<span className="text-primary-600 dark:text-primary-400"> Dashboard</span>
-          </h1>
-          <p className="mt-3 text-surface-600 dark:text-surface-300 max-w-2xl">
-            Access all your courses, track your progress, and continue your learning journey.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-950/30 dark:to-blue-950/30 border-b border-surface-200/50 dark:border-surface-800/50">
+        <div className="absolute inset-0 bg-grid-surface-100/50 dark:bg-grid-surface-800/20" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+          <div className="text-center lg:text-left flex md:justify-between items-center">
+            <div className="space-y-4">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 bg-primary-100/80 dark:bg-primary-900/30 rounded-full text-primary-700 dark:text-primary-300 text-sm font-medium">
+                <Calendar size={14} />
+                <span>
+                  {currentDate.toLocaleDateString("en-US", {
+                    weekday: "long",
+                    month: "long", 
+                    day: "numeric",
+                    year: "numeric"
+                  })}
+                </span>
+              </div>
+              
+              <div className="space-y-2">
+                <h1 className="text-4xl lg:text-5xl font-bold text-surface-900 dark:text-white tracking-tight leading-tight">
+                  {greeting()}!
+                </h1>
+                <p className="text-lg lg:text-xl text-surface-600 dark:text-surface-300 max-w-2xl leading-relaxed font-medium">
+                  Ready to continue your learning journey? Let's dive into your courses and discover something new today.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 sm:justify-center md:justify-normal">
+                <Link 
+                  to="/create-course" 
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                >
+                  <PlusCircle size={20} />
+                  <span>Create New Course</span>
+                </Link>
+                
+                {courses && courses.length > 0 && (
+                  <div className="inline-flex items-center gap-3 px-6 py-3 bg-white dark:bg-surface-900 text-surface-700 dark:text-surface-300 font-medium rounded-xl shadow-sm border border-surface-200 dark:border-surface-800">
+                    <BookOpen size={18} />
+                    <span>{courses.length} course{courses.length !== 1 ? 's' : ''} available</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* place the png here */}
+            <div className="w-0 md:w-fit">
+              <img src={Pamahres} alt="Pamahres Logo" className="mx-auto w-96" />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Courses Section */}
-      <div className="rounded-xl space-y-6">
-        {/* <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-surface-800 dark:text-surface-100">Your Courses</h2>
-            <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">Manage and access your learning materials</p>
-          </div>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="space-y-8">
           
-          <Link 
-            to="/create-course" 
-            className="text-sm font-medium text-white bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-600 dark:to-primary-500 dark:hover:from-primary-500 dark:hover:to-primary-400 flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all shadow-sm hover:shadow"
-          >
-            <PlusCircle size={16} />
-            <span>Create Course</span>
-          </Link>
-        </div> */}
-        
-        {/* Filter Tabs - Enhanced design */}
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
-          <div className="flex bg-surface-100/70 dark:bg-surface-800/60 p-1 rounded-xl shadow-sm">
-            <button className="px-6 py-2.5 text-sm font-medium rounded-lg bg-white dark:bg-surface-700 shadow-sm text-surface-800 dark:text-surface-100 border border-surface-100 dark:border-surface-600/40 transition-all">
-              All
-            </button>
-            <button 
-              onClick={handleError}
-              className="px-6 py-2.5 text-sm font-medium rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 hover:text-surface-800 dark:hover:text-surface-100 transition-all">
-              Favorites
-            </button>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <input
-                onChange={handleSearch}
-                autoComplete="off"
-                type="search"
-                placeholder="Search courses..."
-                className="py-2.5 pl-8 sm:pl-10 pr-0 rounded-xl border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-sm focus:ring-2 focus:ring-primary-500/50 dark:focus:ring-primary-400/50 w-full md:w-64 transition-all"
-              />
-              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400 dark:text-surface-500">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+
+          {/* Courses Section */}
+          <div className="space-y-6">
+            {/* Section Header with Search */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <div className="space-y-1">
+                <h2 className="text-2xl lg:text-3xl font-bold text-surface-900 dark:text-white tracking-tight">
+                  Your Learning Hub
+                </h2>
+                <p className="text-surface-600 dark:text-surface-300 font-medium leading-relaxed">
+                  Manage your courses and track your progress
+                </p>
+              </div>
+              
+              {/* Search */}
+              <div className="relative max-w-md w-full lg:w-auto">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-surface-400 dark:text-surface-500" />
+                <input
+                  onChange={handleSearch}
+                  autoComplete="off"
+                  type="search"
+                  placeholder="Search your courses..."
+                  value={searchTerm}
+                  className="w-full pl-12 pr-4 py-3 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl text-surface-900 dark:text-surface-100 placeholder-surface-500 dark:placeholder-surface-400 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 transition-all duration-200 shadow-sm"
+                />
+                {searchTerm && (
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                    <span className="text-xs text-surface-500 dark:text-surface-400 bg-surface-100 dark:bg-surface-800 px-2 py-1 rounded-md">
+                      {currentCourses.length} of {courses?.length || 0}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Courses Content */}
+            <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200/50 dark:border-surface-800/50 shadow-sm overflow-hidden">
+              <div className="p-6 lg:p-8">
+                {isFetchingCourses ? (
+                  <div className="space-y-4">
+                    <Loading type="course" count={3} />
+                  </div>
+                ) : courses && currentCourses.length > 0 ? (
+                  <CourseList courses={currentCourses} />
+                ) : searchTerm ? (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Search className="h-8 w-8 text-surface-400 dark:text-surface-500" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white mb-2">
+                      No courses found
+                    </h3>
+                    <p className="text-surface-500 dark:text-surface-400">
+                      Try adjusting your search terms or create a new course
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-center py-16">
+                    <EmptyFallback 
+                      message="Your learning journey starts here"
+                      actionText="Create your first course"
+                      actionLink="/create-course"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
-        
-        <div className="min-h-[300px]">
-          {isFetchingCourses ? (
-            <Loading type="course" count={3} />
-          ) : courses && currentCourses.length > 0 ? (
-            <CourseList courses={currentCourses} />
-          ) : (
-            <div className="rounded-2xl border border-surface-100/60 dark:border-surface-700/40 bg-white dark:bg-surface-800/50 p-8 shadow-sm">
-              <EmptyFallback 
-                message="No courses found"
-                actionText="Create your first course"
-                actionLink="/create-course"
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      </main>
     </div>
   );
 };
