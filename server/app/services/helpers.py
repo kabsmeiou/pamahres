@@ -109,3 +109,24 @@ def add_to_chat_history(name_filter: str, new_message: str, sender: str, user_id
     content=new_message
   )
 
+
+def save_answers_of_best_score(answer_list: list, questions: dict) -> None:
+    """
+    Saves the user's answers for the best score in the quiz.
+
+    Args:
+        answer_list (dict): A dictionary containing question IDs as keys and user answers as values.
+        questions (dict): A dictionary containing question IDs as keys and question objects as values.
+        
+    Returns:
+        None
+    """
+    for answer in answer_list:
+        question = questions[answer['question_id']]
+        if question:
+            question.user_answer = answer['answer']
+            question.save()
+        else:
+            logger.warning(f"Question with ID {answer['question_id']} not found in the provided questions.")
+    
+    logger.info("User answers for the best score have been saved successfully.")

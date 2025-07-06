@@ -27,45 +27,50 @@ const ChatHistoryView = () => {
     });
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="mb-4">
-                <Link 
-                    to={`/courses/${courseId}/chat-history`}
-                    className="inline-flex items-center text-surface-600 hover:text-primary-600 dark:text-surface-400 dark:hover:text-primary-400 transition-colors mb-4"
-                >
-                    <ChevronLeft size={16} className="mr-1" />
-                    <span>Back to Chat History</span>
-                </Link>
-                
-                {!isLoading && !error && messages && (
-                    <div className="flex items-center gap-2 text-surface-500 dark:text-surface-400 text-sm mb-2">
-                        <Calendar size={14} />
-                        <span>{formattedDate}</span>
-                    </div>
-                )}
+        <div className="space-y-4">
+            {/* Navigation Header */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div className="flex items-center justify-between">
+                    <Link 
+                        to={`/courses/${courseId}/chat-history`}
+                        className="inline-flex items-center text-gray-600 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors"
+                    >
+                        <ChevronLeft size={16} className="mr-1" />
+                        <span className="font-medium">Back to Chat History</span>
+                    </Link>
+                    
+                    {!isLoading && !error && messages && (
+                        <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm">
+                            <Calendar size={14} />
+                            <span>{formattedDate}</span>
+                        </div>
+                    )}
+                </div>
             </div>
             
-            <div className="flex-1 bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 shadow-sm overflow-hidden">
+            {/* Chat Content */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden min-h-[600px]">
                 {isLoading ? (
-                    <div className="flex flex-col items-center justify-center h-full p-8">
-                        <div className="w-12 h-12 bg-primary-50 dark:bg-primary-900/30 rounded-full flex items-center justify-center mb-4">
-                            <Clock size={20} className="text-primary-500 dark:text-primary-400 animate-pulse" />
+                    <div className="flex flex-col items-center justify-center h-96 p-8">
+                        <div className="w-16 h-16 bg-primary-50 dark:bg-primary-900/30 rounded-full flex items-center justify-center mb-4">
+                            <Clock size={24} className="text-primary-500 dark:text-primary-400 animate-pulse" />
                         </div>
-                        <p className="text-surface-600 dark:text-surface-400 mb-4">Loading conversation history...</p>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Loading conversation</h3>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6">Retrieving chat history...</p>
                         <div className="w-full max-w-md">
                             <Loading type="default" count={2} />
                         </div>
                     </div>
                 ) : error ? (
-                    <div className="flex flex-col items-center justify-center text-center h-full p-8">
-                        <div className="w-12 h-12 bg-red-50 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-4">
-                            <AlertCircle size={20} className="text-red-500 dark:text-red-400" />
+                    <div className="flex flex-col items-center justify-center text-center h-96 p-8">
+                        <div className="w-16 h-16 bg-red-50 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-4">
+                            <AlertCircle size={24} className="text-red-500 dark:text-red-400" />
                         </div>
-                        <h3 className="text-lg font-medium text-surface-800 dark:text-surface-200 mb-2">Failed to load conversation</h3>
-                        <p className="text-surface-600 dark:text-surface-400 mb-2">Sorry, we couldn't retrieve this chat history.</p>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Failed to load conversation</h3>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6">Sorry, we couldn't retrieve this chat history.</p>
                         <Link 
                             to={`/courses/${courseId}/chat-history`}
-                            className="text-primary-600 dark:text-primary-400 hover:underline mt-2"
+                            className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                         >
                             Return to chat history
                         </Link>

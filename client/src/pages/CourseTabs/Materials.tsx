@@ -9,7 +9,6 @@ import supabase from "../../lib/supabase"
 
 import CourseHeader from "../CourseView/CourseHeader"
 import MaterialList from "../../components/MaterialList"
-import EmptyFallback from "../../components/EmptyFallback"
 import MaterialListSkeleton from "../../components/MaterialListSkeleton"
 
 import type { Material } from "../../types/course"
@@ -97,17 +96,42 @@ const Materials = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-0">
-      <div className="bg-white rounded-xl shadow-sm p-6 border dark:bg-surface-800 dark:border-surface-700">
-        <CourseHeader isUploading={isUploading} handleFileUpload={handleFileUpload} />
-        <div className="mt-6">
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-2xl p-6 border border-primary-200/50 dark:border-primary-700/50">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-primary-600 rounded-lg text-white">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Course Materials</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-300 font-medium leading-relaxed">Upload and manage your learning resources</p>
+          </div>
+        </div>
+        
+        <div className="mt-4">
+          <CourseHeader isUploading={isUploading} handleFileUpload={handleFileUpload} />
+        </div>
+      </div>
+
+      {/* Materials Content */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="p-6">
           {materialsLoading ? (
-            <div className="p-4">
-              <MaterialListSkeleton count={1} />
+            <div>
+              <MaterialListSkeleton count={3} />
             </div>
           ) : materials && materials.length === 0 ? (
-            <div className="py-6">
-              <EmptyFallback />
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No materials yet</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-4">Upload your first PDF to get started with this course.</p>
             </div>
           ) : (
             <MaterialList 
@@ -117,17 +141,7 @@ const Materials = () => {
             />
           )}
         </div>
-
       </div>
-      {/* <div className="flex items-center justify-between">
-        {isUploading && (
-          <div className="flex items-center text-primary-600 text-sm font-medium">
-            <div className="h-4 w-4 border-2 border-primary-600 border-t-transparent rounded-full animate-spin mr-2"></div>
-            Uploading...
-          </div>
-        )}
-      </div> */}
-
     </div>
   )
 }

@@ -5,9 +5,9 @@ import EmptyFallback from "../../components/EmptyFallback"
 
 export const ChatHistoryList = ({ histories }: { histories: ChatHistoryProps[] })  => {
     return (
-        <div className="flex flex-col h-full">
+        <div>
             {histories.length > 0 ? (
-                <div className="w-full max-w-4xl">
+                <div className="w-full">
                     <ul className="space-y-4 max-h-[calc(75vh)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-surface-300 dark:scrollbar-thumb-surface-600 scrollbar-track-transparent">
                         {histories.map((item, idx) => (
                             <li key={idx}>

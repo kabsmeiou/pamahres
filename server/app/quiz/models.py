@@ -81,6 +81,7 @@ class QuestionModel(models.Model):
   question = models.CharField(max_length=1000)
   question_type = models.CharField(max_length=3, choices=QUESTION_TYPE_CHOICES, default='MCQ')
   correct_answer = models.CharField(max_length=10, null=True, blank=True)
+  user_answer = models.CharField(max_length=10, null=True, blank=True)  # store user answer for review(only save the answers for the best score)
 
   # indexing quiz for faster lookup when i filter questions by quiz
   class Meta:

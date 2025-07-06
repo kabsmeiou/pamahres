@@ -5,7 +5,6 @@ import { useQuizApi } from "../../services/quizzes";
 import TimeLimitBar from "../../components/TimeLimitBar";
 import { Quiz, Question, QuizItemDetails } from "../../types/quiz";
 import QuizItem from "./QuizItem";
-import Skeleton from "@mui/material/Skeleton";
 import { useQueryClient } from "@tanstack/react-query";
 import ActionConfirmation from "../../components/ActionConfirmation";
 import { MaterialsContext } from "../../components/CourseLayout"
@@ -45,7 +44,7 @@ const QuizPage = () => {
     let location = useLocation();
     const quizFromState = location.state as Quiz | null;
 
-    const { data: quizFromFetch, isLoading: quizLoading, error: quizError } = useQuery<Quiz>({
+    const { data: quizFromFetch } = useQuery<Quiz>({
         queryKey: ["quiz-info", quizId],
         queryFn: () => getQuizById(Number(quizId)),
         enabled: !quizFromState, // only fetch if not provided in state
@@ -54,7 +53,7 @@ const QuizPage = () => {
 
     const quiz = quizFromFetch || quizFromState;
     
-    const { data: questions, isLoading: questionsLoading, error: questionsError } = useQuery<Question[]>({
+    const { data: questions, isLoading: questionsLoading } = useQuery<Question[]>({
         queryKey: ["quiz-questions", quizId],
         queryFn: () => fetchQuestionsByQuizId(Number(quizId)),
     });
@@ -156,8 +155,8 @@ const QuizPage = () => {
     }
 
     return (
-        <div className="min-h-[calc(100vh-9rem)] flex flex-col lg:flex-row gap-6 p-4 bg-gray-50 dark:bg-surface-900">
-            {/* pop up confirmation for going back to the quiz list which is currently hidden and opens if back is pressed */}
+        <div className="min-h-screen bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950">
+            {/* Confirmation Modal */}
             {showConfirmation && !hasSubmitted && (
                 <ActionConfirmation
                     headerMessage={headerMessage}
@@ -168,173 +167,203 @@ const QuizPage = () => {
                     isLoading={false}
                 />
             )}
-            {/* Sidebar or quiz meta info */}
-            <div className="lg:w-96 w-full h-fit md:bg-white md:dark:bg-surface-800 rounded-xl md:shadow-md md:p-6 transition-all duration-300">
-                <div className="flex flex-col gap-6">
-                    <div className="text-center">
-                        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{quiz?.quiz_title ?? 'Quiz Title'}</h1>
-                    {showScore && (
-                        <div className="text-center">
-                            <p className="text-lg text-gray-600 dark:text-gray-300">
-                                You scored <span className="font-bold text-primary-600 dark:text-primary-400">{result.filter(r => r.is_correct).length}</span> out of <span className="font-bold text-primary-600 dark:text-primary-400">{quiz?.number_of_questions ?? 0}</span>
-                            </p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Review your answers below</p>
-                        </div>
-                    )}
-                    </div>
-                    {/* time limit as progress bar */}
-                    <div className="w-full rounded-lg overflow-hidden bg-gray-100 dark:bg-surface-700 p-4">
-                        <TimeLimitBar 
-                            totalMinutes={Number(quiz?.time_limit_minutes ?? 10)}
-                            isPaused={isPaused}
-                        />
-                    </div>
-                    <div className="flex text-sm justify-between w-full px-2">
-                        {/* number of questions remaining */}
-                        {/* if questions are loading, show skeleton */}
-                        {questionsLoading ? (
-                            <Skeleton variant="text" width={100} height={20} />
-                        ) : (
-                            <p className="font-medium text-gray-700 dark:text-gray-300">
-                                Questions Left: <span className="text-primary-600 dark:text-primary-400">{quiz?.number_of_questions ? quiz?.number_of_questions - numberOfQuestionsAnswered : 0}</span>
-                            </p>
-                        )}
+            
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Sidebar - Quiz Information */}
+                    <div className="lg:w-80 w-full">
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-8">
+                            <div className="space-y-6">
+                                {/* Quiz Title */}
+                                <div className="text-center space-y-3">
+                                    <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-2xl flex items-center justify-center mx-auto">
+                                        <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                    </div>
+                                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">{quiz?.quiz_title ?? 'Quiz Title'}</h1>
+                                    
+                                    {showScore && (
+                                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200/50 dark:border-blue-700/50">
+                                            <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">Quiz Complete!</p>
+                                            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                                                {result.filter(r => r.is_correct).length}/{quiz?.number_of_questions ?? 0}
+                                            </p>
+                                            <p className="text-xs text-gray-600 dark:text-gray-300">Review your answers below</p>
+                                        </div>
+                                    )}
+                                </div>
 
-                        {/* number of questions */}
-                        <p className="font-medium text-gray-700 dark:text-gray-300">
-                            Total Questions: <span className="text-primary-600 dark:text-primary-400">{quiz?.number_of_questions ?? 0}</span>
-                        </p>
-                    </div>
-                </div>
-                <div className="mt-6 mb-4">
-                    <h2 className="text-sm font-semibold text-gray-600 dark:text-gray-200 mb-3">Question Navigator</h2>
-                    <div className="grid grid-cols-6 lg:grid-cols-4 gap-2 max-h-[calc(100vh-30rem)] overflow-y-auto pr-1">
-                    {quiz?.current_number_of_questions && quiz?.current_number_of_questions > 0 && Array.isArray(questions) && questions.length > 0
-                        ? questions!.map((question, index) => (
-                            <button
-                                onClick={() => setCurrentQuestionIndex(index)}
-                                key={question.id}
-                                aria-label={`Go to question: ${question.question}`}
-                                className={`aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 ${
-                                    index === currentQuestionIndex 
-                                        ? 'bg-primary-600 dark:bg-primary-700 text-white shadow-md' 
-                                        : answers[Number(question.id)] 
-                                            ? 'bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-300 hover:bg-primary-200 dark:hover:bg-primary-800/70' 
-                                            : 'bg-white dark:bg-surface-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-surface-600'
-                                }`}
-                            >
-                                {index + 1}
-                            </button>
-                        ))
-                        : // Show 12 skeleton placeholders while loading
-                        Array.from({ length: 12 }).map((_, i) => (
-                            <div
-                                key={`skeleton-${i}`}
-                                className="aspect-square flex items-center justify-center bg-white dark:bg-surface-700 rounded-lg"
-                            >
-                                <Skeleton variant="rectangular" width={30} height={30} />
+                                {/* Timer */}
+                                <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl p-4 border border-orange-200/50 dark:border-orange-700/50">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-sm font-medium text-gray-900 dark:text-white">Time Limit</span>
+                                        <span className="text-sm text-orange-600 dark:text-orange-400">{quiz?.time_limit_minutes ?? 10} min</span>
+                                    </div>
+                                    <TimeLimitBar 
+                                        totalMinutes={Number(quiz?.time_limit_minutes ?? 10)}
+                                        isPaused={isPaused}
+                                    />
+                                </div>
+
+                                {/* Progress Stats */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 text-center">
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">Answered</p>
+                                        <p className="text-lg font-bold text-gray-900 dark:text-white">{numberOfQuestionsAnswered}</p>
+                                    </div>
+                                    <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 text-center">
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">Total</p>
+                                        <p className="text-lg font-bold text-gray-900 dark:text-white">{quiz?.number_of_questions ?? 0}</p>
+                                    </div>
+                                </div>
+
+                                {/* Question Navigator */}
+                                <div>
+                                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Question Navigator</h3>
+                                    <div className="grid grid-cols-5 gap-2 max-h-40 overflow-y-auto">
+                                        {quiz?.current_number_of_questions && quiz?.current_number_of_questions > 0 && Array.isArray(questions) && questions.length > 0
+                                            ? questions!.map((question, index) => (
+                                                <button
+                                                    onClick={() => setCurrentQuestionIndex(index)}
+                                                    key={question.id}
+                                                    className={`aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 ${
+                                                        index === currentQuestionIndex 
+                                                            ? 'bg-blue-600 text-white shadow-md' 
+                                                            : answers[Number(question.id)] 
+                                                                ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800/70' 
+                                                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                                    }`}
+                                                >
+                                                    {index + 1}
+                                                </button>
+                                            ))
+                                            : Array.from({ length: 12 }).map((_, i) => (
+                                                <div key={`skeleton-${i}`} className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                                            ))}
+                                    </div>
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                    <button
+                                        onClick={handleGoBack}
+                                        className="w-full px-4 py-2.5 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 font-medium rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    >
+                                        ← Back to Quizzes
+                                    </button>
+                                    
+                                    {hasStarted ? (
+                                        <button
+                                            onClick={handleSubmit}
+                                            className="w-full px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                                            disabled={hasSubmitted}
+                                        >
+                                            Submit Quiz
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={handleStartQuiz}
+                                            className="w-full px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                                            disabled={questionsLoading}
+                                        >
+                                            Start Quiz
+                                        </button>
+                                    )}
+                                </div>
                             </div>
-                        ))}
+                        </div>
                     </div>
-                </div>
-                <div className="flex justify-between mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">                        <button
-                            onClick={handleGoBack}
-                            className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-surface-700 transition-colors"
-                        >
-                            &larr; Back
-                        </button>
-                    {hasStarted ? (
-                        <button
-                            onClick={handleSubmit}
-                            className="px-6 py-2 bg-primary-600 dark:bg-primary-700 text-white font-medium rounded-lg shadow-sm hover:bg-primary-700 dark:hover:bg-primary-800 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:ring-offset-2 dark:focus:ring-offset-surface-800 transition-all"
-                            disabled={hasSubmitted}
-                        >
-                            Submit Quiz
-                        </button>
-                    ) : (
-                        <button
-                            onClick={handleStartQuiz}
-                            className="px-6 py-2 bg-primary-600 dark:bg-primary-700 text-white font-medium rounded-lg shadow-sm hover:bg-primary-700 dark:hover:bg-primary-800 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:ring-offset-2 dark:focus:ring-offset-surface-800 transition-all"
-                            disabled={questionsLoading}
-                        >
-                            Start Quiz
-                        </button>
-                    )}
-                </div>
-            </div>
 
-            {/* Question display */}
-            {hasStarted ? (
-            <div className="lg:w-3/4 w-full rounded-xl sm:px-6 sm:py-0 p-2">
-                {isSubmitting ? (
-                    <div className="flex items-center justify-center h-64">
-                        <div className="text-center">
-                            <div className="w-16 h-16 border-4 border-primary-200 dark:border-primary-700 border-t-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
-                            <p className="text-gray-600 dark:text-gray-300 font-medium">Checking your answers...</p>
-                        </div>
-                    </div>
-                ) : questions && currentQuestionIndex < questions.length && (
-                    <div className="flex flex-col h-full">
-                        <div className="mb-4 flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                Question {currentQuestionIndex + 1} of {questions.length}
-                            </span>
-                            <span className={`text-xs font-medium px-3 py-1 rounded-full ${
-                                answers[Number(questions[currentQuestionIndex].id)] 
-                                    ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-400' 
-                                    : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
-                            }`}>
-                                {answers[Number(questions[currentQuestionIndex].id)] 
-                                    ? 'Answered' 
-                                    : 'Not answered'}
-                            </span>
-                        </div>
-                        
-                        <div className="quiz-item flex-grow mb-6">
-                            <QuizItem 
-                                question={questions[currentQuestionIndex]} 
-                                setNumberOfQuestionsAnswered={setNumberOfQuestionsAnswered} 
-                                answers={answers}
-                                setAnswers={setAnswers}
-                                result={result}
-                                hasSubmitted={hasSubmitted}
-                            />
-                        </div>
-                        
-                        <div className="flex justify-between mt-auto pt-6 border-t border-gray-100 dark:border-gray-700">
-                            <button
-                                onClick={handlePreviousQuestion}
-                                className={`px-5 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-                                    currentQuestionIndex > 0 
-                                    ? 'bg-gray-100 dark:bg-surface-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-surface-600' 
-                                    : 'bg-gray-50 dark:bg-surface-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                                }`}
-                                disabled={currentQuestionIndex === 0}
-                            >
-                                &larr; Previous
-                            </button>
-                            <button
-                                onClick={handleNextQuestion}
-                                className={`px-5 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-                                    currentQuestionIndex < questions.length - 1 
-                                    ? 'bg-primary-600 dark:bg-primary-700 text-white hover:bg-primary-700 dark:hover:bg-primary-800' 
-                                    : 'bg-gray-50 dark:bg-surface-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                                }`}
-                                disabled={currentQuestionIndex === questions.length - 1}
-                            >
-                                Next &rarr;
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </div>
-            ) : (
-                <div className="lg:w-3/4 w-full rounded-xl p-6">
-                    <div className="flex items-center justify-center h-full">
-                        <p className="text-gray-600 dark:text-gray-300 font-medium">Quiz not started yet</p>
+                    {/* Main Content Area */}
+                    <div className="flex-1">
+                        {hasStarted ? (
+                            <div className="quiz-item bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
+                                {isSubmitting ? (
+                                    <div className="flex items-center justify-center h-96 p-8">
+                                        <div className="text-center">
+                                            <div className="w-16 h-16 border-4 border-blue-200 dark:border-blue-700 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+                                            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Checking your answers</h3>
+                                            <p className="text-gray-600 dark:text-gray-400">Please wait while we review your responses...</p>
+                                        </div>
+                                    </div>
+                                ) : questions && currentQuestionIndex < questions.length && (
+                                    <div className="p-6 md:p-8">
+                                        {/* Question Header */}
+                                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                                    Question {currentQuestionIndex + 1} of {questions.length}
+                                                </span>
+                                                <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+                                                <span className={`text-xs font-medium px-3 py-1 rounded-full ${
+                                                    answers[Number(questions[currentQuestionIndex].id)] 
+                                                        ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-400' 
+                                                        : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
+                                                }`}>
+                                                    {answers[Number(questions[currentQuestionIndex].id)] 
+                                                        ? 'Answered' 
+                                                        : 'Not answered'}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Question Content */}
+                                        <div className="mb-8">
+                                            <QuizItem 
+                                                question={questions[currentQuestionIndex]} 
+                                                setNumberOfQuestionsAnswered={setNumberOfQuestionsAnswered} 
+                                                answers={answers}
+                                                setAnswers={setAnswers}
+                                                result={result}
+                                                hasSubmitted={hasSubmitted}
+                                            />
+                                        </div>
+
+                                        {/* Navigation Buttons */}
+                                        <div className="flex justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
+                                            <button
+                                                onClick={handlePreviousQuestion}
+                                                className={`px-6 py-2.5 rounded-xl font-medium transition-all duration-200 ${
+                                                    currentQuestionIndex > 0 
+                                                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600' 
+                                                    : 'bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                                }`}
+                                                disabled={currentQuestionIndex === 0}
+                                            >
+                                                ← Previous
+                                            </button>
+                                            <button
+                                                onClick={handleNextQuestion}
+                                                className={`px-6 py-2.5 rounded-xl font-medium transition-all duration-200 ${
+                                                    currentQuestionIndex < questions.length - 1 
+                                                    ? 'bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-800 shadow-sm hover:shadow-md' 
+                                                    : 'bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                                }`}
+                                                disabled={currentQuestionIndex === questions.length - 1}
+                                            >
+                                                Next →
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+                                <div className="text-center">
+                                    <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                        <svg className="w-10 h-10 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Ready to start?</h2>
+                                    <p className="text-gray-600 dark:text-gray-400 mb-6">Click "Start Quiz" to begin your assessment.</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     )
 }
