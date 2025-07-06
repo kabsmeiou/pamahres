@@ -93,7 +93,7 @@ const CourseCard = ({
       {/* Card Footer with improved styling */}
       <div className="px-5 py-4 border-t border-surface-100 dark:border-surface-700/50 bg-surface-50/70 dark:bg-surface-800/50 flex items-center justify-between backdrop-blur-sm">
         <Link 
-        to={`/courses/${id}`}
+        to={`/pamahres/courses/${id}`}
         state={{ course: { course_code, course_name, course_description, last_updated_at } }}
         className="text-primary-600 dark:text-primary-400 font-medium text-sm flex items-center group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
           <span className="mr-1">Enter course</span>

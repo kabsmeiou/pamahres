@@ -56,7 +56,7 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
           {/* Quiz Info */}
           <div className="flex-1 space-y-4">
             <Link 
-              to={`/courses/${courseId}/quizzes/${quiz.id}`}
+              to={`/pamahres/courses/${courseId}/quizzes/${quiz.id}`}
               state={quiz}
               className="group/link inline-flex items-start gap-4 hover:no-underline cursor-pointer"
             >
@@ -116,7 +116,7 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
             <div className="flex items-center gap-3">
               {(quiz.number_of_questions ?? 0) > 0 && quiz.last_taken && (
                 <Link
-                  to={`/courses/${courseId}/quizzes/${quiz.id}?mode=review`}
+                  to={`/pamahres/courses/${courseId}/quizzes/${quiz.id}?mode=review`}
                   state={quiz}
                   className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
                 >
@@ -125,7 +125,7 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
               )}
               
               <Link
-                to={`/courses/${courseId}/quizzes/${quiz.id}`}
+                to={`/pamahres/courses/${courseId}/quizzes/${quiz.id}`}
                 className="inline-flex items-center justify-center px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md"
               >
                 {quiz.last_taken === null ? 'Take Quiz' : 'Retake Quiz'}

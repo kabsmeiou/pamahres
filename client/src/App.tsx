@@ -1,7 +1,9 @@
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
+import LandingPage from "./pages/LandingPage"
 import Dashboard from "./pages/Dashboard"
+import QuickCreate from "./pages/QuickCreate"
 import CourseChat from "./pages/CourseTabs/CourseChat"
 import ChatHistoryView from "./pages/ChatHistoryView/ChatHistoryView"
 import ChatHistoryIndex from "./pages/ChatHistoryView/ChatHistoryIndex"
@@ -20,9 +22,12 @@ function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="app-theme">
       <BrowserRouter>
+        {/* Routes requiring authentication */}
         <SignedIn>
           <Routes>
-            <Route path="/" element={<Layout />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/quick-create" element={<QuickCreate />} />
+            <Route path="/pamahres" element={<Layout />}>
               <Route index element={<Dashboard />} />
               <Route path="create-course" element={<CreateCourse />} />
               <Route path="settings" element={<Settings />} />
@@ -43,7 +48,11 @@ function App() {
         </SignedIn>
 
         <SignedOut>
-          <RedirectToSignIn />
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/quick-create" element={<QuickCreate />} />
+            <Route path="*" element={<RedirectToSignIn />} />
+          </Routes>
         </SignedOut>
       </BrowserRouter>
     </ThemeProvider>

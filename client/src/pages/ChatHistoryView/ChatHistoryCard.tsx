@@ -25,7 +25,7 @@ export const ChatHistoryCard = ({
         <div className="group">
             <div className="p-5 border border-surface-200 dark:border-surface-700 rounded-xl bg-white dark:bg-surface-800 shadow-sm hover:shadow-md transition-all duration-200 hover:border-primary-200 dark:hover:border-primary-800/50">
                 <Link
-                    to={`/courses/${courseId}/chat-history/${id}`}
+                    to={`/pamahres/courses/${courseId}/chat-history/${id}`}
                     className="flex items-center justify-between group-hover:text-primary-600 dark:group-hover:text-primary-400"
                 >
                     <div className="flex items-center gap-3">

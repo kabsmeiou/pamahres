@@ -43,5 +43,47 @@ export function useQuizApi() {
         return callApi(() => api.post<QuizResult>(`api-quiz/quizzes/${id}/check-answers/`, answers), setLoading, setError);
     };
 
-    return { getQuizzes, createQuiz, generateQuestions, deleteQuiz, loading, error, fetchQuestionsByQuizId, getQuizById, submitQuiz };
+    // Quick create quiz functions
+    const quickCreateQuiz = async (data: {
+        material_file_url: string;
+        file_name?: string;
+        quiz_title?: string;
+        number_of_questions?: number;
+        time_limit_minutes?: number;
+        file_size?: number;
+        file_type?: string;
+    }) => {
+        return callApi(() => api.post<{
+            message: string;
+            quiz_id: number;
+            quiz_title: string;
+            number_of_questions: number;
+            status: string;
+        }>(`api-quiz/quick-create/`, data), setLoading, setError);
+    };
+
+    const checkQuickCreateStatus = async (quizId: number) => {
+        return callApi(() => api.get<{
+            quiz?: Quiz;
+            questions?: Question[];
+            quiz_id: number;
+            quiz_title: string;
+            status: 'generating' | 'completed';
+            message?: string;
+        }>(`api-quiz/quick-create/${quizId}/`), setLoading, setError);
+    };
+
+    return { 
+        getQuizzes, 
+        createQuiz, 
+        generateQuestions, 
+        deleteQuiz, 
+        loading, 
+        error, 
+        fetchQuestionsByQuizId, 
+        getQuizById, 
+        submitQuiz,
+        quickCreateQuiz,
+        checkQuickCreateStatus
+    };
 }

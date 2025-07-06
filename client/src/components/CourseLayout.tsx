@@ -85,25 +85,25 @@ const CourseLayout = () => {
   const navigationItems = [
     { 
       name: 'Tutor', 
-      path: `/courses/${courseId}`,
+      path: `/pamahres/courses/${courseId}`,
       icon: MessageSquare,
       description: 'AI-powered course assistant'
     },
     { 
       name: 'History', 
-      path: `/courses/${courseId}/chat-history`,
+      path: `/pamahres/courses/${courseId}/chat-history`,
       icon: Clock,
       description: 'Previous conversations'
     },
     { 
       name: 'Materials', 
-      path: `/courses/${courseId}/materials`,
+      path: `/pamahres/courses/${courseId}/materials`,
       icon: FileText,
       description: 'Course resources and files'
     },
     { 
       name: 'Quizzes', 
-      path: `/courses/${courseId}/quizzes`,
+      path: `/pamahres/courses/${courseId}/quizzes`,
       icon: Book,
       description: 'Practice and assessments'
     },
@@ -119,7 +119,7 @@ const CourseLayout = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <Link 
-                  to="/"
+                  to="/pamahres"
                   className="inline-flex items-center gap-2 px-3 py-2 bg-white dark:bg-surface-900 text-surface-700 dark:text-surface-300 font-medium rounded-lg shadow-sm border border-surface-200 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200"
                 >
                   <ArrowLeft size={16} />

@@ -32,7 +32,7 @@ const ChatHistoryView = () => {
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
                 <div className="flex items-center justify-between">
                     <Link 
-                        to={`/courses/${courseId}/chat-history`}
+                        to={`/pamahres/courses/${courseId}/chat-history`}
                         className="inline-flex items-center text-gray-600 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors"
                     >
                         <ChevronLeft size={16} className="mr-1" />
@@ -69,7 +69,7 @@ const ChatHistoryView = () => {
                         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Failed to load conversation</h3>
                         <p className="text-gray-600 dark:text-gray-400 mb-6">Sorry, we couldn't retrieve this chat history.</p>
                         <Link 
-                            to={`/courses/${courseId}/chat-history`}
+                            to={`/pamahres/courses/${courseId}/chat-history`}
                             className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                         >
                             Return to chat history

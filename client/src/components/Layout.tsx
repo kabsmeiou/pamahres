@@ -129,9 +129,9 @@ const Layout = () => {
   }
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: Home, current: location.pathname === '/' },
-    { name: 'Create Course', href: '/create-course', icon: Plus, current: location.pathname === '/create-course' },
-    { name: 'Settings', href: '/settings', icon: Settings, current: location.pathname === '/settings' },
+    { name: 'Dashboard', href: '/pamahres', icon: Home, current: location.pathname === '/' },
+    { name: 'Create Course', href: '/pamahres/create-course', icon: Plus, current: location.pathname === '/create-course' },
+    { name: 'Settings', href: '/pamahres/settings', icon: Settings, current: location.pathname === '/settings' },
   ]
   const { signOut } = useAuth(); // Use Clerk's signOut function
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -169,7 +169,7 @@ const Layout = () => {
             {/* Logo and Desktop Navigation */}
             <div className="flex items-center">
               {/* Logo */}
-              <Link to="/" className="flex items-center space-x-3">
+              <Link to="/pamahres" className="flex items-center space-x-3">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 dark:from-primary-600 dark:to-primary-900 flex items-center justify-center text-white shadow-sm">
                   <span className="text-sm font-bold">P</span>
                 </div>

@@ -1,10 +1,11 @@
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import render
 from rest_framework import generics, status
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.throttling import AnonRateThrottle
+from rest_framework.permissions import AllowAny # <-- Import this!
 from django.shortcuts import get_object_or_404
 from quiz.serializers import QuizModelSerializer, QuestionModelSerializer, QuestionOptionSerializer
 from .models import QuizModel, QuestionModel, QuestionOption
@@ -63,6 +64,188 @@ class QuizListCreateView(generics.ListCreateAPIView):
       cache.delete(f'quizzes_serialized_{course_id}')
     except Exception as e:
       raise ValidationError(f"Error creating quiz: {str(e)}")
+
+
+class QuickCreateQuizView(APIView):
+  """
+  View to quickly create a quiz without any course association. This is intended for users who want to generate quizzes without being logged in. Also, logged in users can use this view but the limit for them is higher unlike anonymous users that has a limit of 2 quizzes per day.
+  """
+  permission_classes = [AllowAny]  # allow any user to create a quiz
+  throttle_classes = [AnonRateThrottle]  # disable throttling for this view
+
+  def get_throttled_message(self, request):
+    return "You have exceeded your daily limit for quick quiz generations. Please try again tomorrow or sign up for unlimited access!"
+
+  def post(self, request, *args, **kwargs):
+    """
+    Create a quick quiz from uploaded material file URL.
+    Expects material_file_url from supabase storage.
+    """
+    start_time = time.time()
+    
+    try:
+      # Get the material file URL from request
+      material_file_url = request.data.get('material_file_url')
+      
+      if not material_file_url:
+        return Response(
+          {"error": "Material file URL is required."}, 
+          status=status.HTTP_400_BAD_REQUEST
+        )
+      
+      # Get optional parameters with defaults
+      quiz_title = request.data.get('quiz_title', 'Quick Created Quiz')
+      number_of_questions = int(request.data.get('number_of_questions', 4))
+      time_limit_minutes = int(request.data.get('time_limit_minutes', 10))
+      file_name = request.data.get('file_name', 'Quick Create Material')
+      
+      # Validate number of questions
+      max_questions = 15 if request.user.is_authenticated else 10
+      if number_of_questions > max_questions:
+        return Response(
+          {"error": f"Maximum {max_questions} questions allowed for your account type."}, 
+          status=status.HTTP_400_BAD_REQUEST
+        )
+      
+      # Create a dummy course object to associate the quiz with
+      # Handle anonymous users by creating a course without user association
+      course_data = {
+        'course_name': f"QCC",
+        'course_code': f"QC01"
+      }
+      
+      if request.user.is_authenticated:
+        course_data['user'] = request.user
+      else:
+        try:
+          # Try to get a system user for anonymous quick creates
+          from django.contrib.auth import get_user_model
+          User = get_user_model()
+          system_user, created = User.objects.get_or_create(
+            username='system_quick_create',
+            defaults={'email': 'system@pamahres.com'}
+          )
+          course_data['user'] = system_user
+        except Exception:
+          return Response(
+            {"error": "Unable to create course for anonymous user. Please try again or sign up."}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+          )
+      
+      course = Course.objects.create(**course_data)
+      
+      material = CourseMaterial.objects.create(
+        course=course,
+        material_file_url=material_file_url,  
+        file_name=file_name,
+        file_size=request.data.get('file_size', 0),  
+        file_type=request.data.get('file_type', 'application/pdf') 
+      )
+      
+      quiz = QuizModel.objects.create(
+        course=course,
+        quiz_title=quiz_title,
+        number_of_questions=number_of_questions,
+        time_limit_minutes=time_limit_minutes,
+      )
+      
+      quiz.material_list.add(material)
+      
+      # Extract content from the material and generate questions
+      try:
+        contents = get_content_from_quizId(quiz.id)
+        
+        if not contents:
+          quiz.delete()
+          material.delete()
+          course.delete()
+          return Response(
+            {"error": "No valid content extracted from the provided materials. Please ensure the file contains readable text."}, 
+            status=status.HTTP_400_BAD_REQUEST
+          )
+        
+        generate_questions_by_chunks(contents, quiz, quiz.number_of_questions)
+        
+        quiz.is_generated = True
+        quiz.save()
+        
+        logger.info(f"Quick quiz creation took {time.time() - start_time:.3f} seconds")
+        
+        return Response({
+          "message": "Quiz created successfully.",
+          "quiz_id": quiz.id,
+          "quiz_title": quiz.quiz_title,
+          "number_of_questions": quiz.number_of_questions,
+          "status": "completed"
+        }, status=status.HTTP_201_CREATED)
+      
+      # Clean up on error
+      except ValidationError as e:
+        quiz.delete()
+        material.delete()
+        course.delete()
+        return Response(
+          {"error": str(e)}, 
+          status=status.HTTP_400_BAD_REQUEST
+        )
+      except Exception as e:
+        quiz.delete()
+        material.delete()
+        course.delete()
+        logger.error(f"Error generating questions: {str(e)}")
+        return Response(
+          {"error": "Failed to generate quiz questions.", "details": str(e)}, 
+          status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+        
+    except ValueError as e:
+      return Response(
+        {"error": "Invalid number provided for questions or time limit."}, 
+        status=status.HTTP_400_BAD_REQUEST
+      )
+    except Exception as e:
+      logger.error(f"Unexpected error in QuickCreateQuizView: {str(e)}")
+      return Response(
+        {"error": "An unexpected error occurred.", "details": str(e)}, 
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+      )
+
+  def get(self, request, quiz_id=None):
+    """
+    Check quiz status or retrieve quiz details for quick create.
+    """
+    if not quiz_id:
+      return Response(
+        {"error": "Quiz ID is required."}, 
+        status=status.HTTP_400_BAD_REQUEST
+      )
+    
+    try:
+      quiz = get_object_or_404(QuizModel, pk=quiz_id)
+      if quiz.is_generated:
+        # Return quiz with questions
+        serializer = QuizModelSerializer(quiz)
+        questions = QuestionModel.objects.filter(quiz=quiz)
+        questions_data = QuestionModelSerializer(questions, many=True).data
+        
+        return Response({
+          "quiz": serializer.data,
+          "questions": questions_data,
+          "status": "completed"
+        }, status=status.HTTP_200_OK)
+      else:
+        return Response({
+          "quiz_id": quiz.pk,
+          "quiz_title": quiz.quiz_title,
+          "status": "generating",
+          "message": "Quiz is still being generated. Please check again in a moment."
+        }, status=status.HTTP_202_ACCEPTED)
+        
+    except Exception as e:
+      return Response(
+        {"error": "Quiz not found or an error occurred.", "details": str(e)}, 
+        status=status.HTTP_404_NOT_FOUND
+      )
 
 # delete a quiz
 class QuizDeleteView(generics.DestroyAPIView):

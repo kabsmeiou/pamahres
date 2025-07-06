@@ -83,7 +83,7 @@ class ChatHistoryView(generics.ListAPIView):
       logger.info(f"No chat histories found for course_id: {course_id} and user_id: {self.request.user.id}")
 
     return chat_histories
-  
+
 class LLMConversationView(generics.GenericAPIView):
   serializer_class = LLMConversationSerializer
   permission_classes = [IsAuthenticated, IsOwner]
