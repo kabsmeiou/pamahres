@@ -9,13 +9,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from quiz.models import QuizModel
 from quiz.tasks import delete_material_and_quiz
-from services.helpers import get_content_from_quizId, generate_questions_by_chunks, add_to_chat_history
+from utils.helpers import get_content_from_quizId, generate_questions_by_chunks, add_to_chat_history
 from services.openai_generator import get_conversational_completion
 import time
 import logging
 import tiktoken
 import datetime
-from utils.embedding import embed_and_upsert_chunks, query_course, delete_course_chunks
+from services.embedding import embed_and_upsert_chunks, query_course, delete_course_chunks
 
 logger = logging.getLogger(__name__)
 

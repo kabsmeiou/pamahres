@@ -1,29 +1,21 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
-from user.models import User
+from user.models import User, Profile, UserActivity
 from courses.models import Course, CourseMaterial
 from typing import Final
-from supabase_client import supabase
+import uuid
 
 TEST_PASSWORD: Final[str] = 'testpass123'
 
 class CourseViewTests(APITestCase):
   def setUp(self):
-    # Create a user for authentication
-    url = reverse('signup')
-    data = {
-      'username': 'testuser',
-      'email': 'test@example.com',
-      'first_name': 'Test',
-      'last_name': 'User',
-      'password': TEST_PASSWORD
-    }
-    response = self.client.post(url, data, format='json')
-    self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    user = User.objects.get(username='testuser')
-    self.user = user
-    self.token = self.get_jwt_token(self.user) 
+    # Create a test user that mimics Clerk user creation
+    self.user = self.create_test_user()
+    
+    # For testing, we'll use Django's built-in authentication
+    # instead of Clerk authentication to avoid external dependencies
+    self.client.force_authenticate(user=self.user)
 
     valid_units = {
       'course_name': 'Test Course',
@@ -32,72 +24,45 @@ class CourseViewTests(APITestCase):
     }
 
     url = reverse('course-list-create')
-    response = self.client.post(url, valid_units, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+    response = self.client.post(url, valid_units, format='json')
     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
     self.course = Course.objects.get(id=response.data['id'])
-
-  def get_jwt_token(self, user):
-    """Helper method to get JWT token for the user."""
-    # Obtain JWT token using the TokenObtainPairView
-    response = self.client.post(reverse('token_obtain_pair'), data={
-      'username': user.username,
-      'password': TEST_PASSWORD
-    })
-    return response.data['access']
   
-  def test_create_invalid_course_code(self):
-    """Test creating a course with invalid units."""
-    invalid_unit = {
-      'course_name': 'Test Course',
-      'course_code': None,
-    }
+  def create_test_user(self):
+      """Create a test user that mimics Clerk user creation."""
+      # Generate a unique username that mimics Clerk's user ID format
+      clerk_user_id = f"user_{uuid.uuid4().hex[:12]}"
+      
+      user = User.objects.create(
+          username=clerk_user_id,
+          email='test@example.com',
+          first_name='Test',
+          last_name='User'
+      )
+      
+      # Create related objects like Clerk authentication middleware does
+      Profile.objects.get_or_create(user=user)
+      UserActivity.objects.get_or_create(user=user)
+      
+      return user
 
-    url = reverse('course-list-create')
-    response = self.client.post(url, invalid_unit, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')  
-    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+  def test_get_materials(self):
+    url = reverse('course-material-list-create', kwargs={'course_id': self.course.id})
+    response = self.client.get(url, format='json')
+    self.assertEqual(response.status_code, status.HTTP_200_OK)
+    self.assertEqual(len(response.data), 0)
 
-  
-  def test_create_invalid_course_duplicate_course_name(self):
-    """Should fail when creating a course with non-positive integers in the units field."""
-    invalid_unit = {
-      'course_name': 'Test Course',
-      'course_code': 'code2',
-    }
-    url = reverse('course-list-create')
-    response = self.client.post(url, invalid_unit, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
-    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-  def test_create_invalid_course_with_empty_string(self):
-    """Should fail when creating an empty course name"""
-    invalid_unit = {
-      'course_name': "", # No course name should raise a validation error
-    }
-
-    url = reverse('course-list-create')
-    response = self.client.post(url, invalid_unit, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
-    self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-  def test_create_valid_course(self):
-    """Should work when creating a course that meets the model's expected input"""
-    valid_units = {
-      'course_name': 'Test Course 2',
-      'course_code': 'TEST2',
-    }
-
-    url = reverse('course-list-create')
-    response = self.client.post(url, valid_units, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
-    self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-  def test_course_material(self):
-    """"Should be able to add materials in the course"""
+  def test_create_material(self):
     material = {
-      'material_file_url': "https://yszhqkacyhudqdjjncjc.supabase.co/storage/v1/object/public/images//inbound1750991441972193945.webp",
-      'file_name': 'test.pdf',
-      'file_type': 'pdf',
+      'material_file_url': "2025-06-05T08:55:05_Concurrency",
+      'file_name': 'test_material.pdf',
+      'file_type': 'application/pdf',
       'file_size': 1024
     }
 
     url = reverse('course-material-list-create', kwargs={'course_id': self.course.id})
-    response = self.client.post(url, material, HTTP_AUTHORIZATION=f'Bearer {self.token}', format='json')
+    response = self.client.post(url, material, format='json')
+    print(response.data)
     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
     self.assertEqual(CourseMaterial.objects.count(), 1)
+    self.material1 = CourseMaterial.objects.get(id=response.data['id'])

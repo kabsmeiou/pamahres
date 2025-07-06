@@ -16,7 +16,7 @@ from utils.validators import validate_quiz_question
 import time
 import logging
 from django.core.cache import cache
-from services.helpers import get_content_from_quizId, generate_questions_by_chunks, save_answers_of_best_score
+from utils.helpers import get_content_from_quizId, generate_questions_by_chunks, save_answers_of_best_score
 
 logger = logging.getLogger(__name__)
 
