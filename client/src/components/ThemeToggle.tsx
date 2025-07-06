@@ -46,7 +46,7 @@ export function ThemeToggle() {
       className="p-2 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg transition-colors text-surface-600 hover:text-surface-900 dark:text-surface-300 dark:hover:text-surface-100"
       title={getTooltip()}
       aria-label={getTooltip()}
-      disabled={true}
+      disabled={false}
     >
       {getIcon()}
     </button>
