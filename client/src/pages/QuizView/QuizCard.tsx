@@ -6,7 +6,6 @@ import { Quiz } from "../../types/quiz";
 import { useQuizApi } from "../../services/quizzes";
 import { useDeleteItem } from "../../hooks/useDeleteItem";
 
-import Error from "../../components/Error";
 import ActionConfirmation from "../../components/ActionConfirmation";
 
 const QuizCard = ({quiz}: {quiz: Quiz}) => {
@@ -14,7 +13,6 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
   const { courseId } = useParams<{ courseId: string }>();
   const numericCourseId = parseInt(courseId!, 10);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [clickedReview, setClickedReview] = useState(false);
 
   // wrapper function to delete quiz with courseId
   // This is necessary because the deleteQuiz function expects an id, but we need to pass courseId as well
@@ -53,10 +51,6 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group">
-      {clickedReview && (
-        <Error message="This feature is not available yet. Please check back later." />
-      )}
-      
       <div className="p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           {/* Quiz Info */}
@@ -120,13 +114,14 @@ const QuizCard = ({quiz}: {quiz: Quiz}) => {
             
             {/* Action Buttons */}
             <div className="flex items-center gap-3">
-              {(quiz.number_of_questions ?? 0) > 0 && (
-                <button
+              {(quiz.number_of_questions ?? 0) > 0 && quiz.last_taken && (
+                <Link
+                  to={`/courses/${courseId}/quizzes/${quiz.id}?mode=review`}
+                  state={quiz}
                   className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
-                  onClick={() => setClickedReview(true)}
                 >
                   Review
-                </button>
+                </Link>
               )}
               
               <Link

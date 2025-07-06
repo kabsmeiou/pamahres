@@ -19,12 +19,20 @@ const QuizPage = () => {
     const { fetchQuestionsByQuizId, getQuizById, submitQuiz } = useQuizApi();
     const { courseId, quizId } = useParams();
 
+    // get the quiz data from the previous state, if not present, fetch it
+    let location = useLocation();
+    const quizFromState = location.state as Quiz | null;
+    
+    // Check if we're in review mode
+    const urlParams = new URLSearchParams(location.search);
+    const isReviewMode = urlParams.get('mode') === 'review';
+
     // quiz state
-    const [hasStarted, setHasStarted] = useState(false);
+    const [hasStarted, setHasStarted] = useState(isReviewMode); // auto-start in review mode
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [numberOfQuestionsAnswered, setNumberOfQuestionsAnswered] = useState(0);
-    const [isPaused, setIsPaused] = useState(true);
-    const [hasSubmitted, setHasSubmitted] = useState(false);
+    const [isPaused, setIsPaused] = useState(!isReviewMode); // don't pause in review mode
+    const [hasSubmitted, setHasSubmitted] = useState(isReviewMode); // already submitted in review mode
     const [isSubmitting, setIsSubmitting] = useState(false);
     
     // quiz result
@@ -39,10 +47,6 @@ const QuizPage = () => {
 
     // save the answers to the quiz
     const [answers, setAnswers] = useState<Record<number, string>>({});
-
-    // get the quiz data from the previous state, if not present, fetch it
-    let location = useLocation();
-    const quizFromState = location.state as Quiz | null;
 
     const { data: quizFromFetch } = useQuery<Quiz>({
         queryKey: ["quiz-info", quizId],
@@ -126,8 +130,9 @@ const QuizPage = () => {
     }
 
     const handleGoBack = () => {
-        if (hasSubmitted) {
+        if (isReviewMode || hasSubmitted) {
             handleConfirmGoBack();
+            return;
         }
         setShowConfirmation(true);
         setHeaderMessage("Are you sure you want to go back?");
@@ -181,7 +186,14 @@ const QuizPage = () => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
                                     </div>
-                                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">{quiz?.quiz_title ?? 'Quiz Title'}</h1>
+                                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                                        {quiz?.quiz_title ?? 'Quiz Title'}
+                                        {isReviewMode && (
+                                            <span className="block text-sm font-medium text-gray-600 dark:text-gray-400 mt-1">
+                                                Review Mode
+                                            </span>
+                                        )}
+                                    </h1>
                                     
                                     {showScore && (
                                         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200/50 dark:border-blue-700/50">
@@ -194,23 +206,25 @@ const QuizPage = () => {
                                     )}
                                 </div>
 
-                                {/* Timer */}
-                                <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl p-4 border border-orange-200/50 dark:border-orange-700/50">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-sm font-medium text-gray-900 dark:text-white">Time Limit</span>
-                                        <span className="text-sm text-orange-600 dark:text-orange-400">{quiz?.time_limit_minutes ?? 10} min</span>
+                                {/* Timer - Hidden in review mode */}
+                                {!isReviewMode && (
+                                    <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl p-4 border border-orange-200/50 dark:border-orange-700/50">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="text-sm font-medium text-gray-900 dark:text-white">Time Limit</span>
+                                            <span className="text-sm text-orange-600 dark:text-orange-400">{quiz?.time_limit_minutes ?? 10} min</span>
+                                        </div>
+                                        <TimeLimitBar 
+                                            totalMinutes={Number(quiz?.time_limit_minutes ?? 10)}
+                                            isPaused={isPaused}
+                                        />
                                     </div>
-                                    <TimeLimitBar 
-                                        totalMinutes={Number(quiz?.time_limit_minutes ?? 10)}
-                                        isPaused={isPaused}
-                                    />
-                                </div>
+                                )}
 
                                 {/* Progress Stats */}
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 text-center">
                                         <p className="text-sm text-gray-600 dark:text-gray-300">Answered</p>
-                                        <p className="text-lg font-bold text-gray-900 dark:text-white">{numberOfQuestionsAnswered}</p>
+                                        <p className="text-lg font-bold text-gray-900 dark:text-white">{isReviewMode ? quiz?.number_of_questions : numberOfQuestionsAnswered}</p>
                                     </div>
                                     <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 text-center">
                                         <p className="text-sm text-gray-600 dark:text-gray-300">Total</p>
@@ -230,7 +244,7 @@ const QuizPage = () => {
                                                     className={`aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 ${
                                                         index === currentQuestionIndex 
                                                             ? 'bg-blue-600 text-white shadow-md' 
-                                                            : answers[Number(question.id)] 
+                                                            : (isReviewMode ? question.user_answer : answers[Number(question.id)])
                                                                 ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800/70' 
                                                                 : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                                                     }`}
@@ -253,22 +267,25 @@ const QuizPage = () => {
                                         ← Back to Quizzes
                                     </button>
                                     
-                                    {hasStarted ? (
-                                        <button
-                                            onClick={handleSubmit}
-                                            className="w-full px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
-                                            disabled={hasSubmitted}
-                                        >
-                                            Submit Quiz
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={handleStartQuiz}
-                                            className="w-full px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
-                                            disabled={questionsLoading}
-                                        >
-                                            Start Quiz
-                                        </button>
+                                    {/* Hide submit/start buttons in review mode */}
+                                    {!isReviewMode && (
+                                        hasStarted ? (
+                                            <button
+                                                onClick={handleSubmit}
+                                                className="w-full px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                                                disabled={hasSubmitted}
+                                            >
+                                                Submit Quiz
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={handleStartQuiz}
+                                                className="w-full px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                                                disabled={questionsLoading}
+                                            >
+                                                Start Quiz
+                                            </button>
+                                        )
                                     )}
                                 </div>
                             </div>
@@ -297,14 +314,15 @@ const QuizPage = () => {
                                                 </span>
                                                 <div className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600"></div>
                                                 <span className={`text-xs font-medium px-3 py-1 rounded-full ${
-                                                    answers[Number(questions[currentQuestionIndex].id)] 
+                                                    (isReviewMode ? questions[currentQuestionIndex].user_answer : answers[Number(questions[currentQuestionIndex].id)])
                                                         ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-400' 
                                                         : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
                                                 }`}>
-                                                    {answers[Number(questions[currentQuestionIndex].id)] 
+                                                    {(isReviewMode ? questions[currentQuestionIndex].user_answer : answers[Number(questions[currentQuestionIndex].id)])
                                                         ? 'Answered' 
                                                         : 'Not answered'}
                                                 </span>
+                                                
                                             </div>
                                         </div>
 
@@ -317,6 +335,7 @@ const QuizPage = () => {
                                                 setAnswers={setAnswers}
                                                 result={result}
                                                 hasSubmitted={hasSubmitted}
+                                                isReviewMode={isReviewMode}
                                             />
                                         </div>
 

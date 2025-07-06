@@ -30,7 +30,7 @@ class QuestionModelSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = QuestionModel
-    fields = ['id', 'question', 'question_type', 'quiz', 'options']
+    fields = ['id', 'question', 'question_type', 'quiz', 'options', 'user_answer', 'correct_answer']
 
   def validate(self, data):
     options = data.get('options', [])
