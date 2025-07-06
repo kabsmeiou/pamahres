@@ -1,7 +1,5 @@
 # PAMAHRES
 
-**P**ersonalized **A**cademic **M**aterial **A**nalysis and **H**elp **R**esource for **E**ducational **S**upport
-
 A modern, AI-powered learning management system that helps students create courses, generate quizzes from PDF materials, and get personalized tutoring through an intelligent chatbot.
 
 ## 🌟 Features
