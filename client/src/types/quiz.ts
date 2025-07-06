@@ -24,6 +24,7 @@ export interface Question {
     quiz: number;       // quiz id
     correct_answer: string;
     options: QuestionOption[];
+    user_answer?: string;
 }
 
 // Quiz result to be received
