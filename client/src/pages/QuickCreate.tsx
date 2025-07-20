@@ -39,7 +39,6 @@ const QuickCreate = () => {
             try {
                 const userDetails = await getUserDetails();
                 setUserDetails(userDetails as UserDetail);
-                console.log("User details:", userDetails);
             } catch (err) {
                 console.error("Failed to fetch user details:", err);
             }
