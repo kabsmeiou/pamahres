@@ -322,7 +322,6 @@ const QuizPage = () => {
                                                         ? 'Answered' 
                                                         : 'Not answered'}
                                                 </span>
-                                                
                                             </div>
                                         </div>
 
