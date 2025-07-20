@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Upload, FileText, ArrowRight, ArrowLeft, RotateCcw } from 'react-feather';
 import Pamahres from '../assets/pamahres.png';
 import { useQuizApi } from '../services/quizzes';
