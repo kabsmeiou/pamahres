@@ -188,10 +188,7 @@ const QuickCreate = () => {
                 answer: selectedAnswers[question.id!] || '' // Use empty string if no answer selected
             }));
 
-            console.log(selectedAnswers);
-            console.log("Submitting quiz with answers:", answers);
             const result = await submitQuiz(quizData.quiz_id, answers);
-            console.log(result)
 
             if (result) {
                 setQuizResult(result);
