@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
-import { Users, Star,  } from 'react-feather';
+import { Users, Star } from 'react-feather';
 import Pamahres from '../assets/pamahres.png';
 import Toast from '../components/Toast';
 import { features } from '../components/Features';
