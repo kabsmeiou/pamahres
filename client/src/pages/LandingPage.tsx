@@ -1,11 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Check, Users } from 'react-feather';
 import { useAuth } from '@clerk/clerk-react';
+import { Users, Star } from 'react-feather';
 import Pamahres from '../assets/pamahres.png';
 import Toast from '../components/Toast';
+import { features } from '../components/Features';
+
 const LandingPage = () => {
   const { isSignedIn } = useAuth();
   const [animatedSquares, setAnimatedSquares] = useState<Array<{
@@ -118,7 +120,8 @@ const LandingPage = () => {
         
         <div className="hidden md:flex items-center gap-8">
           <a href="#home" className="text-gray-700 hover:text-primary-600 transition-colors">Home</a>
-          <a href="#pricing" className="text-gray-700 hover:text-primary-600 transition-colors">Pricing</a>
+          {/* <a href="#pricing" className="text-gray-700 hover:text-primary-600 transition-colors">Pricing</a> */}
+          <a href="#features" className="text-gray-700 hover:text-primary-600 transition-colors">Features</a>
           <a href="#about" className="text-gray-700 hover:text-primary-600 transition-colors">About</a>
         </div>
 
@@ -131,7 +134,7 @@ const LandingPage = () => {
       </nav>
 
       {/* Hero Section */}
-      <section id="home" className="relative z-10 max-w-7xl mx-auto px-6 py-16 text-center">
+      <section id="home" className="relative z-10 max-w-7xl mx-auto px-6 py-32 text-center">
         <div className="max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-50 to-primary-100 border border-primary-200 rounded-full px-4 py-2 text-sm text-gray-600 mb-8 overflow-hidden shadow-sm">
             <div className="relative w-48 overflow-hidden rounded-xl">
@@ -142,9 +145,8 @@ const LandingPage = () => {
           </div>
 
           <div className="relative">
-            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 via-primary-800 to-gray-900 bg-clip-text text-transparent mb-6 relative">
+            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 via-primary-600 to-gray-900 bg-clip-text text-transparent mb-6 relative">
               Pamahres
-              <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-r from-primary-400 to-primary-600 rounded-full opacity-30 animate-pulse"></div>
               <div className="absolute -bottom-2 -left-2 w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full opacity-20 animate-pulse" style={{animationDelay: '1s'}}></div>
             </h1>
           </div>
@@ -180,8 +182,34 @@ const LandingPage = () => {
         <div className="absolute top-1/2 left-5 w-8 h-8 bg-gradient-to-r from-primary-300 to-primary-400 rounded-full opacity-50 animate-ping" style={{animationDelay: '3s'}}></div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="relative z-10 max-w-7xl mx-auto px-6 py-20">
+      {/* Features Section */}
+      <section id="features" className="relative z-10 max-w-7xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 relative">
+            Why use <span className="text-primary-600 relative">
+                Pamahres
+                <div className="absolute -bottom-2 left-0 right-0 h-3 bg-gradient-to-r from-primary-200 to-primary-300 opacity-30 rounded-full"></div>
+              </span>?
+          </h2>
+          <p className="text-lg text-gray-600">Boost the effectivity of your study sessions by a mile!</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Privacy-Focused */}
+          {features.map((feature, index) => (
+            <div key={index} className="p-6 bg-white rounded-lg border border-gray-100 hover:border-primary-200 transition-all">
+              <div className={`w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4`}>
+                {React.createElement(feature.icon, { className: "w-6 h-6 text-primary-600" })}
+              </div>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800">{feature.title}</h3>
+              <p className="text-gray-600">{feature.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Pricing Section (to be added) */}
+      {/* <section id="pricing" className="relative z-10 max-w-7xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-primary-800 bg-clip-text text-transparent mb-4">
             Choose Your Plan
@@ -237,13 +265,12 @@ const LandingPage = () => {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* Testimonials Section */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 py-20">
         {/* Background decorative elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-r from-primary-200 to-primary-300 rounded-full opacity-20 animate-pulse"></div>
           <div className="absolute bottom-20 right-20 w-24 h-24 bg-gradient-to-r from-purple-200 to-pink-200 rounded-lg opacity-25 animate-bounce" style={{animationDelay: '1s'}}></div>
           <div className="absolute top-1/2 right-10 w-16 h-16 bg-gradient-to-r from-blue-200 to-indigo-200 rounded-full opacity-30 animate-ping" style={{animationDelay: '2s'}}></div>
         </div>
@@ -253,7 +280,6 @@ const LandingPage = () => {
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 relative">
               What Our <span className="text-primary-600 relative">
                 Scholars
-                <div className="absolute -bottom-2 left-0 right-0 h-3 bg-gradient-to-r from-primary-200 to-primary-300 opacity-30 rounded-full"></div>
               </span> Say
             </h2>
           </div>
