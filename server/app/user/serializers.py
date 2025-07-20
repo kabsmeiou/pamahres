@@ -39,7 +39,7 @@ class UserWithProfileSerializer(serializers.HyperlinkedModelSerializer):
     model = User
     fields = [
       'id', 'username', 'email', 
-      'first_name', 'last_name', 'profile'
+      'first_name', 'last_name', 'profile', 'quick_create_credit'
     ]
 
 class UserSettingsSerializer(serializers.HyperlinkedModelSerializer):

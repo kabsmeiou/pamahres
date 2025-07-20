@@ -22,4 +22,5 @@ export interface UserDetail {
     first_name: string;
     last_name: string;
     email: string;
+    quick_create_credit: number;
 }
