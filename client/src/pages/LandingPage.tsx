@@ -194,7 +194,7 @@ const LandingPage = () => {
           <p className="text-lg text-gray-600">Boost the effectivity of your study sessions by a mile!</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 ">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Privacy-Focused */}
           {features.map((feature, index) => (
             <div key={index} className="p-6 bg-white rounded-lg border border-gray-100 hover:border-primary-200 transition-all">
