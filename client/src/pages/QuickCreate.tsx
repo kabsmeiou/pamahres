@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Upload, FileText, ArrowRight, ArrowLeft, RotateCcw } from 'react-feather';
 import Pamahres from '../assets/pamahres.png';
 import { useQuizApi } from '../services/quizzes';
+import { useUserApi } from '../services/users';
 import { Question, QuizResult } from '../types/quiz';
 import supabase from '../lib/supabase';
 import QuizItem from './QuizView/QuizItem';
+
+import type { UserDetail } from '../types/user';
 
 const QuickCreate = () => {
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -24,8 +27,26 @@ const QuickCreate = () => {
     const [error, setError] = useState<string | null>(null);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
+    const [isReviewMode, setIsReviewMode] = useState(false);
+    const [userDetails, setUserDetails] = useState<UserDetail | null>(null);
 
-    const { quickCreateQuiz, checkQuickCreateStatus, submitQuiz } = useQuizApi();
+    const { quickCreateQuiz, checkQuickCreateStatus, submitQuiz, deleteQuiz } = useQuizApi();
+    const { getUserDetails } = useUserApi();
+
+    // get userdetails to fetch quick_create credit every time quiz is generated
+    useEffect(() => {
+        const fetchUserDetails = async () => {
+            try {
+                const userDetails = await getUserDetails();
+                setUserDetails(userDetails as UserDetail);
+            } catch (err) {
+                console.error("Failed to fetch user details:", err);
+            }
+        };
+
+        fetchUserDetails();
+    }, [quizGenerated]);
+    
 
     const validateFilename = (filename: string): string => {
         return filename.replace(/[^a-zA-Z0-9._-]/g, '_');
@@ -164,11 +185,11 @@ const QuickCreate = () => {
             // Convert selectedAnswers to the format expected by the API
             const answers = quizData.questions.map((question, index) => ({
                 question_id: question.id!,
-                answer: selectedAnswers[index] || ''
+                answer: selectedAnswers[question.id!] || '' // Use empty string if no answer selected
             }));
 
             const result = await submitQuiz(quizData.quiz_id, answers);
-            console.log(result)
+
             if (result) {
                 setQuizResult(result);
                 setShowResults(true);
@@ -190,6 +211,11 @@ const QuickCreate = () => {
         setQuizResult(null);
         setError(null);
         setUploadProgress(0);
+        if (quizData) {
+            deleteQuiz(quizData.quiz_id).catch(err => {
+                console.error("Failed to delete quiz:", err);
+            });
+        }
     };
 
     const calculateScore = () => {
@@ -214,7 +240,7 @@ const QuickCreate = () => {
             <div className="flex items-center gap-2">
                 <img src={Pamahres} alt="Pamahres" className="w-8 h-8" />
                 <span className="text-xl font-semibold text-primary-600">Pamahres</span>
-                <span className="text-sm text-gray-500 ml-2">Quick Create</span>
+                <span className="text-sm text-gray-500 ml-2">Quick Create Credits: {userDetails?.quick_create_credit}</span>
             </div>
             <button
                 onClick={resetQuiz}
@@ -356,7 +382,7 @@ const QuickCreate = () => {
                             setAnswers={setSelectedAnswers}
                             result={[]} // No results during quiz taking
                             hasSubmitted={false} // Not submitted yet
-                            isReviewMode={false} // Not in review mode
+                            isReviewMode={isReviewMode} // Not in review mode
                         />
                     )}
                 </div>
@@ -423,10 +449,10 @@ const QuickCreate = () => {
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button
-                    onClick={resetQuiz}
+                    onClick={() => setIsReviewMode(true)}
                     className="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-3 rounded-lg hover:from-primary-700 hover:to-primary-800 transition-all font-medium"
                     >
-                    Create Another Quiz
+                    Review Answers
                     </button>
                     <button
                     onClick={() => {

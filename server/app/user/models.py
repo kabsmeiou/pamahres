@@ -5,6 +5,10 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
   # index the username
   username = models.CharField(max_length=150, unique=True)
+  quick_create_credit = models.PositiveIntegerField(default=3)
+
+  def __str__(self):
+    return self.username
 
 # create option for mbti
 MBTI_CHOICES = [

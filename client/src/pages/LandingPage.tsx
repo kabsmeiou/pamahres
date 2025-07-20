@@ -162,12 +162,12 @@ const LandingPage = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button 
-            onClick={() => setShowToast(true)}
+            <Link 
+            to= "/quick-create"
             className="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-8 py-3 rounded-lg hover:from-primary-700 hover:to-primary-800 transition-all font-medium inline-flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               Quick Create
-            </button>
+            </Link>
             <Link 
             to='/pamahres'
             className="border-2 border-primary-600 text-primary-600 px-8 py-3 rounded-lg hover:bg-primary-600 hover:text-white transition-all font-medium shadow-lg hover:shadow-xl transform hover:scale-105">

@@ -317,7 +317,7 @@ class CheckQuizAnswerView(generics.GenericAPIView):
     # check if the answer_list is empty
     if not answer_list:
       raise ValidationError("No answers provided.")
-
+    
     score: int = 0
     # checking asnwers
     results: list[dict] = []
