@@ -24,7 +24,6 @@ class IsOwner(BasePermission):
   def has_object_permission(self, request, view, obj):
     return obj.user == request.user
 
-
 # ########################
 # FLOW FOR CHAT MESSAGES
 # user -> client -> client sends to server
@@ -41,26 +40,18 @@ class ChatHistoryMessageView(generics.ListCreateAPIView):
   def get_queryset(self):
     chat_history_id = None
     if 'chat_history_id' not in self.kwargs:
-      # get the current date and course_id from the url
-      course_id = self.kwargs['course_id']
-      today = datetime.datetime.now().strftime("%Y-%m-%d")
-      name_filter = f"{today}-{course_id}"
-      # get chat history based on course_id, name_filter, user_id
-      chat_history_id = ChatHistory.objects.filter(
-        course__id=course_id,
-        name_filter=name_filter,
-        course__user=self.request.user,
-      ).first()
-
+      # get today's chat history for the course and user
+      chat_history_id = ChatHistory.get_today_for_course_and_user(
+        course_id=self.kwargs['course_id'],
+        user=self.request.user
+      )
       if not chat_history_id:
         return Message.objects.none()
     else:
       chat_history_id = self.kwargs['chat_history_id']
-
     chat_history_messages = Message.objects.filter(
       chat_history=chat_history_id,
     )
-    
     return chat_history_messages
 
 
@@ -255,15 +246,9 @@ class CourseMaterialDetailView(generics.RetrieveUpdateDestroyAPIView):
 class CourseDetailView(generics.RetrieveUpdateDestroyAPIView):
   serializer_class = CourseSerializer
   permission_classes = [IsAuthenticated, IsOwner]
-  lookup_url_kwarg = "course_id" # Specify the URL keyword argument for course_id
+  lookup_url_kwarg = "course_id"
+  queryset = Course.objects.all() 
 
-  # Look into the course list in database and select the corresponding course_id from the request
-  def get_object(self):
-    start_time = time.time()
-    course = get_object_or_404(Course, id=self.kwargs["course_id"], user=self.request.user)
-    logger.info(f"Total get_object method of course detail view took {time.time() - start_time:.3f} seconds")
-    return course
-  
   # override delete to ensure that index is deleted from Pinecone
   def delete(self, request, *args, **kwargs):
     start_time = time.time()

@@ -1,22 +1,26 @@
+import time
+import logging
+import datetime
+
 from rest_framework.exceptions import ValidationError
-from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
-from rest_framework.permissions import AllowAny # <-- Import this!
+from rest_framework.permissions import AllowAny
+
+from django.shortcuts import render
 from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.core.cache import cache
+
 from quiz.serializers import QuizModelSerializer, QuestionModelSerializer, QuestionOptionSerializer
 from .models import QuizModel, QuestionModel, QuestionOption
 from courses.models import CourseMaterial, Course
-from django.http import JsonResponse
-import datetime
+
 from .tasks import generate_questions_task, delete_quiz_cache
 from utils.validators import validate_quiz_question
-import time
-import logging
-from django.core.cache import cache
 from utils.helpers import get_content_from_quizId, generate_questions_by_chunks, save_answers_of_best_score
 
 logger = logging.getLogger(__name__)
@@ -29,6 +33,7 @@ class QuizListCreateView(generics.ListCreateAPIView):
   def get_queryset(self):
     start_time = time.time()
     course_id = self.kwargs['course_id']
+    
     # return all quizzes if no course_id
     if course_id:
       # filter by course, show all the quizzes associated in a course
