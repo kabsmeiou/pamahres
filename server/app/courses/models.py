@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 # from django.contrib.postgres.fields import ArrayField
 from django.core.validators import FileExtensionValidator
 from user.models import User
@@ -60,6 +61,17 @@ class ChatHistory(models.Model):
   # custom get date to return only the mm-dd-yyyy format
   def get_date(self):
     return self.date_created.strftime("%m-%d-%Y")
+  
+  
+  @classmethod
+  def get_today_for_course_and_user(cls, course_id, user):
+      today = timezone.now().strftime("%Y-%m-%d")
+      name_filter = f"{today}-{course_id}"
+      return cls.objects.filter(
+          course__id=course_id,
+          name_filter=name_filter,
+          course__user=user,
+      ).first()
 
 
 SENDER_CHOICES = [
