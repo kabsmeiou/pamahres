@@ -32,5 +32,6 @@ jobs:
         cd server && uv sync
 
     - name: Run Tests
+      working-directory: server/app
       run: |
         uv run python manage.py test
