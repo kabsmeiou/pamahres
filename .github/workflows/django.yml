@@ -30,8 +30,8 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        uv pip install -r requirements.txt
+        uv pip install -r server/app/requirements.txt
 
     - name: Run Tests
       run: |
-        python manage.py test
+        cd server/app && python manage.py test
