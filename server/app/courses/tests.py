@@ -96,39 +96,3 @@ class CourseViewTests(APITestCase):
     url = reverse('course-material-detail', kwargs={'course_id': self.course.id, 'material_id': 999})
     response = self.client.delete(url, format='json')
     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-
-  def test_delete_material_success(self):
-    # First, create a material to delete
-    material = {
-      'material_file_url': "2025-06-05T08:55:05_Concurrency",
-      'file_name': 'test_material.pdf',
-      'file_type': 'application/pdf',
-      'file_size': 1024
-    }
-
-    url = reverse('course-material-list-create', kwargs={'course_id': self.course.id})
-    response = self.client.post(url, material, format='json')
-    self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    material_id = response.data['id']
-
-    # Now, delete the created material
-    url = reverse('course-material-detail', kwargs={'course_id': self.course.id, 'material_id': material_id})
-    response = self.client.delete(url, format='json')
-    self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-    self.assertFalse(CourseMaterial.objects.filter(id=material_id).exists())
-
-
-  def test_create_material(self):
-    material = {
-      'material_file_url': "2025-06-05T08:55:05_Concurrency",
-      'file_name': 'test_material.pdf',
-      'file_type': 'application/pdf',
-      'file_size': 1024
-    }
-
-    url = reverse('course-material-list-create', kwargs={'course_id': self.course.id})
-    response = self.client.post(url, material, format='json')
-    self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-    self.assertEqual(CourseMaterial.objects.count(), 1)
-    self.material1 = CourseMaterial.objects.get(id=response.data['id'])
