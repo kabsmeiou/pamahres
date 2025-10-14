@@ -111,74 +111,75 @@ const CourseLayout = () => {
 
   return (
     <MaterialsContext.Provider value={{ materials, setMaterials, materialsLoading, setShowNavigation}}>
-      <div className="min-h-screen bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950">
-        {/* Course Header */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-950/30 dark:to-blue-950/30 border-b border-surface-200/50 dark:border-surface-800/50">
-          <div className="absolute inset-0 bg-grid-surface-100/50 dark:bg-grid-surface-800/20" />
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <Link 
-                  to="/pamahres"
-                  className="inline-flex items-center gap-2 px-3 py-2 bg-white dark:bg-surface-900 text-surface-700 dark:text-surface-300 font-medium rounded-lg shadow-sm border border-surface-200 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200"
-                >
-                  <ArrowLeft size={16} />
-                  <span>Dashboard</span>
-                </Link>
-                
-                {course ? (
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
-                      <Book className="w-6 h-6 text-primary-600 dark:text-primary-400" />
-                    </div>
-                    <div>
-                      <h1 className="text-2xl font-bold text-surface-900 dark:text-white">
-                        {course.course_code}
-                      </h1>
-                      <p className="text-surface-600 dark:text-surface-300">
-                        {course.course_name}
-                      </p>
-                    </div>
+      <div className="min-h-screen bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950 flex">
+        {/* Sidebar Navigation */}
+        {showNavigation && (
+          <div className="w-80 bg-white dark:bg-surface-900 border-r border-surface-200 dark:border-surface-800 flex flex-col">
+            {/* Course Header in Sidebar */}
+            <div className="p-6 border-b border-surface-200 dark:border-surface-800">
+              <Link 
+                to="/pamahres"
+                className="inline-flex items-center gap-2 px-3 py-2 mb-4 bg-surface-50 dark:bg-surface-800 text-surface-700 dark:text-surface-300 font-medium rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-all duration-200"
+              >
+                <ArrowLeft size={16} />
+                <span>Dashboard</span>
+              </Link>
+              
+              {course ? (
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
+                    <Book className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                   </div>
-                ) : (
-                  <CourseDetailSkeleton />
-                )}
-              </div>
+                  <div>
+                    <h1 className="text-xl font-bold text-surface-900 dark:text-white">
+                      {course.course_code}
+                    </h1>
+                    <p className="text-sm text-surface-600 dark:text-surface-300">
+                      {course.course_name}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <CourseDetailSkeleton />
+              )}
             </div>
 
-            {/* Navigation Tabs */}
-            {showNavigation && (
-              <div className="mt-6">
-                <nav className="flex space-x-2 overflow-x-auto pb-2">
-                  {navigationItems.map((item) => {
-                    const Icon = item.icon;
-                    const active = isActive(item.path);
-                    return (
-                      <Link
-                        key={item.name}
-                        to={item.path}
-                        state={{ course }}
-                        className={`
-                          flex items-center space-x-2 px-4 py-3 rounded-xl transition-all duration-200 whitespace-nowrap
-                          ${active 
-                            ? 'bg-white dark:bg-surface-900 text-primary-600 dark:text-primary-400 shadow-sm border border-surface-200 dark:border-surface-800' 
-                            : 'text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100 hover:bg-white/50 dark:hover:bg-surface-900/50'
-                          }
-                        `}
-                      >
-                        <Icon size={18} />
-                        <span className="font-medium">{item.name}</span>
-                      </Link>
-                    );
-                  })}
-                </nav>
+            {/* Navigation Menu */}
+            <nav className="flex-1 p-4">
+              <div className="space-y-2">
+                {navigationItems.map((item) => {
+                  const Icon = item.icon;
+                  const active = isActive(item.path);
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      state={{ course }}
+                      className={`
+                        flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group
+                        ${active 
+                          ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800' 
+                          : 'text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-50 dark:hover:bg-surface-800'
+                        }
+                      `}
+                    >
+                      <Icon size={20} className={active ? 'text-primary-600 dark:text-primary-400' : ''} />
+                      <div className="flex-1">
+                        <div className="font-medium">{item.name}</div>
+                        <div className={`text-xs ${active ? 'text-primary-500 dark:text-primary-500' : 'text-surface-500 dark:text-surface-400'}`}>
+                          {item.description}
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
-            )}
+            </nav>
           </div>
-        </div>
+        )}
 
         {/* Main Content Area */}
-        <main className="flex-1">
+        <main className="flex-1 overflow-hidden">
           <Outlet />
         </main>
       </div>
