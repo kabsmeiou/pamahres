@@ -14,6 +14,7 @@ from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.core.cache import cache
+from django.contrib.auth import get_user_model
 
 from quiz.serializers import QuizModelSerializer, QuestionModelSerializer, QuestionOptionSerializer
 from .models import QuizModel, QuestionModel, QuestionOption
@@ -22,6 +23,8 @@ from courses.models import CourseMaterial, Course
 from .tasks import generate_questions_task, delete_quiz_cache
 from utils.validators import validate_quiz_question
 from utils.helpers import get_content_from_quizId, generate_questions_by_chunks, save_answers_of_best_score
+from utils.utils import get_data_from_request
+from .helpers import create_dummy_course
 
 logger = logging.getLogger(__name__)
 
@@ -73,13 +76,9 @@ class QuizListCreateView(generics.ListCreateAPIView):
 
 class QuickCreateQuizView(APIView):
   """
-  View to quickly create a quiz without any course association. This is intended for users who want to generate quizzes without being logged in. Also, logged in users can use this view but the limit for them is higher unlike anonymous users that has a limit of 2 quizzes per day.
+  View to quickly create a quiz without any course association.
   """
-  permission_classes = [AllowAny]  # allow any user to create a quiz
-  throttle_classes = [AnonRateThrottle]  # disable throttling for this view
-
-  def get_throttled_message(self, request):
-    return "You have exceeded your daily limit for quick quiz generations. Please try again tomorrow or sign up for unlimited access!"
+  permission_classes = [IsAuthenticated]  # allow any user to create a quiz
 
   def post(self, request, *args, **kwargs):
     """
@@ -90,20 +89,14 @@ class QuickCreateQuizView(APIView):
     
     try:
       # Get the material file URL from request
-      material_file_url = request.data.get('material_file_url')
-      
-      if not material_file_url:
-        return Response(
-          {"error": "Material file URL is required."}, 
-          status=status.HTTP_400_BAD_REQUEST
-        )
+      material_file_url = get_data_from_request(request, 'material_file_url')
       
       # Get optional parameters with defaults
-      quiz_title = request.data.get('quiz_title', 'Quick Created Quiz')
-      number_of_questions = int(request.data.get('number_of_questions', 4))
-      time_limit_minutes = int(request.data.get('time_limit_minutes', 10))
-      file_name = request.data.get('file_name', 'Quick Create Material')
-      
+      quiz_title = get_data_from_request(request, 'quiz_title', 'Quick Create Quiz')
+      number_of_questions = int(get_data_from_request(request, 'number_of_questions', 4))
+      time_limit_minutes = int(get_data_from_request(request, 'time_limit_minutes', 10))
+      file_name = get_data_from_request(request, 'file_name', 'Quick Create Material')
+
       # Validate number of questions
       max_questions = 15 if request.user.is_authenticated else 10
       if number_of_questions > max_questions:
@@ -112,32 +105,7 @@ class QuickCreateQuizView(APIView):
           status=status.HTTP_400_BAD_REQUEST
         )
       
-      # Create a dummy course object to associate the quiz with
-      # Handle anonymous users by creating a course without user association
-      course_data = {
-        'course_name': f"QCC",
-        'course_code': f"QC01"
-      }
-      
-      if request.user.is_authenticated:
-        course_data['user'] = request.user
-      else:
-        try:
-          # Try to get a system user for anonymous quick creates
-          from django.contrib.auth import get_user_model
-          User = get_user_model()
-          system_user, created = User.objects.get_or_create(
-            username='system_quick_create',
-            defaults={'email': 'system@pamahres.com'}
-          )
-          course_data['user'] = system_user
-        except Exception:
-          return Response(
-            {"error": "Unable to create course for anonymous user. Please try again or sign up."}, 
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-          )
-      
-      course = Course.objects.create(**course_data)
+      course = create_dummy_course(request)
       
       material = CourseMaterial.objects.create(
         course=course,
