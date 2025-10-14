@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Profile, UserSettings, UserActivity
+from .models import User, Profile, UserActivity
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
   password = serializers.CharField(
@@ -32,6 +32,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     ]
     read_only_fields = ['user', 'id']
 
+
 class UserWithProfileSerializer(serializers.HyperlinkedModelSerializer):
   profile = ProfileSerializer()
 
@@ -42,10 +43,6 @@ class UserWithProfileSerializer(serializers.HyperlinkedModelSerializer):
       'first_name', 'last_name', 'profile', 'quick_create_credit'
     ]
 
-class UserSettingsSerializer(serializers.HyperlinkedModelSerializer):
-  class Meta:
-    model = UserSettings
-    fields = ['id', 'user', 'notification_preferences']
 
 class UserActivitySerializer(serializers.HyperlinkedModelSerializer):
   class Meta:

@@ -75,6 +75,14 @@ class ChatHistoryView(generics.ListAPIView):
 
     return chat_histories
 
+class ChatHistoryDetailView(generics.RetrieveDestroyAPIView):
+  serializer_class = ChatHistorySerializer
+  permission_classes = [IsAuthenticated, IsOwner]
+
+  def get_object(self):
+    chat_history = get_object_or_404(ChatHistory, id=self.kwargs['chat_history_id'], course__user=self.request.user)
+    return chat_history
+
 class LLMConversationView(generics.GenericAPIView):
   serializer_class = LLMConversationSerializer
   permission_classes = [IsAuthenticated, IsOwner]
