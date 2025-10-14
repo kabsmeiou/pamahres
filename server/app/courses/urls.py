@@ -1,6 +1,6 @@
 # get the views from views.py
 from django.urls import path
-from .views import CourseView, CourseMaterialsView, CourseDetailView, CourseMaterialDetailView, MaterialDetailView, LLMConversationView, ChatHistoryView, ChatHistoryMessageView
+from .views import CourseView, CourseMaterialsView, CourseDetailView, CourseMaterialDetailView, MaterialDetailView, LLMConversationView, ChatHistoryView, ChatHistoryMessageView, ChatHistoryDetailView
 
 # reminder: utilize parameters in urls, if an id is passed, no need to let serializer pass it around
 urlpatterns = [
@@ -13,4 +13,5 @@ urlpatterns = [
   path('chat/<int:course_id>/history/', ChatHistoryView.as_view(), name='chat-history'),
   path('chat/<int:course_id>/history/<int:chat_history_id>/', ChatHistoryMessageView.as_view(), name='chat-history-messages'),
   path('chat/<int:course_id>/history/today/', ChatHistoryMessageView.as_view(), name='chat-history-messages-today'),
+  path('chat/history/<int:chat_history_id>/', ChatHistoryDetailView.as_view(), name='chat-history-detail'),
 ]

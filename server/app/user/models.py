@@ -45,7 +45,7 @@ class Profile(models.Model):
   mbti_type = models.CharField(max_length=4, choices=MBTI_CHOICES, blank=True, null=True)
   age = models.PositiveIntegerField(blank=True, null=True)
   education_level = models.CharField(max_length=20, choices=EDUCATION_LEVEL_CHOICES, blank=True, null=True)
-  user_course = models.CharField(max_length=100, blank=True)
+  user_course = models.CharField(max_length=60, blank=True)
   target_study_hours = models.PositiveIntegerField(blank=True, null=True)
   current_grade = models.PositiveIntegerField(blank=True, null=True)
 
@@ -58,8 +58,3 @@ class UserActivity(models.Model):
   last_login = models.DateTimeField(auto_now=True)
   quiz_attempts = models.PositiveIntegerField(default=0)
   materials_uploaded = models.PositiveIntegerField(default=0)
-
-
-class UserSettings(models.Model):
-  user = models.OneToOneField(User, on_delete=models.CASCADE)
-  notification_preferences = models.BooleanField(default=False)

@@ -90,3 +90,6 @@ class Message(models.Model):
       models.Index(fields=['chat_history']),
     ]
     ordering = ['timestamp']  # Order messages by timestamp in ascending order
+  
+  def __str__(self):
+    return f"{self.sender}: {self.content[:20]}..."

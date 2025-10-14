@@ -1,15 +1,12 @@
-from django.shortcuts import render
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from user.serializers import ProfileSerializer, UserWithProfileSerializer
-from user.models import User, Profile
 from rest_framework.views import APIView
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
 import logging
 from rest_framework.response import Response
-from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from django.http import JsonResponse
 
 logger = logging.getLogger(__name__)
 
@@ -66,9 +63,6 @@ class UserDetailView(generics.RetrieveAPIView):
 
   def get_object(self):
      return self.request.user
-
-from django.http import JsonResponse
-from app.middleware import ClerkSDK
 
 class ClerkProtectedView(APIView):
     permission_classes = [IsAuthenticated]
