@@ -70,7 +70,7 @@ class QuestionOption(models.Model):
     ordering = ['order']
   
   def __str__(self):
-    return f"{self.text} {'(Correct)' if self.question.correct_answer == self.text else ''}"
+    return f"{self.text}"
 
 class QuestionModel(models.Model):
   QUESTION_TYPE_CHOICES = [
