@@ -1,7 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { Send, MessageCircle, Star } from 'react-feather';
-import { useChatbot } from '../services/chatbot';
-import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { ChatMessage } from '../types/course';
 
@@ -42,25 +40,7 @@ const Chatbox = ({
     }, [messages]);
 
     return (
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-            <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200/50 dark:border-surface-800/50 shadow-sm overflow-hidden h-[calc(100vh-12rem)]">
-                {/* Chat Header */}
-                <div className="px-6 lg:px-8 py-6 bg-gradient-to-r from-surface-50 to-surface-100/50 dark:from-surface-800/50 dark:to-surface-700/30 border-b border-surface-200 dark:border-surface-800">
-                    <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-100 to-primary-50 dark:from-primary-900/60 dark:to-primary-800/40 flex items-center justify-center shadow-sm">
-                            <Star size={24} className="text-primary-600 dark:text-primary-400" />
-                        </div>
-                        <div>
-                            <h2 className="text-xl font-semibold text-surface-900 dark:text-white tracking-tight">
-                                AI Course Assistant
-                            </h2>
-                            <p className="text-surface-600 dark:text-surface-300 mt-1 font-medium leading-relaxed">
-                                Ask questions about your course materials and get instant help
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
+        <div className="max-w-6xl mx-auto">
                 {/* Messages Area */}
                 <div className="flex-1 flex flex-col h-[calc(100%-8rem)] relative">
                     <div 
@@ -82,13 +62,13 @@ const Chatbox = ({
                             </div>
                         ) : messages.length === 0 ? (
                             <div className="flex-1 flex flex-col items-center justify-center text-center py-12">
-                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-100 to-primary-50 dark:from-primary-900/60 dark:to-primary-800/40 flex items-center justify-center mb-6 shadow-lg">
+                                <div className="w-16 h-16  rounded-2xl bg-gradient-to-br from-primary-100 to-primary-50 dark:from-primary-900/60 dark:to-primary-800/40 flex items-center justify-center mb-6">
                                     <MessageCircle size={32} className="text-primary-600 dark:text-primary-400" />
                                 </div>
-                                <h3 className="text-2xl font-bold text-surface-900 dark:text-white mb-3 tracking-tight">
+                                <h3 className="text-xl font-bold text-surface-900 dark:text-white mb-3 tracking-tight">
                                     Start Your Learning Conversation
                                 </h3>
-                                <p className="text-surface-600 dark:text-surface-300 max-w-md text-lg mb-8 font-medium leading-relaxed">
+                                <p className="text-surface-600 dark:text-surface-300 max-w-md mb-8 font-medium leading-relaxed">
                                     Ask questions about your course materials, request explanations, or get help with concepts.
                                 </p>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl">
@@ -119,7 +99,7 @@ const Chatbox = ({
                                     > 
                                         <div
                                             className={`
-                                                max-w-[85%] rounded-2xl px-6 py-4 shadow-sm
+                                                max-w-[85%] rounded-2xl px-4 py-2 shadow-sm
                                                 ${msg.sender === 'user' 
                                                     ? 'bg-gradient-to-br from-primary-600 to-primary-500 text-white' 
                                                     : 'bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 border border-surface-200 dark:border-surface-700'
@@ -201,7 +181,6 @@ const Chatbox = ({
                     )}
                 </div>
             </div>
-        </div>
     );
 };
 
