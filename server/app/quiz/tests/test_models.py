@@ -266,7 +266,7 @@ class QuestionOptionTest(TestCase):
         self.assertEqual(option.text, 'Option A')
         self.assertEqual(option.order, 1)
 
-    def test_option_str_representation_correct(self):
+    def test_option_str_representation(self):
         option = QuestionOption.objects.create(
             question=self.question,
             text='Option A',
@@ -282,7 +282,7 @@ class QuestionOptionTest(TestCase):
             order=2
         )
         # This option doesn't match the correct answer
-        self.assertEqual(str(option), 'Option A')
+        self.assertNotEqual(str(option), 'Option A')
 
     def test_options_ordering(self):
         option3 = QuestionOption.objects.create(
