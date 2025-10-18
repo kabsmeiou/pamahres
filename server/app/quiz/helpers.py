@@ -1,4 +1,5 @@
-from courses.models import Course
+from courses.models import Course, CourseMaterial
+from quiz.models import QuizModel
 from datetime import datetime
 
 
@@ -22,6 +23,30 @@ def create_dummy_course(request):
         user=user,
         course_code="QC01",
         course_name=course_name,
-        is_quick_create=True
     )
     return course
+
+
+def setup_quiz_and_material_object_for_quick_create(request, *, course, material_file_url, file_name, quiz_title, number_of_questions, time_limit_minutes):
+    """
+    Create or reuse a lightweight course and material object for quick-created quizzes.
+    """
+    material = CourseMaterial.objects.create(
+        course=course,
+        material_file_url=material_file_url,  
+        file_name=file_name,
+        file_size=request.data.get('file_size', 0),  
+        file_type=request.data.get('file_type', 'application/pdf') 
+    )
+    
+    quiz = QuizModel.objects.create(
+        course=course,
+        quiz_title=quiz_title,
+        number_of_questions=number_of_questions,
+        time_limit_minutes=time_limit_minutes,
+        is_quick_create=True
+    )
+      
+    quiz.material_list.add(material)
+
+    return quiz
