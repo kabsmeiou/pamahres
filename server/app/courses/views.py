@@ -156,7 +156,7 @@ class CourseView(generics.ListCreateAPIView):
 
   def get_queryset(self):
     start_time = time.time()
-    courses = self.request.user.courses.all()
+    courses = self.request.user.courses.filter(is_quick_create=False)
     logger.info(f"Total get_queryset method of course list took {time.time() - start_time:.3f} seconds")
     return courses
   

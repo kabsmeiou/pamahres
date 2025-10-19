@@ -23,6 +23,7 @@ def create_dummy_course(request):
         user=user,
         course_code="QC01",
         course_name=course_name,
+        is_quick_create=True
     )
     return course
 
@@ -36,7 +37,7 @@ def setup_quiz_and_material_object_for_quick_create(request, *, course, material
         material_file_url=material_file_url,  
         file_name=file_name,
         file_size=request.data.get('file_size', 0),  
-        file_type=request.data.get('file_type', 'application/pdf') 
+        file_type=request.data.get('file_type', 'application/pdf'),
     )
     
     quiz = QuizModel.objects.create(
@@ -44,7 +45,6 @@ def setup_quiz_and_material_object_for_quick_create(request, *, course, material
         quiz_title=quiz_title,
         number_of_questions=number_of_questions,
         time_limit_minutes=time_limit_minutes,
-        is_quick_create=True
     )
       
     quiz.material_list.add(material)
