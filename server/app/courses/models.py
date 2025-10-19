@@ -11,6 +11,7 @@ class Course(models.Model):
   course_name = models.CharField(max_length=100, null=True, blank=True)
   course_description = models.TextField(null=True, blank=True)
   last_updated_at = models.DateTimeField(auto_now=True)
+  is_quick_create = models.BooleanField(default=False)
 
   def __str__(self):
     return self.course_name
