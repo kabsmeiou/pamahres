@@ -7,13 +7,13 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.throttling import AnonRateThrottle
-from rest_framework.permissions import AllowAny
 
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.core.cache import cache
+from django.contrib.auth import get_user_model
+from django.db import transaction
 
 from quiz.serializers import QuizModelSerializer, QuestionModelSerializer, QuestionOptionSerializer
 from .models import QuizModel, QuestionModel, QuestionOption
@@ -22,6 +22,8 @@ from courses.models import CourseMaterial, Course
 from .tasks import generate_questions_task, delete_quiz_cache
 from utils.validators import validate_quiz_question
 from utils.helpers import get_content_from_quizId, generate_questions_by_chunks, save_answers_of_best_score
+from utils.utils import get_data_from_request
+from .helpers import create_dummy_course, setup_quiz_and_material_object_for_quick_create
 
 logger = logging.getLogger(__name__)
 
@@ -73,13 +75,9 @@ class QuizListCreateView(generics.ListCreateAPIView):
 
 class QuickCreateQuizView(APIView):
   """
-  View to quickly create a quiz without any course association. This is intended for users who want to generate quizzes without being logged in. Also, logged in users can use this view but the limit for them is higher unlike anonymous users that has a limit of 2 quizzes per day.
+  View to quickly create a quiz without any course association.
   """
-  permission_classes = [AllowAny]  # allow any user to create a quiz
-  throttle_classes = [AnonRateThrottle]  # disable throttling for this view
-
-  def get_throttled_message(self, request):
-    return "You have exceeded your daily limit for quick quiz generations. Please try again tomorrow or sign up for unlimited access!"
+  permission_classes = [IsAuthenticated]
 
   def post(self, request, *args, **kwargs):
     """
@@ -90,84 +88,44 @@ class QuickCreateQuizView(APIView):
     
     try:
       # Get the material file URL from request
-      material_file_url = request.data.get('material_file_url')
+      material_file_url = get_data_from_request(request, 'material_file_url')
       
-      if not material_file_url:
-        return Response(
-          {"error": "Material file URL is required."}, 
-          status=status.HTTP_400_BAD_REQUEST
-        )
+      # check if material_file already exists in the supabase storage / database. 
+      # if it exists, use the exisiting material.
+
       
       # Get optional parameters with defaults
-      quiz_title = request.data.get('quiz_title', 'Quick Created Quiz')
-      number_of_questions = int(request.data.get('number_of_questions', 4))
-      time_limit_minutes = int(request.data.get('time_limit_minutes', 10))
-      file_name = request.data.get('file_name', 'Quick Create Material')
-      
+      # these parameters currently are not being handled in the frontend resulting to default values only
+      quiz_title = get_data_from_request(request, 'quiz_title', 'Quick Create Quiz')
+      number_of_questions = int(get_data_from_request(request, 'number_of_questions', 4))
+      time_limit_minutes = int(get_data_from_request(request, 'time_limit_minutes', 10))
+      file_name = get_data_from_request(request, 'file_name', 'Quick Create Material')
+
       # Validate number of questions
-      max_questions = 15 if request.user.is_authenticated else 10
+      max_questions = 15
       if number_of_questions > max_questions:
         return Response(
           {"error": f"Maximum {max_questions} questions allowed for your account type."}, 
           status=status.HTTP_400_BAD_REQUEST
         )
       
-      # Create a dummy course object to associate the quiz with
-      # Handle anonymous users by creating a course without user association
-      course_data = {
-        'course_name': f"QCC",
-        'course_code': f"QC01"
-      }
-      
-      if request.user.is_authenticated:
-        course_data['user'] = request.user
-      else:
-        try:
-          # Try to get a system user for anonymous quick creates
-          from django.contrib.auth import get_user_model
-          User = get_user_model()
-          system_user, created = User.objects.get_or_create(
-            username='system_quick_create',
-            defaults={'email': 'system@pamahres.com'}
-          )
-          course_data['user'] = system_user
-        except Exception:
-          return Response(
-            {"error": "Unable to create course for anonymous user. Please try again or sign up."}, 
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-          )
-      
-      course = Course.objects.create(**course_data)
-      
-      material = CourseMaterial.objects.create(
-        course=course,
-        material_file_url=material_file_url,  
-        file_name=file_name,
-        file_size=request.data.get('file_size', 0),  
-        file_type=request.data.get('file_type', 'application/pdf') 
-      )
-      
-      quiz = QuizModel.objects.create(
-        course=course,
-        quiz_title=quiz_title,
-        number_of_questions=number_of_questions,
-        time_limit_minutes=time_limit_minutes,
-      )
-      
-      quiz.material_list.add(material)
-      
-      # Extract content from the material and generate questions
-      try:
+      # atomic block to ensure data integrity, rollback on failure
+      with transaction.atomic():
+        course = create_dummy_course(request)
+
+        quiz = setup_quiz_and_material_object_for_quick_create(
+          request,
+          quiz_title=quiz_title,
+          number_of_questions=number_of_questions,
+          time_limit_minutes=time_limit_minutes,
+          course=course,
+          material_file_url=material_file_url,
+          file_name=file_name
+        )
         contents = get_content_from_quizId(quiz.id)
         
         if not contents:
-          quiz.delete()
-          material.delete()
-          course.delete()
-          return Response(
-            {"error": "No valid content extracted from the provided materials. Please ensure the file contains readable text."}, 
-            status=status.HTTP_400_BAD_REQUEST
-          )
+          raise ValidationError("No content extracted from the material file. Please check the file format or content.")
         
         generate_questions_by_chunks(contents, quiz, quiz.number_of_questions)
         
@@ -183,26 +141,13 @@ class QuickCreateQuizView(APIView):
           "number_of_questions": quiz.number_of_questions,
           "status": "completed"
         }, status=status.HTTP_201_CREATED)
-      
-      # Clean up on error
-      except ValidationError as e:
-        quiz.delete()
-        material.delete()
-        course.delete()
-        return Response(
-          {"error": str(e)}, 
-          status=status.HTTP_400_BAD_REQUEST
-        )
-      except Exception as e:
-        quiz.delete()
-        material.delete()
-        course.delete()
-        logger.error(f"Error generating questions: {str(e)}")
-        return Response(
-          {"error": "Failed to generate quiz questions.", "details": str(e)}, 
-          status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-        
+    
+    # Clean up on error
+    except ValidationError as e:
+      return Response(
+        {"error": str(e)}, 
+        status=status.HTTP_400_BAD_REQUEST
+      )
     except ValueError as e:
       return Response(
         {"error": "Invalid number provided for questions or time limit."}, 

@@ -50,7 +50,6 @@ function App() {
         <SignedOut>
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/quick-create" element={<QuickCreate />} />
             <Route path="*" element={<RedirectToSignIn />} />
           </Routes>
         </SignedOut>
