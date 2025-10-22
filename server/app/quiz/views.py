@@ -89,11 +89,6 @@ class QuickCreateQuizView(APIView):
     try:
       # Get the material file URL from request
       material_file_url = get_data_from_request(request, 'material_file_url')
-      
-      # check if material_file already exists in the supabase storage / database. 
-      # if it exists, use the exisiting material.
-
-      
       # Get optional parameters with defaults
       # these parameters currently are not being handled in the frontend resulting to default values only
       quiz_title = get_data_from_request(request, 'quiz_title', 'Quick Create Quiz')
@@ -122,15 +117,19 @@ class QuickCreateQuizView(APIView):
           material_file_url=material_file_url,
           file_name=file_name
         )
-        contents = get_content_from_quizId(quiz.id)
-        
-        if not contents:
-          raise ValidationError("No content extracted from the material file. Please check the file format or content.")
-        
-        generate_questions_by_chunks(contents, quiz, quiz.number_of_questions)
-        
-        quiz.is_generated = True
-        quiz.save()
+
+        # if the quiz has less questions than specified, generate more questions
+        # else do nothing and return the quiz as is
+        if quiz.current_number_of_questions() < quiz.number_of_questions:
+          contents = get_content_from_quizId(quiz.id)
+          
+          if not contents:
+            raise ValidationError("No content extracted from the material file. Please check the file format or content.")
+
+          generate_questions_by_chunks(contents, quiz, quiz.number_of_questions - quiz.current_number_of_questions())
+
+          quiz.is_generated = True
+          quiz.save()
         
         logger.info(f"Quick quiz creation took {time.time() - start_time:.3f} seconds")
         

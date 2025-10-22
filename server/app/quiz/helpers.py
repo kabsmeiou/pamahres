@@ -32,21 +32,40 @@ def setup_quiz_and_material_object_for_quick_create(request, *, course, material
     """
     Create or reuse a lightweight course and material object for quick-created quizzes.
     """
-    material = CourseMaterial.objects.create(
+          
+    # check if material_file already exists in the supabase storage / database. 
+    # if it exists, use the existing material.
+
+    existing_material = CourseMaterial.objects.filter(
         course=course,
-        material_file_url=material_file_url,  
         file_name=file_name,
-        file_size=request.data.get('file_size', 0),  
-        file_type=request.data.get('file_type', 'application/pdf'),
-    )
-    
-    quiz = QuizModel.objects.create(
+    ).first()
+
+    if not existing_material:
+        material = CourseMaterial.objects.create(
+            course=course,
+            material_file_url=material_file_url,
+            file_name=file_name,
+            file_size=request.data.get('file_size', 0),
+            file_type=request.data.get('file_type', 'application/pdf'),
+        )
+    else:
+        material = existing_material
+
+    existing_quiz = QuizModel.objects.filter(
         course=course,
         quiz_title=quiz_title,
-        number_of_questions=number_of_questions,
-        time_limit_minutes=time_limit_minutes,
-    )
-      
-    quiz.material_list.add(material)
+    ).first()
 
+    if not existing_quiz:
+        quiz = QuizModel.objects.create(
+            course=course,
+            quiz_title=quiz_title,
+            number_of_questions=number_of_questions,
+            time_limit_minutes=time_limit_minutes,
+        )
+        quiz.material_list.add(material)
+    else:
+        quiz = existing_quiz
+      
     return quiz
