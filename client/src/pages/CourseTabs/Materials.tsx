@@ -117,7 +117,7 @@ const Materials = () => {
       </div>
 
       {/* Materials Content */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800">
         <div className="p-6">
           {materialsLoading ? (
             <div>

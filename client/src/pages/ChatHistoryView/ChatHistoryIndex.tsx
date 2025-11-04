@@ -93,7 +93,7 @@ const ChatHistoryIndex = () => {
             </div>
             
             {/* Content */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl">
                 <div className="p-6">
                     {history && history.length > 0 ? (
                         <ChatHistoryList histories={history} />
