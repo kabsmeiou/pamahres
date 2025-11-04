@@ -18,11 +18,23 @@ const LandingPage = () => {
     speed: number;
     opacity: number;
   }>>([]);
-
+  const [scrolled, setScrolled] = useState(false);
   const techStackText = 'deepseek • groq • supabase • ';
 
+  // listen to scroll
   useEffect(() => {
-    // Ggenerate animated squares
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Generate animated squares
     const squares = Array.from({ length: 15 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -112,7 +124,8 @@ const LandingPage = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
+      {/* change bg if scrolled */}
+      <nav className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 py-4 mx-auto ${scrolled ? 'bg-white bg-opacity-20 backdrop-blur-md shadow-md' : 'bg-transparent'}`}>
         <div className="flex items-center gap-2">
           <img src={Pamahres} alt="Pamahres" className="w-8 h-8" />
           <span className="text-xl font-semibold text-primary-600">Pamahres</span>
@@ -127,7 +140,7 @@ const LandingPage = () => {
 
         <Link
           to="/pamahres"
-          className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium"
+          className="bg-primary-600 text-xs text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium"
         >
           {isSignedIn ? 'Dashboard' : 'Login'}
         </Link>
@@ -171,7 +184,7 @@ const LandingPage = () => {
             <Link 
             to='/pamahres'
             className="border-2 border-primary-600 text-primary-600 px-8 py-3 rounded-lg hover:bg-primary-600 hover:text-white transition-all font-medium shadow-lg hover:shadow-xl transform hover:scale-105">
-              Sign up
+              {isSignedIn ? 'Go to Dashboard' : 'Get Started'}
             </Link>
           </div>
         </div>
@@ -393,8 +406,8 @@ const LandingPage = () => {
 
       {/* Footer */}
       <footer className="relative z-10 bg-primary-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex justify-between flex-wrap gap-8">
             <div className="col-span-2">
               <div className="flex items-center gap-2 mb-4">
                 <img src={Pamahres} alt="Pamahres" className="w-8 h-8 brightness-0 invert" />
@@ -405,22 +418,12 @@ const LandingPage = () => {
                 quiz generation, and context-augmented tutor.
               </p>
             </div>
-            
+
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
+              <h4 className="font-semibold mb-4">About the dev</h4>
               <ul className="space-y-2 text-primary-200">
-                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">API</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-primary-200">
-                <li><a href="#" className="hover:text-white transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
+                <li><a href="https://github.com/kabsmeiou" target="_blank" className="hover:text-white transition-colors">Github</a></li>
+                <li><a href="https://kabs-info.vercel.app" target="_blank" className="hover:text-white transition-colors">Contacts</a></li>
               </ul>
             </div>
           </div>

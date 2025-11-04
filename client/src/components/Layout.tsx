@@ -169,7 +169,7 @@ const Layout = () => {
             {/* Logo and Desktop Navigation */}
             <div className="flex items-center">
               {/* Logo */}
-              <Link to="/pamahres" className="flex items-center space-x-3">
+              <Link to="/" className="flex items-center space-x-3">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-700 dark:from-primary-600 dark:to-primary-900 flex items-center justify-center text-white shadow-sm">
                   <span className="text-sm font-bold">P</span>
                 </div>
