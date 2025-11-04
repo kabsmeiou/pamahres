@@ -46,7 +46,7 @@ const CreateCourse = () => {
       
       // Navigate to dashboard after brief delay
       setTimeout(() => {
-        navigate('/');
+        navigate('/pamahres');
       }, 1500);
     } catch (error: any) {
       console.error('Error creating course:', error);

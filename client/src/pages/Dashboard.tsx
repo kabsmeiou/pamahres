@@ -96,7 +96,7 @@ const Dashboard = () => {
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4 sm:justify-center md:justify-normal">
                 <Link 
-                  to="/create-course" 
+                  to="/pamahres/create-course" 
                   className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
                 >
                   <PlusCircle size={20} />
@@ -184,7 +184,7 @@ const Dashboard = () => {
                     <EmptyFallback 
                       message="Your learning journey starts here"
                       actionText="Create your first course"
-                      actionLink="/create-course"
+                      actionLink="/pamahres/create-course"
                     />
                   </div>
                 )}
