@@ -64,7 +64,7 @@ const Quizzes = () => {
       )}
 
       {/* Quiz Content */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800">
         <div className="p-6">
           {isLoading ? (
             <div className="space-y-4">
