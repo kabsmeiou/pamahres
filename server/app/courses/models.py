@@ -21,7 +21,11 @@ class Course(models.Model):
   
   class Meta:
     unique_together = [('user', 'course_code'),
-                       ('user', 'course_name')] 
+                       ('user', 'course_name')]
+    indexes = [
+      models.Index(fields=('user', 'is_quick_create'))
+    ]
+    
 
 
 class CourseMaterial(models.Model):
@@ -32,8 +36,6 @@ class CourseMaterial(models.Model):
   file_type = models.CharField(max_length=50)
   uploaded_at = models.DateTimeField(auto_now_add=True)
 
-  # database index for 'course' and 'uploaded_at'
-  # querying performence
   class Meta:
     indexes = [
       models.Index(fields=['course', 'uploaded_at']),
@@ -87,9 +89,6 @@ class Message(models.Model):
   timestamp = models.DateTimeField(auto_now_add=True)
 
   class Meta:
-    indexes = [
-      models.Index(fields=['chat_history']),
-    ]
     ordering = ['timestamp']  # Order messages by timestamp in ascending order
   
   def __str__(self):

@@ -36,16 +36,12 @@ class QuizModel(models.Model):
   uploaded_at = models.DateTimeField(auto_now_add=True)
 
   class Meta:
-    indexes = [
-      models.Index(fields=['course', 'quiz_title']),
-    ]
     constraints = [
       models.UniqueConstraint(
         fields=['course', 'quiz_title'],
         name='unique_quiz_title_per_course'
       ), 
     ]
-    unique_together = [('course', 'quiz_title')]
     ordering = ['-uploaded_at']
 
   def __str__(self):
@@ -53,6 +49,7 @@ class QuizModel(models.Model):
 
   def current_number_of_questions(self):
     return self.questions.count()
+
 
 # add options to a model
 # validate number of options (only <= 4 for now)
@@ -64,13 +61,11 @@ class QuestionOption(models.Model):
   
   # index by questions fk
   class Meta:
-    indexes = [
-      models.Index(fields=['question']),
-    ]
     ordering = ['order']
   
   def __str__(self):
     return f"{self.text}"
+
 
 class QuestionModel(models.Model):
   QUESTION_TYPE_CHOICES = [
@@ -85,9 +80,6 @@ class QuestionModel(models.Model):
 
   # indexing quiz for faster lookup when i filter questions by quiz
   class Meta:
-    indexes = [
-      models.Index(fields=['quiz']),
-    ]
     ordering = ['id']
 
   def __str__(self):

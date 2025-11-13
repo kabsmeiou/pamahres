@@ -54,7 +54,7 @@ class Profile(models.Model):
 
 
 class UserActivity(models.Model):
-  user = models.OneToOneField(User, on_delete=models.CASCADE)
+  user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='activity')
   last_login = models.DateTimeField(auto_now=True)
   quiz_attempts = models.PositiveIntegerField(default=0)
   materials_uploaded = models.PositiveIntegerField(default=0)
