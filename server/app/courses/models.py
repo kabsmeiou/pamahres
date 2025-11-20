@@ -17,7 +17,7 @@ class Course(models.Model):
     return self.course_name
   
   def get_number_of_quizzes(self):
-    return self.quizzes.count()
+    return self.quizzes.filter(is_generated=False).count()
   
   class Meta:
     unique_together = [('user', 'course_code'),

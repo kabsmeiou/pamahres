@@ -3,28 +3,54 @@ from rest_framework import status
 from django.urls import reverse
 from user.models import User, Profile
 from unittest.mock import patch
+import jwt
 
 class ClerkAuthTest(APITestCase):
-    @patch('rest_framework_simplejwt.authentication.JWTAuthentication.authenticate')
-    @patch('app.middleware.JWTAuthenticationMiddleware.decode_jwt')
-    def test_clerk_protected_view_with_valid_token(self, mock_decode_jwt, mock_authenticate):
-        user = User.objects.create(username='clerkuser', email='clerk@example.com')
-        mock_authenticate.return_value = (user, None)
-        mock_decode_jwt.return_value = user 
-        url = reverse('clerk_protected')
-        response = self.client.get(url, HTTP_AUTHORIZATION='Bearer testtoken')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('Clerk authentication successful', response.json()['message'])
+    @patch('app.middleware.ClerkSDK.get_jwks')
+    @patch('jwt.decode')
+    def test_clerk_authentication_success(self, mock_jwt_decode, mock_get_jwks):
+        mock_get_jwks.return_value = {
+            "keys": [
+                {
+                    "kty": "RSA",
+                    "kid": "testkey",
+                    "use": "sig",
+                    "n": "testmodulus",
+                    "e": "AQAB"
+                }
+            ]
+        }
+        mock_jwt_decode.return_value = {
+            "sub": "test_user_id"
+        }
 
-    @patch('rest_framework_simplejwt.authentication.JWTAuthentication.authenticate')
-    @patch('app.middleware.JWTAuthenticationMiddleware.decode_jwt') 
-    def test_clerk_protected_view_with_invalid_token(self, mock_decode_jwt, mock_authenticate):
-        mock_authenticate.return_value = None
-        mock_decode_jwt.return_value = None
-        url = reverse('clerk_protected')
-        response = self.client.get(url, HTTP_AUTHORIZATION='Bearer invalidtoken')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertIn('detail', response.json())
+        url = reverse('course-list-create')
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer testtoken')
+        response = self.client.get(url)
+
+        self.assertNotEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertIn('test_user_id', [user.username for user in User.objects.all()])
+
+    @patch('app.middleware.ClerkSDK.get_jwks')
+    @patch('jwt.decode', side_effect=jwt.InvalidTokenError)
+    def test_clerk_authentication_failure(self, mock_jwt_decode, mock_get_jwks):
+        mock_get_jwks.return_value = {
+            "keys": [
+                {
+                    "kty": "RSA",
+                    "kid": "testkey",
+                    "use": "sig",
+                    "n": "testmodulus",
+                    "e": "AQAB"
+                }
+            ]
+        }
+
+        url = reverse('course-list-create')  
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer invalidtoken')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class UserAPITest(APITestCase):
@@ -47,7 +73,7 @@ class UserAPITest(APITestCase):
         self.client.force_authenticate(user=None)
         url = reverse('user-detail')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
     
 
 class ProfileAPITest(APITestCase):
