@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 class User(AbstractUser):
   # index the username
-  username = models.CharField(max_length=150, unique=True)
+  username = models.CharField(max_length=150, unique=True, db_index=True)
   quick_create_credit = models.PositiveIntegerField(default=3)
 
   def __str__(self):
@@ -54,7 +54,7 @@ class Profile(models.Model):
 
 
 class UserActivity(models.Model):
-  user = models.OneToOneField(User, on_delete=models.CASCADE)
+  user = models.OneToOneField(User, on_delete=models.CASCADE) 
   last_login = models.DateTimeField(auto_now=True)
   quiz_attempts = models.PositiveIntegerField(default=0)
   materials_uploaded = models.PositiveIntegerField(default=0)
