@@ -68,7 +68,7 @@ const Course = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-800/20 rounded-2xl p-6 border border-green-200/50 dark:border-green-700/50">
+      <div className="bg-gradient-to-r from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-800/20 p-6 border border-green-200/50 dark:border-green-700/50">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-green-600 rounded-lg text-white">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
