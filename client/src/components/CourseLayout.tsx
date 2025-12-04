@@ -111,7 +111,7 @@ const CourseLayout = () => {
 
   return (
     <MaterialsContext.Provider value={{ materials, setMaterials, materialsLoading, setShowNavigation}}>
-      <div className="min-h-screen bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950 flex">
+      <div className="h-full bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950 flex">
         {/* Sidebar Navigation */}
         {showNavigation && (
           <div className="w-80 bg-white dark:bg-surface-900 border-r border-surface-200 dark:border-surface-800 flex flex-col">
@@ -179,7 +179,7 @@ const CourseLayout = () => {
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-hidden">
+        <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </div>
