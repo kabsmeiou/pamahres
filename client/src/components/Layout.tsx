@@ -154,7 +154,7 @@ const Layout = () => {
     }
   };
   return (
-    <div className="min-h-screen bg-surface-50 dark:bg-surface-950">
+    <div className="flex flex-col h-screen min-h-screen bg-surface-50 dark:bg-surface-950">
       {isLoggingOut && <LogoutAnimation />}
       {showConfirmation && (
         ConfirmLogout({
@@ -247,7 +247,7 @@ const Layout = () => {
 
       {/* Main Content */}
       <LayoutContext.Provider value={{ courses: courses ?? null, isFetchingCourses, setShowToast }}>
-        <main className="flex-1">
+        <main className="flex-1 overflow-y-auto">
           {showToast && (
             <Toast 
               message="This feature is currently unavailable. Please try again later." 
