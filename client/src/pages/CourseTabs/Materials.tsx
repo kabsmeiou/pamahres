@@ -98,7 +98,7 @@ const Materials = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-2xl p-6 border border-primary-200/50 dark:border-primary-700/50">
+      <div className="bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 p-6 border border-primary-200/50 dark:border-primary-700/50">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-primary-600 rounded-lg text-white">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,7 +110,7 @@ const Materials = () => {
             <p className="text-sm text-gray-600 dark:text-gray-300 font-medium leading-relaxed">Upload and manage your learning resources</p>
           </div>
         </div>
-        
+    
         <div className="mt-4">
           <CourseHeader isUploading={isUploading} handleFileUpload={handleFileUpload} />
         </div>

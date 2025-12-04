@@ -30,7 +30,7 @@ const Quizzes = () => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-800/20 rounded-2xl p-6 border border-blue-200/50 dark:border-blue-700/50">
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-800/20 p-6 border border-blue-200/50 dark:border-blue-700/50">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-blue-600 rounded-lg text-white">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,11 +39,8 @@ const Quizzes = () => {
           </div>
           <div className="flex-1">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Course Quizzes</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-300 font-medium leading-relaxed">Test your knowledge and track your progress</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300 font-medium leading-relaxed">Generate quizzes from your course materials</p>
           </div>
-        </div>
-        
-        <div className="mt-4">
           <QuizHeader />
         </div>
       </div>

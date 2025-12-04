@@ -27,9 +27,9 @@ const ChatHistoryView = () => {
     });
 
     return (
-        <div className="space-y-4">
+        <div className="">
             {/* Navigation Header */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
                 <div className="flex items-center justify-between">
                     <Link 
                         to={`/pamahres/courses/${courseId}/chat-history`}
@@ -49,7 +49,7 @@ const ChatHistoryView = () => {
             </div>
             
             {/* Chat Content */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden min-h-[600px]">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden h-screen">
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center h-96 p-8">
                         <div className="w-16 h-16 bg-primary-50 dark:bg-primary-900/30 rounded-full flex items-center justify-center mb-4">
@@ -57,9 +57,6 @@ const ChatHistoryView = () => {
                         </div>
                         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Loading conversation</h3>
                         <p className="text-gray-600 dark:text-gray-400 mb-6">Retrieving chat history...</p>
-                        <div className="w-full max-w-md">
-                            <Loading type="default" count={2} />
-                        </div>
                     </div>
                 ) : error ? (
                     <div className="flex flex-col items-center justify-center text-center h-96 p-8">

@@ -34,7 +34,7 @@ const ChatHistoryIndex = () => {
                     </div>
                 </div>
                 
-                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-8">
+                <div className="bg-white dark:bg-gray-800">
                     <div className="flex flex-col items-center text-center">
                         <div className="w-16 h-16 bg-orange-50 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-4">
                             <Clock size={24} className="text-orange-500 dark:text-orange-400 animate-pulse" />
@@ -80,7 +80,7 @@ const ChatHistoryIndex = () => {
     return (
         <div className="space-y-6">
             {/* Header Section */}
-            <div className="bg-gradient-to-r from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-800/20 rounded-2xl p-6 border border-orange-200/50 dark:border-orange-700/50">
+            <div className="bg-gradient-to-r from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-800/20 p-6 border border-orange-200/50 dark:border-orange-700/50">
                 <div className="flex items-center space-x-3">
                     <div className="p-2 bg-orange-600 rounded-lg text-white">
                         <MessageCircle size={20} />
