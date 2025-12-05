@@ -28,7 +28,7 @@ const Quizzes = () => {
   // };
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-800/20 p-6 border border-blue-200/50 dark:border-blue-700/50">
         <div className="flex items-center space-x-3">

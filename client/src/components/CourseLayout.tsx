@@ -111,10 +111,10 @@ const CourseLayout = () => {
 
   return (
     <MaterialsContext.Provider value={{ materials, setMaterials, materialsLoading, setShowNavigation}}>
-      <div className="h-full bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950 flex">
+      <div className="h-full bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950 md:flex">
         {/* Sidebar Navigation */}
         {showNavigation && (
-          <div className="w-80 bg-white dark:bg-surface-900 border-r border-surface-200 dark:border-surface-800 flex flex-col">
+          <div className="md:w-80 bg-white dark:bg-surface-900 border-r border-surface-200 dark:border-surface-800 flex flex-col">
             {/* Course Header in Sidebar */}
             <div className="p-6 border-b border-surface-200 dark:border-surface-800">
               <Link 
