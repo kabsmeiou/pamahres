@@ -96,7 +96,7 @@ const Materials = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* Header Section */}
       <div className="bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 p-6 border border-primary-200/50 dark:border-primary-700/50">
         <div className="flex items-center space-x-3">
