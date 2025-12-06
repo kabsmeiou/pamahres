@@ -40,10 +40,11 @@ const Chatbox = ({
     }, [messages]);
 
     return (
-        <div className="max-w-6xl max-h-full flex flex-col">
+        <div className="max-w-6xl mx-auto">
                 {/* Messages Area */}
+                <div className="flex-1 flex flex-col h-full relative">
                     <div 
-                        className="flex flex-col p-6 lg:p-8 overflow-y-auto space-y-6 bg-gradient-to-b from-surface-50/30 to-white dark:from-surface-900/30 dark:to-surface-900" 
+                        className="flex-1 p-6 lg:p-8 overflow-y-auto space-y-6 bg-gradient-to-b from-surface-50/30 to-white dark:from-surface-900/30 dark:to-surface-900" 
                         ref={messagesContainerRef} 
                         style={{overflowAnchor: 'none'}}
                     >
@@ -178,6 +179,7 @@ const Chatbox = ({
                             </form>
                         </div>
                     )}
+                </div>
             </div>
     );
 };

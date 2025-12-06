@@ -49,7 +49,7 @@ const ChatHistoryView = () => {
             </div>
             
             {/* Chat Content */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden h-screen flex flex-col">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden h-screen">
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center h-96 p-8">
                         <div className="w-16 h-16 bg-primary-50 dark:bg-primary-900/30 rounded-full flex items-center justify-center mb-4">
@@ -73,7 +73,7 @@ const ChatHistoryView = () => {
                         </Link>
                     </div>
                 ) : typeof messages !== "undefined" ? (
-                    <div className="h-full min-h-0">
+                    <div className="h-full">
                         <Chatbox
                             showForm={false}
                             messages={messages || []}
