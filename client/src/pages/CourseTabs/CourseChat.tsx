@@ -68,19 +68,22 @@ const Course = () => {
   return (
     <div className='h-full relative flex flex-col'>
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-800/20 p-6 border border-green-200/50 dark:border-green-700/50">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-green-600 rounded-lg text-white">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-          </div>
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white tracking-tight">AI Tutor</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-300 font-medium leading-relaxed">Ask questions about your course materials</p>
+      {/* if messages exist, dont show the header */}
+      {!messages.length && (
+        <div className="bg-gradient-to-r from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-800/20 p-6 border border-green-200/50 dark:border-green-700/50">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-green-600 rounded-lg text-white">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white tracking-tight">AI Tutor</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-300 font-medium leading-relaxed">Ask questions about your course materials</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Chat Content */}
       <div className='h-full min-h-0'>
