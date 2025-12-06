@@ -66,7 +66,7 @@ const Course = () => {
   };
 
   return (
-    <div className='h-screen'>
+    <div className='h-full relative flex flex-col'>
       {/* Header Section */}
       <div className="bg-gradient-to-r from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-800/20 p-6 border border-green-200/50 dark:border-green-700/50">
         <div className="flex items-center space-x-3">
@@ -83,7 +83,7 @@ const Course = () => {
       </div>
 
       {/* Chat Content */}
-      <div className="max-h-full">
+      <div className='h-full min-h-0'>
         <Chatbox
           showForm={true}
           message={message}
@@ -94,6 +94,8 @@ const Course = () => {
           handleSubmit={handleSubmit}
         />
       </div>
+
+    
     </div>
   )
 };

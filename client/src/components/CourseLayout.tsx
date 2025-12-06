@@ -114,7 +114,7 @@ const CourseLayout = () => {
       <div className="h-full bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950 md:flex">
         {/* Sidebar Navigation */}
         {showNavigation && (
-          <div className="md:w-80 bg-white dark:bg-surface-900 border-r border-surface-200 dark:border-surface-800 flex flex-col">
+          <div className="md:w-96 bg-white dark:bg-surface-900 border-r border-surface-200 dark:border-surface-800 flex flex-col">
             {/* Course Header in Sidebar */}
             <div className="p-6 border-b border-surface-200 dark:border-surface-800">
               <Link 
@@ -179,7 +179,7 @@ const CourseLayout = () => {
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="border-box h-full w-full overflow-y-auto">
           <Outlet />
         </main>
       </div>
