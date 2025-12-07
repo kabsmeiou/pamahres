@@ -1,21 +1,12 @@
-import os
-from dotenv import load_dotenv
-from openai import OpenAI
 import json
 from rest_framework.exceptions import ValidationError
 from utils.validators import validate_response_format
 import logging
 import re
 
+from services.clients import groq_client, openai_client
+
 logger = logging.getLogger(__name__)
-
-load_dotenv()
-
-# can use openrouter or groq
-client = OpenAI(
-  base_url="https://api.groq.com/openai/v1",
-  api_key=os.getenv("GROK_API_KEY",),
-)
 
 def parse_llm_response(raw_text: str):
   # Use regex to find the first JSON array in the text
@@ -83,7 +74,7 @@ def get_completion(model="meta-llama/llama-4-scout-17b-16e-instruct", *, items: 
       }
     ]
 
-  completion = client.chat.completions.create(
+  completion = groq_client.chat.completions.create(
     model=model,
     messages = prompt
   )
@@ -115,13 +106,8 @@ def get_completion(model="meta-llama/llama-4-scout-17b-16e-instruct", *, items: 
   return response
 
 
-openai_client = OpenAI(
-  base_url="https://openrouter.ai/api/v1",
-  api_key=os.getenv("OPENAI_API_KEY"),
-)
-
 # function for handling the conversation with the LLM
-def get_conversational_completion(model="deepseek/deepseek-chat:free", *, previous_messages: list, new_message: str, context: str) -> str:
+def get_conversational_completion(model="openai/gpt-5.1", *, previous_messages: list, new_message: str, context: str) -> str:
   """
   This function handles the conversation with the LLM.
   It takes in a list of previous messages and a new message, and returns a string of responses from the LLM.
@@ -132,6 +118,7 @@ def get_conversational_completion(model="deepseek/deepseek-chat:free", *, previo
 
   note that previous_messages is not the full conversation history, but only the last few messages
   """
+  
   completion = openai_client.chat.completions.create(
     model=model,
     messages = [
@@ -144,7 +131,8 @@ def get_conversational_completion(model="deepseek/deepseek-chat:free", *, previo
         "role": "user",
         "content": new_message
       }
-    ]
+    ],
+    max_tokens=7000
   )
   response = completion.choices[0].message.content
   # clean up the response
