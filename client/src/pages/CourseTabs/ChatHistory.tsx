@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 
 const ChatHistory = () => {
     return (
-        <div className="h-full">
+        <div>
             <Outlet />
         </div>
     );

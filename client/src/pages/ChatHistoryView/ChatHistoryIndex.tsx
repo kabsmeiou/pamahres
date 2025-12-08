@@ -78,7 +78,7 @@ const ChatHistoryIndex = () => {
     }
 
     return (
-        <div className="space-y-6">
+        <div>
             {/* Header Section */}
             <div className="bg-gradient-to-r from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-800/20 p-6 border border-orange-200/50 dark:border-orange-700/50">
                 <div className="flex items-center space-x-3">
@@ -93,7 +93,7 @@ const ChatHistoryIndex = () => {
             </div>
             
             {/* Content */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl">
+            <div className="pb-16 bg-white dark:bg-gray-800 rounded-2xl">
                 <div className="p-6">
                     {history && history.length > 0 ? (
                         <ChatHistoryList histories={history} />

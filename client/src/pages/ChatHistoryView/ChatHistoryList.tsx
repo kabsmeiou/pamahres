@@ -8,7 +8,7 @@ export const ChatHistoryList = ({ histories }: { histories: ChatHistoryProps[] }
         <div>
             {histories.length > 0 ? (
                 <div className="w-full">
-                    <ul className="space-y-4 max-h-[calc(75vh)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-surface-300 dark:scrollbar-thumb-surface-600 scrollbar-track-transparent">
+                    <ul className="space-y-4 max-h-[calc(75vh)] pr-2 scrollbar-thin scrollbar-thumb-surface-300 dark:scrollbar-thumb-surface-600 scrollbar-track-transparent">
                         {histories.map((item, idx) => (
                             <li key={idx}>
                                 <ChatHistoryCard
