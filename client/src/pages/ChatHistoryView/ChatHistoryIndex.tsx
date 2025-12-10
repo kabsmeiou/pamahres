@@ -4,7 +4,6 @@ import { useChatbot } from '../../services/chatbot';
 import { useParams } from 'react-router-dom';
 import { ChatHistoryProps } from '../../types/course';
 import { MessageCircle, AlertCircle, Clock } from 'react-feather';
-import Loading from '../../components/Loading';
 
 const ChatHistoryIndex = () => {
     const { getHistory } = useChatbot();

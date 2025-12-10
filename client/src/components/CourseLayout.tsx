@@ -179,7 +179,7 @@ const CourseLayout = () => {
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1 border-box h-full w-full overflow-y-auto">
+        <main className="flex-1 border-box h-full w-full">
           <Outlet />
         </main>
       </div>

@@ -66,7 +66,7 @@ const Course = () => {
   };
 
   return (
-    <div className='h-full relative flex flex-col'>
+    <div className='h-full flex flex-col'>
       {/* Header Section */}
       {/* if messages exist, dont show the header */}
       {!messages.length && (

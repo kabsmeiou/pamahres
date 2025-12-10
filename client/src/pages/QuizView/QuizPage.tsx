@@ -160,7 +160,7 @@ const QuizPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950">
+        <div className="bg-gradient-to-br from-surface-50 via-white to-surface-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950">
             {/* Confirmation Modal */}
             {showConfirmation && !hasSubmitted && (
                 <ActionConfirmation
@@ -176,8 +176,8 @@ const QuizPage = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Sidebar - Quiz Information */}
-                    <div className="lg:w-80 w-full">
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-8">
+                    <div className="w-full lg:w-80 lg:flex-shrink-0">
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 lg:sticky lg:top-8">
                             <div className="space-y-6">
                                 {/* Quiz Title */}
                                 <div className="text-center space-y-3">
@@ -293,7 +293,7 @@ const QuizPage = () => {
                     </div>
 
                     {/* Main Content Area */}
-                    <div className="flex-1">
+                    <div className="w-full lg:flex-1 min-w-0">
                         {hasStarted ? (
                             <div className="quiz-item bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
                                 {isSubmitting ? (
