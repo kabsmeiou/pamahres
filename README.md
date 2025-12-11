@@ -210,6 +210,7 @@ pamahres/
 ├── server/                 # Django backend
 │   ├── app/
 │   │   ├── courses/        # Course management
+|   |   ├── auth/           
 │   │   ├── quiz/           # Quiz functionality
 │   │   ├── user/           # User management
 │   │   ├── services/       # AI services
