@@ -69,10 +69,10 @@ const QuizForm = ({ isOpen, onClose, materialQuiz }: QuizFormProps) => {
         material_list: selectedMaterialId ? [parseInt(selectedMaterialId, 10)] : [],
         number_of_questions: selectedMaterialId ? formData.number_of_questions : 0
       };
-      const quiz = await createQuiz(numericCourseId, quizData);
+      const quiz = await createQuiz(courseId!, quizData);
       if (quiz.material_list && quiz.material_list.length > 0) {
         try {
-          await generateQuestions(quiz.id!);
+          await generateQuestions(courseId!,quiz.id!);
         } catch (err: any) {
           console.error("Error generating questions:", err);
         }

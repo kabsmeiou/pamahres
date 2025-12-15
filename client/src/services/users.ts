@@ -8,15 +8,15 @@ export const useUserApi = () => {
     const [error, setError] = useState<string | null>(null);
 
     const getUserProfile = async () => {
-        return callApi(() => api.get('api-user/profile/'), setLoading, setError);
+        return callApi(() => api.get('user/profile/'), setLoading, setError);
     };
 
     const getUserDetails = async () => {
-        return callApi(() => api.get(`api-user/user/`), setLoading, setError);
+        return callApi(() => api.get(`user/`), setLoading, setError);
     };
 
     const updateUserProfile = async (data: any) => {
-        return callApi(() => api.put('api-user/profile/', data), setLoading, setError);
+        return callApi(() => api.put('user/profile/', data), setLoading, setError);
     };
 
     return { getUserProfile, getUserDetails, updateUserProfile, loading, error };

@@ -6,10 +6,12 @@ import { useUserApi } from '../services/users';
 import { Question, QuizResult } from '../types/quiz';
 import supabase from '../lib/supabase';
 import QuizItem from './QuizView/QuizItem';
+import { useParams } from 'react-router-dom';
 
 import type { UserDetail } from '../types/user';
 
 const QuickCreate = () => {
+    const { courseId } = useParams();
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [isDragOver, setIsDragOver] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
@@ -188,7 +190,7 @@ const QuickCreate = () => {
                 answer: selectedAnswers[question.id!] || '' // Use empty string if no answer selected
             }));
 
-            const result = await submitQuiz(quizData.quiz_id, answers);
+            const result = await submitQuiz(courseId!, quizData.quiz_id, answers);
 
             if (result) {
                 setQuizResult(result);
@@ -212,7 +214,7 @@ const QuickCreate = () => {
         setError(null);
         setUploadProgress(0);
         if (quizData) {
-            deleteQuiz(quizData.quiz_id).catch(err => {
+            deleteQuiz(courseId!, quizData.quiz_id).catch(err => {
                 console.error("Failed to delete quiz:", err);
             });
         }
