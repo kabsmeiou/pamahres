@@ -16,19 +16,19 @@ export const useChatbot = () => {
   const [error, setError] = useState<string | null>(null);
 
   const sendMessage = async (message: Message, courseId: number) => {
-    return callApi(() => api.post(`api-courses/chat/${courseId}/`, message), setLoading, setError);
+    return callApi(() => api.post(`courses/chat/${courseId}/`, message), setLoading, setError);
   };
 
   const getHistory = async (courseId: number) => {
-    return callApi(() => api.get(`api-courses/chat/${courseId}/history/`), setLoading, setError);
+    return callApi(() => api.get(`courses/chat/${courseId}/history/`), setLoading, setError);
   }
 
   const getHistoryMessages = async (courseId: number, chatId: number) => {
-    return callApi(() => api.get(`api-courses/chat/${courseId}/history/${chatId}/`), setLoading, setError);
+    return callApi(() => api.get(`courses/chat/${courseId}/history/${chatId}/`), setLoading, setError);
   };
 
   const getHistoryToday = async (courseId: number) => {
-    return callApi(() => api.get(`api-courses/chat/${courseId}/history/today/`), setLoading, setError);
+    return callApi(() => api.get(`courses/chat/${courseId}/history/today/`), setLoading, setError);
   };
 
   return { sendMessage, getHistory, getHistoryMessages, getHistoryToday, loading, error };

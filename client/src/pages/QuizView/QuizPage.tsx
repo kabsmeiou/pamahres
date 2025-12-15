@@ -50,7 +50,7 @@ const QuizPage = () => {
 
     const { data: quizFromFetch } = useQuery<Quiz>({
         queryKey: ["quiz-info", quizId],
-        queryFn: () => getQuizById(Number(quizId)),
+        queryFn: () => getQuizById(courseId!, Number(quizId)),
         enabled: !quizFromState, // only fetch if not provided in state
         initialData: quizFromState || undefined, // use the state if available
     });
@@ -59,7 +59,7 @@ const QuizPage = () => {
     
     const { data: questions, isLoading: questionsLoading } = useQuery<Question[]>({
         queryKey: ["quiz-questions", quizId],
-        queryFn: () => fetchQuestionsByQuizId(Number(quizId)),
+        queryFn: () => fetchQuestionsByQuizId(courseId!, Number(quizId)),
     });
 
     const validateAnswers = () => {
@@ -87,7 +87,7 @@ const QuizPage = () => {
         const formattedAnswers = validateAnswers();
         // submit for checking
         try {
-            const response = await submitQuiz(Number(quizId), formattedAnswers);
+            const response = await submitQuiz(courseId!, Number(quizId), formattedAnswers);
             setResult(response.results);
             queryClient.invalidateQueries({ queryKey: ["quizzes", courseId] });
         } catch (error) {

@@ -15,7 +15,7 @@ const Quizzes = () => {
 
   const { data: quizzes, isLoading, error } = useQuery<Quiz[]>({
     queryKey: ['quizzes', numericCourseId],
-    queryFn: () => getQuizzes(numericCourseId),
+    queryFn: () => getQuizzes(courseId!),
   });
 
   // const getStatusIcon = (status: Quiz['status']) => {
