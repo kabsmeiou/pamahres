@@ -78,9 +78,9 @@ jobs:
         done
 
     - name: Run migrations
-      working-directory: server
+      working-directory: server/app
       run: uv run python manage.py migrate
 
     - name: Run tests
-      working-directory: server
+      working-directory: server/app
       run: uv run python manage.py test
