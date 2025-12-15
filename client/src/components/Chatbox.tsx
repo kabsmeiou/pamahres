@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { Send, MessageCircle, Star } from 'react-feather';
+import { Send, MessageCircle } from 'react-feather';
 import ReactMarkdown from 'react-markdown';
 import { ChatMessage } from '../types/course';
 

@@ -21,7 +21,7 @@ import os
 
 urlpatterns = [
     path(os.getenv("DJANGO_ADMIN_URL"), admin.site.urls),
-    path('api-user/', include('user.urls')),
-    path('api-courses/', include('courses.urls')),
-    path('api-quiz/', include('quiz.urls')),
+    path('api/user/', include('user.urls')),
+    path('api/courses/', include('courses.urls')),
+    path('api/quiz/', include('quiz.urls')),
 ]

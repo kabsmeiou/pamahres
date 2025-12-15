@@ -54,7 +54,7 @@ const CourseLayout = () => {
   const courseFromState = location.state?.course;
 
   // if course is not found, fetch it
-  const { data: courseFromQuery, isLoading } = useQuery({
+  const { data: courseFromQuery } = useQuery({
     queryKey: ['course', courseId],
     queryFn: () => getCourseById(courseId!),
     enabled: !courseFromState
