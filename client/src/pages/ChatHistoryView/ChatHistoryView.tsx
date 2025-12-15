@@ -4,7 +4,6 @@ import { useParams, Link } from "react-router-dom";
 import { useChatbot } from "../../services/chatbot";
 import Chatbox from "../../components/Chatbox";
 import { AlertCircle, Clock, ChevronLeft, Calendar } from "react-feather";
-import Loading from "../../components/Loading";
 
 const ChatHistoryView = () => {
     const { courseId, chatId } = useParams<{ courseId: string, chatId: string }>();

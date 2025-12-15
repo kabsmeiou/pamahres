@@ -183,7 +183,7 @@ const QuickCreate = () => {
 
         try {
             // Convert selectedAnswers to the format expected by the API
-            const answers = quizData.questions.map((question, index) => ({
+            const answers = quizData.questions.map((question) => ({
                 question_id: question.id!,
                 answer: selectedAnswers[question.id!] || '' // Use empty string if no answer selected
             }));
@@ -198,7 +198,7 @@ const QuickCreate = () => {
             setError(err instanceof Error ? err.message : 'Failed to submit quiz');
         }
     };
-
+    console.log(numberOfQuestionsAnswered);
     const resetQuiz = () => {
         setUploadedFile(null);
         setQuizGenerated(false);

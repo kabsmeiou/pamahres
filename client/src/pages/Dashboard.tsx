@@ -1,5 +1,5 @@
 import { Course } from "../types/course";
-import { PlusCircle, Search, TrendingUp, Calendar, BookOpen, Clock } from "react-feather";
+import { PlusCircle, Search, Calendar, BookOpen } from "react-feather";
 import { Link } from "react-router-dom";
 import EmptyFallback from "../components/EmptyFallback";
 import Loading from "../components/Loading";

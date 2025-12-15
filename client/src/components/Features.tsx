@@ -1,4 +1,4 @@
-import { Star, Check, Users, Lock, TrendingUp, Repeat, GitBranch, Terminal, Zap, Sliders, Book } from 'react-feather';
+import { Star, Check, Zap, Book } from 'react-feather';
 
 type feature = {
     title: string;

@@ -1,4 +1,4 @@
-import { BookOpen, ArrowRight, Delete } from "react-feather";
+import { ArrowRight, Delete } from "react-feather";
 import { Link } from "react-router-dom";
 import { Course } from "../../types/course";
 import ActionConfirmation from "../../components/ActionConfirmation";

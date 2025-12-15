@@ -46,46 +46,46 @@ const LandingPage = () => {
     setAnimatedSquares(squares);
   }, []);
 
-  const pricingPlans = [
-    {
-      name: 'Free',
-      price: '$0.00',
-      description: 'Perfect for getting started',
-      features: [
-        'Up to 3 courses',
-        'Up to 3 quizzes per course',
-        'Basic quiz generation',
-        'Limited storage'
-      ],
-      buttonText: 'Get Started',
-      popular: true
-    },
-    {
-      name: 'Apprentice',
-      price: '$X.XX/ mo',
-      description: 'Best for growing learners',
-      features: [
-        'Up to 8 courses',
-        'Up to 5 quizzes per course',
-        'Extended storage',
-        'Analytics dashboard'
-      ],
-      buttonText: 'Start Free Trial',
-      popular: false
-    },
-    {
-      name: 'Scholar',
-      price: '$XX.XX / mo',
-      description: 'For serious educators',
-      features: [
-        'Everything in Apprentice + more',
-        'AI-powered insights',
-        'API access'
-      ],
-      buttonText: 'Get Started',
-      popular: false
-    }
-  ];
+  // const pricingPlans = [
+  //   {
+  //     name: 'Free',
+  //     price: '$0.00',
+  //     description: 'Perfect for getting started',
+  //     features: [
+  //       'Up to 3 courses',
+  //       'Up to 3 quizzes per course',
+  //       'Basic quiz generation',
+  //       'Limited storage'
+  //     ],
+  //     buttonText: 'Get Started',
+  //     popular: true
+  //   },
+  //   {
+  //     name: 'Apprentice',
+  //     price: '$X.XX/ mo',
+  //     description: 'Best for growing learners',
+  //     features: [
+  //       'Up to 8 courses',
+  //       'Up to 5 quizzes per course',
+  //       'Extended storage',
+  //       'Analytics dashboard'
+  //     ],
+  //     buttonText: 'Start Free Trial',
+  //     popular: false
+  //   },
+  //   {
+  //     name: 'Scholar',
+  //     price: '$XX.XX / mo',
+  //     description: 'For serious educators',
+  //     features: [
+  //       'Everything in Apprentice + more',
+  //       'AI-powered insights',
+  //       'API access'
+  //     ],
+  //     buttonText: 'Get Started',
+  //     popular: false
+  //   }
+  // ];
 
   const testimonials = [
     {

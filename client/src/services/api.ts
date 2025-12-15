@@ -8,7 +8,7 @@ export const useApiClient = () => {
 
   const api = useMemo(() => {
     const instance = axios.create({
-      baseURL: "http://127.0.0.1:8000/",
+      baseURL: "/api/",
       timeout: 20000,
     });
 

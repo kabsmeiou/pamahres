@@ -1,4 +1,4 @@
-import { Plus, FileText } from "react-feather";
+import { Plus } from "react-feather";
 import { useState } from "react";
 import QuizForm from "./QuizForm";
 

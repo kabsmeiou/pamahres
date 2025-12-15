@@ -13,7 +13,7 @@ const Course = () => {
   const { sendMessage, getHistoryToday } = useChatbot();
   const [loading, setLoading] = useState(false);
 
-  const {data: current_messages, isLoading, isError} = useQuery<ChatMessage[]>({
+  const {data: current_messages, isLoading} = useQuery<ChatMessage[]>({
     queryKey: ['chat-history', courseIdNumber],
     queryFn: () => getHistoryToday(courseIdNumber) as Promise<ChatMessage[]>,
     enabled: !!courseIdNumber,
