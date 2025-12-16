@@ -122,7 +122,7 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+IS_CI = os.getenv("GITHUB_ACTIONS") == "true"
 if 'test' in sys.argv:
     DATABASES = {
         'default': {
@@ -140,7 +140,7 @@ else:
             'HOST': os.getenv("POSTGRES_HOST"),
             'PORT': os.getenv("POSTGRES_PORT"),
             'OPTIONS': {
-                'sslmode': 'require',  
+                'sslmode': 'disable' if IS_CI else 'require',  
             },
             'CONN_MAX_AGE': 300,
         }
