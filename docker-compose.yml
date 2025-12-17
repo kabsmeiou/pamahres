@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: pamahres_backend
     env_file:
-      - ./server/.env
+      - ./server/.env.prod
     ports:
       - "8000:8000"
     depends_on:
@@ -48,4 +48,4 @@ services:
       - backend
 
 volumes:
-  static_volume:  
+  static_volume:
