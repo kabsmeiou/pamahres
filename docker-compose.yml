@@ -28,7 +28,7 @@ services:
       dockerfile: Dockerfile
     container_name: pamahres_celery
     env_file:
-      - ./server/.env
+      - ./server/.env.prod
     depends_on:
       - backend
       - redis

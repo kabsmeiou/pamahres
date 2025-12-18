@@ -11,3 +11,4 @@ staticfiles/
 .venv
 .env*
 .vscode/
+.DS_Store
