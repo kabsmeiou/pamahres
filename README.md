@@ -18,7 +18,7 @@ A modern, AI-powered learning management system that helps students create cours
 - Multiple choice and True/False question support
 - Timed quizzes with customizable time limits
 - **Review Mode**: Review completed quizzes with correct answers and explanations
-- Real-time progress tracking and scoring
+- Real-time progress tracking
 
 ### 💬 Chat & History
 - Chat with AI about specific course materials
@@ -36,13 +36,11 @@ A modern, AI-powered learning management system that helps students create cours
 
 ### Frontend
 - **React 18** with TypeScript
-- **Vite** for fast development and building
 - **TailwindCSS** for styling with custom design system
 - **React Router** for navigation
 - **TanStack Query** for state management and caching
 - **React Feather** for beautiful icons
-- **Inter Font** for modern typography
-
+  
 ### Backend
 - **Django** REST API
 - **Python** with modern async support
@@ -50,6 +48,11 @@ A modern, AI-powered learning management system that helps students create cours
 - **Groq and OpenRouter** for AI-powered features
 - **Celery** for background task processing
 - **PDF Processing** utilities for document analysis
+
+### Deployment
+- **Docker** for containerization
+- **AWS EC2** for cloud-based virtual machine deployment
+- **Nginx** as reverse proxy and static file server
 
 ## 🚀 Quick Start
 
@@ -139,6 +142,12 @@ CLERK_SECRET_KEY=sk_test_your-clerk-secret-key
 # Celery (for background tasks) - Optional
 CELERY_BROKER_URL=redis://localhost:6379/0
 CELERY_RESULT_BACKEND=redis://localhost:6379/0
+
+DJANGO_SETTINGS_MODULE=app.settings
+DJANGO_ENV=local
+DJANGO_ADMIN_URL=admin/
+
+REDIS_URL=redis://localhost:6379/1
 ```
 
 ### Getting API Keys
@@ -209,6 +218,8 @@ pamahres/
 │   └── public/
 ├── server/                 # Django backend
 │   ├── app/
+|   |   ├── app/            # main django app dir
+|   |   |   ├── settings/   # django settings (local/prod)
 │   │   ├── courses/        # Course management
 |   |   ├── auth/           
 │   │   ├── quiz/           # Quiz functionality
