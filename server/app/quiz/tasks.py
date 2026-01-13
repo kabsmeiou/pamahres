@@ -1,14 +1,13 @@
 from celery import shared_task
-from .models import QuizModel
-from courses.models import CourseMaterial
-from utils.pdf_processor import extract_pdf_content
-from services.openai_generator import get_completion
-from utils.question_generator import create_questions_and_options
+import logging
 from rest_framework.exceptions import ValidationError
-from supabase_client import supabase
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404
-import logging
+
+from .models import QuizModel
+from services.openai_generator import get_completion
+from utils.question_generator import create_questions_and_options
+from supabase_client import supabase
 
 logger = logging.getLogger(__name__)
 

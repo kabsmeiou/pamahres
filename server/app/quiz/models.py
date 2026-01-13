@@ -1,8 +1,9 @@
 from django.db import models
-from courses.models import CourseMaterial
-from courses.models import Course
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
+
+from courses.models import CourseMaterial
+from courses.models import Course
 
 # quiz model that is linked to materials in a course and specifies the number of questions
 # change default number of questions to 0

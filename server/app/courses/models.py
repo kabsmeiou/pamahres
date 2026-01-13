@@ -1,7 +1,5 @@
 from django.db import models
 from django.utils import timezone
-# from django.contrib.postgres.fields import ArrayField
-from django.core.validators import FileExtensionValidator
 from user.models import User
 
 # Create your models here.

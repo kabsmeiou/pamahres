@@ -5,11 +5,8 @@ import jwt
 import pytz
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from jwt.algorithms import RSAAlgorithm
-from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from dotenv import load_dotenv
-from user.models import Profile, UserActivity
 
 # Load .env file
 load_dotenv()

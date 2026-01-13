@@ -1,24 +1,19 @@
 import time
 import logging
 import datetime
-
 from rest_framework.exceptions import ValidationError
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.core.cache import cache
-from django.contrib.auth import get_user_model
 from django.db import transaction
 
-from quiz.serializers import QuizModelSerializer, QuestionModelSerializer, QuestionOptionSerializer
-from .models import QuizModel, QuestionModel, QuestionOption
-from courses.models import CourseMaterial, Course
-
+from quiz.serializers import QuizModelSerializer, QuestionModelSerializer
+from .models import QuizModel, QuestionModel
+from courses.models import Course
 from .tasks import generate_questions_task, delete_quiz_cache
 from utils.validators import validate_quiz_question
 from utils.helpers import get_content_from_quizId, generate_questions_by_chunks, save_answers_of_best_score
