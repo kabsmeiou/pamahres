@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import QuizListCreateView, QuestionListCreateView, GenerateQuestionView, QuizDeleteView, QuizDetailView, CheckQuizAnswerView, QuickCreateQuizView
+from .views import QuizListCreateView, QuestionListCreateView, GenerateQuestionView, QuizDeleteView, QuizDetailView, CheckQuizAnswerView
 
 urlpatterns = [
     path('', QuizListCreateView.as_view(), name='quiz-list-create'), 

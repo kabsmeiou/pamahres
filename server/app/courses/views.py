@@ -1,20 +1,19 @@
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated, BasePermission
-from courses.serializers import CourseSerializer, CourseMaterialSerializer, LLMConversationSerializer, ChatHistorySerializer, MessageSerializer
-from django.shortcuts import get_object_or_404
-from .models import Course, CourseMaterial, ChatHistory, Message
-from rest_framework.exceptions import ValidationError
-from supabase_client import supabase
-from rest_framework.response import Response
-from rest_framework import status
-from quiz.models import QuizModel
-from quiz.tasks import delete_material_and_quiz
-from utils.helpers import get_content_from_quizId, generate_questions_by_chunks, add_to_chat_history
-from services.openai_generator import get_conversational_completion
 import time
 import logging
 import tiktoken
 import datetime
+from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from rest_framework import status, generics
+from rest_framework.permissions import IsAuthenticated, BasePermission
+from rest_framework.exceptions import ValidationError
+
+from courses.serializers import CourseSerializer, CourseMaterialSerializer, LLMConversationSerializer, ChatHistorySerializer, MessageSerializer
+from .models import Course, CourseMaterial, ChatHistory, Message
+from quiz.models import QuizModel
+from quiz.tasks import delete_material_and_quiz
+from utils.helpers import get_content_from_quizId, generate_questions_by_chunks, add_to_chat_history
+from services.openai_generator import get_conversational_completion
 from services.embedding import embed_and_upsert_chunks, query_course, delete_course_chunks
 
 logger = logging.getLogger(__name__)

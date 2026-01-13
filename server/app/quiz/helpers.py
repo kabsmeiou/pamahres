@@ -1,7 +1,7 @@
-from courses.models import Course, CourseMaterial
-from quiz.models import QuizModel
 from datetime import datetime
 
+from courses.models import Course, CourseMaterial
+from quiz.models import QuizModel
 
 def create_dummy_course(request):
     """
