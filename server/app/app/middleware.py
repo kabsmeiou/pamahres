@@ -1,7 +1,6 @@
 import datetime
 import os
 import requests
-import jwt
 import pytz
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
@@ -19,7 +18,6 @@ CLERK_SECRET_KEY = os.getenv("CLERK_SECRET_KEY")
 CACHE_KEY = "jwks_data"
 
 
-import time
 import logging
 
 logger = logging.getLogger(__name__)
