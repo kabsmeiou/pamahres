@@ -3,11 +3,8 @@ from django.shortcuts import get_object_or_404
 from quiz.models import QuizModel
 from courses.models import CourseMaterial
 from utils.pdf_processor import extract_pdf_content, chunk_text
-from utils.question_generator import create_questions_and_options
 from quiz.tasks import generate_questions_task
 from rest_framework.exceptions import ValidationError
-import datetime
-from courses.models import Course, ChatHistory, Message
 
 logger = logging.getLogger(__name__)
 
@@ -93,21 +90,6 @@ def generate_questions_by_chunks(pdf_content_chunks: list[str], quiz: QuizModel,
             raise ValidationError(f"Error generating questions: {str(e)}")
     
     logger.info(f"Generated {requested_count} questions for quiz {quiz}.")
-
-
-def add_to_chat_history(name_filter: str, new_message: str, sender: str, user_id: int, course_id: int) -> None:
-  course = get_object_or_404(Course, id=course_id, user_id=user_id)
-
-  chat_history, created = ChatHistory.objects.get_or_create(
-    course=course,
-    name_filter=name_filter,
-  )
-
-  Message.objects.create(
-    chat_history=chat_history,
-    sender=sender,
-    content=new_message
-  )
 
 
 def save_answers_of_best_score(answer_list: list, questions: dict) -> None:
