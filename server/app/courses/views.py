@@ -162,10 +162,9 @@ class CourseMaterialDetailView(generics.RetrieveUpdateDestroyAPIView):
     material = self.get_object()
     quiz_title = f"pregenerated-quiz-{material.id}"
     file_url = material.material_file_url
-    with transaction.atomic():
-      QuizModel.objects.filter(quiz_title=quiz_title).delete()
-      material.delete()
-      transaction.on_commit(lambda: delete_material_and_quiz.delay(file_url))
+    QuizModel.objects.filter(quiz_title=quiz_title).delete()
+    material.delete()
+    delete_material_and_quiz.delay(file_url)
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 # Single instance view of a course, showing details
@@ -180,11 +179,11 @@ class CourseDetailView(generics.RetrieveUpdateDestroyAPIView):
   def delete(self, request, *args, **kwargs):
     course = self.get_object()
     course_id = str(course.id)
-    with transaction.atomic():
-      # delete the course object
-      course.delete()
-      # delete all chunks associated with the course from Pinecone
-      transaction.on_commit(lambda: delete_course_chunks.delay(course_id))
+    # delete the course object
+    course.delete()
+    start_time = time.time()
+    # delete all chunks associated with the course from Pinecone
+    delete_course_chunks.delay(course_id)
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 class MaterialDetailView(generics.RetrieveUpdateDestroyAPIView):

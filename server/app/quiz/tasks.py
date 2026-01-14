@@ -35,7 +35,7 @@ def delete_material_and_quiz(self, file_url: str):
         raise self.retry(exc=e)
 
 
-@shared_task(bind=True)
+@shared_task()
 def delete_quiz_cache(self, course_id):
     cache.delete(f'quizzes_serialized_{course_id}')
 
