@@ -6,6 +6,7 @@ from courses.models import Course, CourseMaterial, ChatHistory, Message
 from quiz.models import QuizModel
 from typing import Final
 from unittest.mock import patch
+from django.db import transaction
 
 TEST_PASSWORD: Final[str] = 'testpass123'
 
@@ -48,12 +49,14 @@ class CourseViewTests(APITestCase):
     self.assertEqual(self.course.course_name, 'Updated Course Name')
     self.assertEqual(self.course.course_code, 'UPDATED')
 
-  @patch('courses.views.delete_course_chunks')
-  def test_delete_course(self, mock_delete_chunks):
+  @patch('django.db.transaction.on_commit')
+  @patch('courses.views.delete_course_chunks.delay')
+  def test_delete_course(self, mock_delete_chunks, mock_on_commit):
+    mock_on_commit.side_effect = lambda fn: fn()
     url = reverse('course-detail', kwargs={'course_id': self.course.id})
     response = self.client.delete(url, format='json')
     self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-    self.assertFalse(Course.objects.filter(id=self.course.id).exists())
+    self.assertFalse(Course.objects.filter(id=self.course.id).exists()) 
     mock_delete_chunks.assert_called_once_with(str(self.course.id))
 
   def test_get_course_list(self):
@@ -81,10 +84,8 @@ class CourseMaterialTests(APITestCase):
     self.course = Course.objects.create(user=self.user, course_name='Material Course', course_description='Course Description')
     self.client.force_authenticate(user=self.user)
 
-  @patch('courses.views.get_content_from_quizId')
-  @patch('courses.views.generate_questions_by_chunks')
-  @patch('courses.views.embed_and_upsert_chunks')
-  def test_add_material(self, mock_embed, mock_generate, mock_get_content):
+  @patch('courses.views.handle_quiz_pregeneration')
+  def test_add_material(self, mock_handle_quiz_pregeneration):
     url = reverse('course-material-list-create', kwargs={'course_id': self.course.id})
     data = {
       'file_name': 'Lecture 1',
@@ -96,16 +97,11 @@ class CourseMaterialTests(APITestCase):
     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
     self.assertEqual(CourseMaterial.objects.count(), 1)
     material = CourseMaterial.objects.get(id=response.data['id'])
-    # get the pregenerated quiz associated with the material
-    quiz = QuizModel.objects.filter(quiz_title=f'pregenerated-quiz-{material.id}').first()
-    self.assertIsNotNone(quiz)
     self.assertEqual(material.file_name, 'Lecture 1')
     self.assertEqual(material.file_size, 2048)
     self.assertEqual(material.file_type, 'application/pdf')
     self.assertEqual(material.material_file_url, 'http://example.com/lecture1.pdf')
-    mock_get_content.assert_called_once_with(quiz.id) # quizId generated here is 1
-    mock_generate.assert_called_once_with(mock_get_content.return_value, quiz, 20)
-    mock_embed.assert_called_once_with(chunks=mock_get_content.return_value, course_id=self.course.id)
+    mock_handle_quiz_pregeneration.assert_called_once()
 
   def test_get_material_detail(self):
     material = CourseMaterial.objects.create(course=self.course, file_name='Lecture 1', file_size=2048, file_type='application/pdf', material_file_url='http://example.com/lecture1.pdf')

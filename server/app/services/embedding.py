@@ -3,6 +3,7 @@ from pinecone import Pinecone, ServerlessSpec
 import os
 from dotenv import load_dotenv
 import logging
+from celery import shared_task
 
 logger = logging.getLogger(__name__)
 
@@ -77,10 +78,13 @@ def query_course(question: str, course_id: str, top_k=3):
   return relevant_chunks
 
 
-def delete_course_chunks(course_id: str):
+@shared_task(bind=True, max_retries=5, default_retry_delay=10)
+def delete_course_chunks(self, course_id: str):
   index = get_index()
-  
-  # Delete all vectors associated with the course_id
-  index.delete(filter={"course_id": course_id})
-  logger.info(f"Deleted all chunks for course {course_id}")
+  try:
+    # Delete all vectors associated with the course_id
+    index.delete(filter={"course_id": course_id})
+  except Exception as e:
+    logger.error(f"Error deleting course chunks for course {course_id}: {str(e)}")
+    raise self.retry(exc=e)
   return True
