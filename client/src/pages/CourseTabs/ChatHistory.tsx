@@ -3,9 +3,7 @@ import { Outlet } from 'react-router-dom';
 
 const ChatHistory = () => {
     return (
-        <div>
-            <Outlet />
-        </div>
+        <Outlet />
     );
 }
 

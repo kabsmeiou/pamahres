@@ -247,7 +247,7 @@ const Layout = () => {
 
       {/* Main Content */}
       <LayoutContext.Provider value={{ courses: courses ?? null, isFetchingCourses, setShowToast }}>
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 flex flex-col min-h-0">
           {showToast && (
             <Toast 
               message="This feature is currently unavailable. Please try again later." 
