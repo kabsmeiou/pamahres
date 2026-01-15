@@ -1,8 +1,8 @@
 from courses.models import ChatHistory, Message
 from services.embedding import query_course
 
-def add_to_chat_history(name_filter: str, new_message: str, sender: str, user_id: int, course) -> None:
-  chat_history = ChatHistory.objects.get_or_create(
+def add_to_chat_history(name_filter: str, new_message: str, sender: str, course) -> None:
+  chat_history, created = ChatHistory.objects.get_or_create(
     course=course,
     name_filter=name_filter,
   )

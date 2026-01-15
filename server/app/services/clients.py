@@ -3,6 +3,7 @@ import os
 import logging
 
 from openai import OpenAI
+from groq import Groq
 
 load_dotenv()
 
@@ -20,10 +21,9 @@ except Exception as e:
   
 
 try:
-  openai_client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENAI_API_KEY"),
+  groq_v2 = OpenAI(
+    base_url="https://api.groq.com/openai/v1",
+    api_key=os.getenv("GROQ_API_KEY",),
   )
 except Exception as e:
   logger.error(f"Error initializing OpenAI client: {e}")
-  openai_client = None
