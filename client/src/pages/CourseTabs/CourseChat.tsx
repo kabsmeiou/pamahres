@@ -117,12 +117,10 @@ const Course = () => {
           });
         }
       };
-
       let buffer = '';
       while (true) {
         const { value, done: doneReading } = await reader.read();
         if (doneReading) break;
-
         // Decode with streaming mode to handle multi-byte UTF-8 correctly
         const chunkText = decoder.decode(value, { stream: true });
         buffer += chunkText;
@@ -139,6 +137,7 @@ const Course = () => {
             scheduleUpdate(fullResponse);
           }
         }
+        setLoading(false);
       }
 
       // Final flush for any remaining bytes
@@ -175,11 +174,9 @@ const Course = () => {
     } catch (error: any) {
       if (error.name !== 'AbortError') {
         console.error('Stream error:', error);
-        // Could add error handling UI here
       }
     } finally {
       abortControllerRef.current = null;
-      setLoading(false);
     }
   };
 

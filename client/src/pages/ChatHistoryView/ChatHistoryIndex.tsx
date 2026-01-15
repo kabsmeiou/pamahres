@@ -77,9 +77,9 @@ const ChatHistoryIndex = () => {
     }
 
     return (
-        <div>
+        <div className="flex-1 flex flex-col min-h-0">
             {/* Header Section */}
-            <div className="bg-gradient-to-r from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-800/20 p-6 border border-orange-200/50 dark:border-orange-700/50">
+            <div className="p-6 bg-gradient-to-r from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-800/20  border border-orange-200/50 dark:border-orange-700/50">
                 <div className="flex items-center space-x-3">
                     <div className="p-2 bg-orange-600 rounded-lg text-white">
                         <MessageCircle size={20} />
@@ -92,8 +92,7 @@ const ChatHistoryIndex = () => {
             </div>
             
             {/* Content */}
-            <div className="pb-16 bg-white dark:bg-gray-800 rounded-2xl">
-                <div className="p-6">
+            <div className="flex-1 flex flex-col min-h-0 overflow-y-auto bg-white dark:bg-gray-800">
                     {history && history.length > 0 ? (
                         <ChatHistoryList histories={history} />
                     ) : (
@@ -107,7 +106,6 @@ const ChatHistoryIndex = () => {
                             </p>
                         </div>
                     )}
-                </div>
             </div>
         </div>
     );

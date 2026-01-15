@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
+# TODO. refactor global variables to a better pattern
 _model = None
 _pc = None
 _index = None

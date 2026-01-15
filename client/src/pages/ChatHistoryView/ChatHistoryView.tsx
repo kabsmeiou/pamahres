@@ -26,7 +26,7 @@ const ChatHistoryView = () => {
     });
 
     return (
-        <div className="">
+        <div className="flex-1 flex flex-col min-h-0">
             {/* Navigation Header */}
             <div className="bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700 shadow-sm">
                 <div className="flex items-center justify-between">

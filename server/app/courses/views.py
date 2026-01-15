@@ -92,7 +92,6 @@ class LLMConversationView(generics.GenericAPIView):
 
     course = get_object_or_404(Course, id=self.kwargs['course_id'])
 
-    # TODO. use some free llm service instead of openai to reduce costs and make it work
     generator = handle_llm_conversation(
       user=request.user,
       course=course,
