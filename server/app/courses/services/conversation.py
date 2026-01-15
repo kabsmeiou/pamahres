@@ -1,9 +1,7 @@
 from .chat_service import add_to_chat_history, build_chat_prompt
 from services.openai_generator import get_conversational_completion
-from django.db import transaction
 from django.utils import timezone
 
-@transaction.atomic
 def handle_llm_conversation(
     *,
     user,
@@ -17,7 +15,6 @@ def handle_llm_conversation(
         name_filter=name_filter,
         new_message=new_message,
         sender="user",
-        user_id=user.id,
         course=course,
     )
 
@@ -28,18 +25,13 @@ def handle_llm_conversation(
         new_message=new_message,
     )
 
-    response = get_conversational_completion(
+    generator = get_conversational_completion(
+        course=course,
+        model="openai/gpt-oss-20b",
         previous_messages=previous_messages,
         new_message=new_message,
         context=context,
-    )
-
-    add_to_chat_history(
         name_filter=name_filter,
-        new_message=response,
-        sender="ai",
-        user_id=user.id,
-        course_id=course.id,
     )
 
-    return response
+    return generator

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useChatbot } from '../../services/chatbot';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -12,6 +12,9 @@ const Course = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { sendMessage, getHistoryToday } = useChatbot();
   const [loading, setLoading] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const streamingContentRef = useRef<string>('');
+  const animationFrameRef = useRef<number | null>(null);
 
   const {data: current_messages, isLoading} = useQuery<ChatMessage[]>({
     queryKey: ['chat-history', courseIdNumber],
@@ -25,9 +28,26 @@ const Course = () => {
     }
   }, [current_messages]);
 
+  // Cleanup: abort any ongoing stream when component unmounts
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
+
+    // Abort previous stream if still running
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
 
     setLoading(true);
 
@@ -41,28 +61,126 @@ const Course = () => {
     setMessages(prev => [...prev, newMessage]);
     setMessage('');
 
-    // send message to the server
-    const jsonMessage = {
-      previous_messages: messages.map(msg => ({
-        role: msg.sender === 'user' ? 'user' : 'assistant',
-        content: msg.content
-      })),
-      new_message: message,
-    }
+    // Create new abort controller for this request
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
 
-    console.log("Sending message to server:", jsonMessage);
-    const response: any = await sendMessage(jsonMessage, courseIdNumber);
-    console.log("Response from server:", response);
-    const responseText = response.reply || response.warning;
-    
-    const aiResponse: ChatMessage = {
-      id: (Date.now() + 1).toString(),
-      content: responseText,
-      sender: 'ai'
-    };
-    
-    setMessages(prev => [...prev, aiResponse]);
-    setLoading(false);
+    try {
+      // send message to the server
+      const jsonMessage = {
+        previous_messages: messages.map(msg => ({
+          role: msg.sender === 'user' ? 'user' : 'assistant',
+          content: msg.content
+        })),
+        new_message: message,
+      }
+      const response = await sendMessage(jsonMessage, courseIdNumber);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('Response body is not readable');
+      }
+      const decoder = new TextDecoder('utf-8');
+
+      let fullResponse = '';
+      // Add a placeholder AI message immediately 
+      const aiMessageId = (Date.now() + 1).toString();
+      setMessages(prev => [
+        ...prev,
+        { id: aiMessageId, content: '', sender: 'ai' }
+      ]);
+
+      // Throttled update function using requestAnimationFrame
+      let pendingUpdate = false;
+      const scheduleUpdate = (content: string) => {
+        streamingContentRef.current = content;
+        
+        if (!pendingUpdate) {
+          pendingUpdate = true;
+          animationFrameRef.current = requestAnimationFrame(() => {
+            setMessages(prev => {
+              const newMessages = [...prev];
+              const lastIndex = newMessages.length - 1;
+              if (newMessages[lastIndex]?.id === aiMessageId) {
+                newMessages[lastIndex] = {
+                  ...newMessages[lastIndex],
+                  content: streamingContentRef.current
+                };
+              }
+              return newMessages;
+            });
+            pendingUpdate = false;
+          });
+        }
+      };
+
+      let buffer = '';
+      while (true) {
+        const { value, done: doneReading } = await reader.read();
+        if (doneReading) break;
+
+        // Decode with streaming mode to handle multi-byte UTF-8 correctly
+        const chunkText = decoder.decode(value, { stream: true });
+        buffer += chunkText;
+        // Parse SSE format: lines starting with "data: "
+        const lines = buffer.split('\n');
+        // Keep the last incomplete line in the buffer
+        buffer = lines.pop() || '';
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6); // Remove "data: " prefix
+            fullResponse += data;
+            
+            // Schedule throttled update
+            scheduleUpdate(fullResponse);
+          }
+        }
+      }
+
+      // Final flush for any remaining bytes
+      const finalChunk = decoder.decode();
+      if (finalChunk) {
+        buffer += finalChunk;
+        const lines = buffer.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            fullResponse += data;
+          }
+        }
+      }
+
+      // Cancel any pending animation frame and do final update immediately
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+
+      // Finalize the AI message (trim extra whitespace)
+      setMessages(prev => {
+        const newMessages = [...prev];
+        const lastIndex = newMessages.length - 1;
+        if (newMessages[lastIndex]?.id === aiMessageId) {
+          newMessages[lastIndex] = {
+            ...newMessages[lastIndex],
+            content: fullResponse.trim()
+          };
+        }
+        return newMessages;
+      });
+    } catch (error: any) {
+      if (error.name !== 'AbortError') {
+        console.error('Stream error:', error);
+        // Could add error handling UI here
+      }
+    } finally {
+      abortControllerRef.current = null;
+      setLoading(false);
+    }
   };
 
   return (

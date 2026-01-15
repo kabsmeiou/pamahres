@@ -1,7 +1,7 @@
 import time
 import logging
 from django.shortcuts import get_object_or_404
-from django.db import transaction
+from django.http import StreamingHttpResponse
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated, BasePermission
@@ -92,14 +92,19 @@ class LLMConversationView(generics.GenericAPIView):
 
     course = get_object_or_404(Course, id=self.kwargs['course_id'])
 
-    reply = handle_llm_conversation(
+    # TODO. use some free llm service instead of openai to reduce costs and make it work
+    generator = handle_llm_conversation(
       user=request.user,
       course=course,
       previous_messages=previous_messages,
       new_message=new_message,
     )
 
-    return Response({"reply": reply}, status=status.HTTP_200_OK)
+    response = StreamingHttpResponse(generator, content_type='text/event-stream')
+    # Disable buffering in proxies (nginx)
+    response['Cache-Control'] = 'no-cache'
+    response['X-Accel-Buffering'] = 'no'
+    return response
     
 # View function for showing the courses that the current user has made.
 # Also serves as a view for creating new courses

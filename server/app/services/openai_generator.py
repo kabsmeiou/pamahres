@@ -1,24 +1,18 @@
-import json
+"""
+can make get_completion use a shared_task since it takes some time to complete
+the convo function can stay synchronous since we should receive the response for every user message
+"""
+from django.utils import timezone
 from rest_framework.exceptions import ValidationError
-from utils.validators import validate_response_format
 import logging
-import re
+import time
 
-from services.clients import groq_client, openai_client
+from courses.services.chat_service import add_to_chat_history
+
+from .clients import groq_client, groq_v2
+from .llm import get_llm_completion
 
 logger = logging.getLogger(__name__)
-
-def parse_llm_response(raw_text: str):
-  # Use regex to find the first JSON array in the text
-  match = re.search(r"\[\s*{.*?}\s*]", raw_text, re.DOTALL)
-  if match:
-    try:
-      return json.loads(match.group(0))
-    except json.JSONDecodeError as e:
-      raise ValueError(f"Failed to parse extracted JSON: {e}")
-  else:
-    raise ValueError("No JSON array found in response.")
-
 
 def get_completion(model="meta-llama/llama-4-scout-17b-16e-instruct", *, items: int=5, pdf_content="", max_retries: int=3) -> list:
   """
@@ -37,77 +31,21 @@ def get_completion(model="meta-llama/llama-4-scout-17b-16e-instruct", *, items: 
   if not material:
     raise ValidationError("Material content is empty. Please provide valid content to generate quiz questions.")
   
-  prompt = [
-      {
-        "role": "system",
-        "content": "You are a helpful tutor that creates quizzes from key points from educational materials. You only respond in JSON format exactly as the user describes."
-      },
-      {
-        "role": "user",
-        "content": f"""
-    Given the material below:
-
-    {material}
-
-    Generate exactly {items} quiz questions:
-    - {items // 2} True/False
-    - {(items + 1) // 2} Multiple Choice (1 correct + 3 plausible distractors)
-
-    Return your response as a **raw JSON array**, with each question object formatted like this:
-    True/False example:
-    {{
-      "question": "Text",
-      "type": "TF",
-      "answer": "true"
-    }}
-    
-    Multiple Choice example:
-    {{
-      "question": "Text",
-      "type": "MCQ",
-      "options": ["Option A", "Option B", "Option C", "Option D"],
-      "answer": "a"
-    }}
-
-    Use only lowercase letters ("a"-"d") for multiple choice answers. Do not include any explanations, markdown, or extra text. Ensure the JSON is valid and parsable.
-    """
-      }
-    ]
-
-  completion = groq_client.chat.completions.create(
+  response = get_llm_completion.delay(
+    client=groq_client,
     model=model,
-    messages = prompt
+    material=material,
+    items=items
   )
-
-  # parse to json
-  try:
-    response = parse_llm_response(completion.choices[0].message.content)
-  except Exception as e:
-    logger.error(f"Raw response: {completion.choices[0].message.content}")
-    raise ValidationError(f"Error parsing LLM response: {str(e)}")
-
-  # prepare the response and make sure its in the correct format
-  retries = 0
-  good_response: bool = False
-  while (retries < max_retries):
-    if validate_response_format(response) == True:
-      good_response = True
-      break
-    retries += 1
-    completion = client.chat.completions.create(
-      model=model,
-      messages = prompt
-    )
-    response = parse_llm_response(completion.choices[0].message.content)
-  
-  if good_response == False:
-    raise ValidationError("Failed to generate valid response from LLM")
 
   return response
 
 
 # function for handling the conversation with the LLM
-def get_conversational_completion(model="openai/gpt-5.1", *, previous_messages: list, new_message: str, context: str) -> str:
+def get_conversational_completion(
+    course, 
+    model="openai/gpt-oss-20b", 
+    *, previous_messages: list, new_message: str, context: str, name_filter: str):
   """
   This function handles the conversation with the LLM.
   It takes in a list of previous messages and a new message, and returns a string of responses from the LLM.
@@ -118,8 +56,8 @@ def get_conversational_completion(model="openai/gpt-5.1", *, previous_messages: 
 
   note that previous_messages is not the full conversation history, but only the last few messages
   """
-  
-  completion = openai_client.chat.completions.create(
+
+  completion = groq_v2.chat.completions.create(
     model=model,
     messages = [
       {
@@ -132,9 +70,25 @@ def get_conversational_completion(model="openai/gpt-5.1", *, previous_messages: 
         "content": new_message
       }
     ],
-    max_tokens=7000
+    stream=True
   )
-  response = completion.choices[0].message.content
-  # clean up the response
-  response = response.strip()
-  return response
+  
+  full_response = ""
+  try:
+    for chunk in completion:
+      delta = chunk.choices[0].delta.content
+      if delta is not None:
+        full_response += delta
+        # Format as SSE: data: <content>\n\n
+        yield f"data: {delta}\n\n"
+  finally:
+    # Ensure chat history is saved even if client disconnects
+    response = full_response.strip()
+    if response:
+      add_to_chat_history(
+        name_filter=name_filter,
+        new_message=response,
+        sender="ai",
+        course=course
+      )
+
