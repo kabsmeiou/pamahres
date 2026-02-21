@@ -18,7 +18,6 @@ A modern, AI-powered learning management system that helps students create cours
 - Multiple choice and True/False question support
 - Timed quizzes with customizable time limits
 - **Review Mode**: Review completed quizzes with correct answers and explanations
-- Real-time progress tracking
 
 ### 💬 Chat & History
 - Chat with AI about specific course materials
