@@ -1,6 +1,7 @@
 from celery import shared_task
 from django.core.exceptions import ValidationError
 import logging
+from .clients import groq_client
 
 from utils.utils import parse_llm_response
 
@@ -9,7 +10,7 @@ logger = logging.getLogger(__name__)
 @shared_task(bind=True, max_retries=3)
 def get_llm_completion(
   self, 
-  *, client, model: str, material: str, items: int, 
+  *, model: str, material: str, items: int, 
 ):
   prompt = [
     {
@@ -49,7 +50,7 @@ def get_llm_completion(
     ]
 
   try:
-    completion = client.chat.completions.create(
+    completion = groq_client.chat.completions.create(
       model=model,
       messages=prompt
     )

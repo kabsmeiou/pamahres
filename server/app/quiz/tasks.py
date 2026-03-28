@@ -1,4 +1,4 @@
-from celery import shared_task
+from celery import shared_task, chain
 import logging
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404
@@ -17,7 +17,12 @@ def generate_questions_task(self, pdf_content: str, quizId: int, number_of_quest
 
     try:
         # call the function for generating the questions
-        questions: list[dict] = get_completion(items=number_of_questions, pdf_content=pdf_content)
+        # Use the Celery task directly now
+        questions: list[dict] = get_completion(
+            model="meta-llama/llama-4-scout-17b-16e-instruct",
+            items=number_of_questions,
+            pdf_content=pdf_content
+        )
     except Exception as e:
         logger.error(f"Error generating questions for quiz {quizId}: {str(e)}")
         raise self.retry(exc=e)

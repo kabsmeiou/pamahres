@@ -32,7 +32,6 @@ def get_completion(model="meta-llama/llama-4-scout-17b-16e-instruct", *, items: 
     raise ValidationError("Material content is empty. Please provide valid content to generate quiz questions.")
   
   response = get_llm_completion.delay(
-    client=groq_client,
     model=model,
     material=material,
     items=items
