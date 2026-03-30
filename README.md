@@ -229,24 +229,6 @@ pamahres/
 └── README.md
 ```
 
-### Available Scripts
-
-**Frontend (client/)**
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run preview      # Preview production build
-npm run lint         # Run ESLint
-```
-
-**Backend (server/)**
-```bash
-python app/manage.py runserver    # Start Django server
-python app/manage.py migrate      # Run database migrations
-python app/manage.py createsuperuser  # Create admin user
-python app/manage.py test         # Run tests
-```
-
 ## 🎯 Future Roadmap
 
 - [ ] **AI Review System**: Optional AI review after quiz completion for detailed explanations
